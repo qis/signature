@@ -1,0 +1,15 @@
+/*
+.*
+!/include/
+!/src/
+!/.clangd
+!/.clang-format
+!/.clang-tidy
+!/.gitattributes
+!/.gitignore
+!/CMakeLists.txt
+!/CMakePresets.json
+!/conan.profile
+!/conanfile.txt
+!/license.txt
+!/readme.md

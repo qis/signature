@@ -1,0 +1,81 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "binaryDir": "${sourceDir}/build/debug",
+      "generator": "Ninja",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+        "CONAN_CMAKE_SILENT_OUTPUT": true,
+        "SIGNATURE_INSTALL_HEADERS": false,
+        "SIGNATURE_BUILD_TESTS": true,
+        "SIGNATURE_BUILD_MAIN": true
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "binaryDir": "${sourceDir}/build/release",
+      "generator": "Ninja",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+        "CONAN_CMAKE_SILENT_OUTPUT": true,
+        "SIGNATURE_INSTALL_HEADERS": false,
+        "SIGNATURE_BUILD_BENCHMARKS": true,
+        "SIGNATURE_BUILD_TESTS": true,
+        "SIGNATURE_BUILD_MAIN": true
+      }
+    },
+    {
+      "name": "install",
+      "displayName": "Install",
+      "binaryDir": "${sourceDir}/build/install",
+      "installDir": "${sourceDir}/install",
+      "generator": "Ninja",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "configuration": "Debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "configuration": "Release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "install",
+      "displayName": "Install",
+      "configuration": "Release",
+      "configurePreset": "install"
+    }
+  ]
+}

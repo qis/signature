@@ -1,0 +1,7 @@
+[requires]
+benchmark/[x]
+doctest/[x]
+onetbb/[x]
+
+[generators]
+cmake_find_package

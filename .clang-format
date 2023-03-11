@@ -1,0 +1,114 @@
+# Clang-Format Configuration
+---
+BasedOnStyle: LLVM
+
+# Indent
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+IndentPPDirectives: AfterHash
+IndentRequiresClause: true
+LambdaBodyIndentation: Signature
+
+# Alignment
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlines: Left
+AlignOperands: DontAlign
+PointerAlignment: Left
+
+# Breaks
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  AfterControlStatement: MultiLine
+  AfterFunction: true
+  BeforeCatch: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+BreakBeforeBinaryOperators: None
+BreakBeforeConceptDeclarations: Always
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+PackConstructorInitializers: NextLine
+RequiresClausePosition: OwnLine
+
+# Spaces
+Cpp11BracedListStyle: false
+SpacesInContainerLiterals: false
+
+# Columns
+ColumnLimit: 100
+PenaltyBreakComment: 100
+PenaltyBreakFirstLessLess: 100
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 10
+PenaltyReturnTypeOnItsOwnLine: 10000
+
+# Comments
+ReflowComments: false
+SpacesBeforeTrailingComments: 2
+CommentPragmas: '^ (NOTE|TODO):'
+
+# Sorting
+SortUsingDeclarations: false
+
+# Line Endings
+DeriveLineEnding: false
+UseCRLF: false
+---
+Language: Cpp
+Standard: c++20
+
+# Includes
+SortIncludes: CaseInsensitive
+IncludeCategories:
+  # Relative Paths
+  - Regex: '^"'
+    Priority: 1
+
+  # Project Headers
+  - Regex: '^<qis/'
+    Priority: 2
+    SortPriority: 0
+
+  # Benchmark Headers
+  - Regex: '^<benchmark/'
+    Priority: 3
+    SortPriority: 0
+
+  # Test Framework Headers
+  - Regex: '^<(doctest|gtest|gmock)/'
+    Priority: 4
+    SortPriority: 0
+
+  # Library Headers
+  - Regex: '^<.*\.'
+    Priority: 5
+
+  # C Compatibility Headers
+  - Regex: '^<c(a|c|e|f|i|l|m|s|t|u|w)'
+    Priority: 7
+
+  # C++ Standard Library Headers
+  - Regex: '^<'
+    Priority: 6
+---
+Language: ObjC
+DisableFormat: true
+---
+Language: Java
+BreakAfterJavaFieldAnnotations: true
+---
+Language: JavaScript
+JavaScriptQuotes: Single
+...

@@ -1,0 +1,79 @@
+# clang-tidy
+---
+Checks: "-*,\
+clang-diagnostic-*,\
+clang-analyzer-*,\
+-clang-analyzer-deadcode.DeadStores,\
+bugprone-*,\
+-bugprone-dynamic-static-initializers,\
+-bugprone-forward-declaration-namespace,\
+-bugprone-macro-parentheses,\
+cppcoreguidelines-*,\
+-cppcoreguidelines-avoid-c-arrays,\
+-cppcoreguidelines-avoid-goto,\
+-cppcoreguidelines-avoid-magic-numbers,\
+-cppcoreguidelines-macro-usage,\
+-cppcoreguidelines-owning-memory,\
+-cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+-cppcoreguidelines-pro-bounds-constant-array-index,\
+-cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+-cppcoreguidelines-pro-type-reinterpret-cast,\
+-cppcoreguidelines-pro-type-union-access,\
+-cppcoreguidelines-special-member-functions,\
+fuchsia-multiple-inheritance,\
+fuchsia-trailing-return,\
+fuchsia-virtual-inheritance,\
+llvm-namespace-comment,\
+misc-*,\
+-misc-throw-by-value-catch-by-reference,\
+-misc-unused-alias-decls,\
+-misc-unused-parameters,\
+-misc-unused-using-decls,\
+modernize-*,\
+-modernize-avoid-c-arrays,\
+-modernize-raw-string-literal,\
+-modernize-use-nodiscard,\
+-modernize-use-trailing-return-type,\
+performance-*,\
+readability-*,\
+-readability-else-after-return,\
+-readability-function-size,\
+-readability-identifier-length"
+-readability-implicit-bool-conversion,\
+-readability-magic-numbers,\
+-readability-named-parameter,\
+-readability-qualified-auto,\
+-readability-uppercase-literal-suffix,
+HeaderFilterRegex: '\.hpp$'
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+CheckOptions:
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: 1
+  - key: modernize-loop-convert.NamingStyle
+    value: lower_case
+  - key: modernize-use-default-member-init.UseAssignment
+    value: 1
+  - key: readability-identifier-naming.EnumCase
+    value: lower_case
+  - key: readability-identifier-naming.EnumConstantCase
+    value: lower_case
+  - key: readability-identifier-naming.ClassCase
+    value: lower_case
+  - key: readability-identifier-naming.UnionCase
+    value: lower_case
+  - key: readability-identifier-naming.StructCase
+    value: lower_case
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.MemberCase
+    value: lower_case
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: _
+...
