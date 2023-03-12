@@ -152,23 +152,29 @@ QIS_TEST("scan")
       const auto byte = static_cast<std::uint8_t>(i);
       if (byte >= 0xB0 && byte <= 0xBF) {
         REQUIRE(qis::scan(&byte, 1, sig) == 0);
+        
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
+        
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 1);
+        
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 3);
       } else {
         REQUIRE(qis::scan(&byte, 1, sig) == qis::signature::npos);
+        
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
+        
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
+        
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
@@ -183,23 +189,29 @@ QIS_TEST("scan")
       const auto byte = static_cast<std::uint8_t>(i);
       if ((byte & 0x0F) == 0x0E) {
         REQUIRE(qis::scan(&byte, 1, sig) == 0);
+        
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
+        
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 1);
+        
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 3);
       } else {
         REQUIRE(qis::scan(&byte, 1, sig) == qis::signature::npos);
+        
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
+        
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
+        
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
@@ -213,12 +225,15 @@ QIS_TEST("scan")
     for (unsigned i = 0x00; i <= 0xFF; i++) {
       const auto byte = static_cast<std::uint8_t>(i);
       REQUIRE(qis::scan(&byte, 1, sig) == 0);
+      
       str.assign("\xFF\xFF", 2);
       str[0] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
+      
       str.assign("\x00\x00\x00", 3);
       str[1] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
+      
       str.assign("\xFF\x00\xFF\x00", 4);
       str[3] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
@@ -238,6 +253,19 @@ QIS_TEST("scan")
       mem::write(str.data(), str.size(), i - 4, "B2 A9 01");
       str[i - 3] = static_cast<std::uint8_t>(i);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == i - 4);
+
+      str.assign(i, '\xFF');
+      mem::write(str.data(), str.size(), i - 3, "B2 A9 01");
+      str[i - 2] = static_cast<std::uint8_t>(i);
+      REQUIRE(qis::scan(str.data(), str.size(), sig) == i - 3);
+
+      str.assign(i, '\xFF');
+      mem::write(str.data(), str.size(), i - 2, "B2 A9 01");
+      str[i - 1] = static_cast<std::uint8_t>(i);
+      REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
+
+      mem::write(str.data(), str.size(), i - 1, "B2 A9 01");
+      REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
     }
   }
 }
