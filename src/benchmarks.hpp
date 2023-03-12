@@ -3,13 +3,21 @@
 #include <benchmark/benchmark.h>
 #include <memory.hpp>
 
-#ifndef QIS_BENCHMARK
-#  define QIS_BENCHMARK(name, ...) static void name(__VA_ARGS__)
-#endif
+// clang-format off
 
-#ifndef QIS_CALL
-#  define QIS_CALL(name) BENCHMARK(name##_avx)
-#endif
+#define QIS_BENCHMARK(name, ...)                      \
+  static void QIS_BENCHMARK_NAME(name)(__VA_ARGS__);  \
+  QIS_BENCHMARK_CALL(name)                            \
+    ->Unit(benchmark::kMillisecond)                   \
+    ->Arg(512_kb)                                     \
+    ->Arg(128_mb)                                     \
+    ->Arg(256_mb)                                     \
+    ->Arg(512_mb)                                     \
+    ->Arg(1_gb)                                       \
+    ->Arg(2_gb);                                      \
+  static void QIS_BENCHMARK_NAME(name)(__VA_ARGS__)
+
+// clang-format on
 
 using namespace mem::literals;
 
@@ -23,16 +31,3 @@ QIS_BENCHMARK(scan, benchmark::State& state)
     benchmark::DoNotOptimize(pos);
   }
 }
-
-// clang-format off
-
-QIS_CALL(scan)
-  ->Unit(benchmark::kMillisecond)
-  ->Arg(512_kb)
-  ->Arg(128_mb)
-  ->Arg(256_mb)
-  ->Arg(512_mb)
-  ->Arg(1_gb)
-  ->Arg(2_gb);
-
-// clang-format on
