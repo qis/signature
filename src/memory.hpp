@@ -22,6 +22,9 @@ void print(std::span<const std::uint8_t> memory, std::size_t max = 1024) noexcep
 // Prints given data to standard output in blocks.
 void print(const void* data, std::size_t size, std::size_t max = 1024) noexcept;
 
+// Returns 2 GB of data of given size with bytes iterating over 0x00..0xFF in a loop.
+std::span<const std::uint8_t> get();
+
 inline namespace literals {
 
 constexpr std::size_t operator""_kb(std::size_t size)

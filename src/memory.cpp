@@ -1,6 +1,7 @@
 #pragma once
 #include "memory.hpp"
 #include <qis/signature.hpp>
+#include <mutex>
 #include <random>
 #include <span>
 #include <stdexcept>
@@ -8,6 +9,12 @@
 #include <cstdio>
 
 namespace mem {
+namespace {
+
+std::vector<std::uint8_t> g_memory;
+std::mutex g_mutex;
+
+}  // namespace
 
 std::vector<std::uint8_t> random(std::size_t size)
 {
@@ -151,6 +158,26 @@ void print(const void* data, std::size_t size, std::size_t max) noexcept
     return;
   }
   print({ reinterpret_cast<const std::uint8_t*>(data), size }, max);
+}
+
+std::span<const std::uint8_t> get()
+{
+  std::lock_guard lock(g_mutex);
+  if (g_memory.empty()) {
+    g_memory.resize(2_gib);
+    std::vector<std::uint8_t> data(1_mib);
+    auto src = data.data();
+    for (std::size_t i = 0; i < 1_mib; i++) {
+      *src++ = static_cast<std::uint8_t>(i % 0xFF);
+    }
+    src = data.data();
+    auto dst = g_memory.data();
+    for (std::size_t i = 0; i < 2_gib; i += 1_mib) {
+      std::memcpy(dst, src, 1_mib);
+      dst += 1_mib;
+    }
+  }
+  return g_memory;
 }
 
 }  // namespace mem
