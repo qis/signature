@@ -11,7 +11,7 @@
 
 #define QIS_BENCHMARK(name, unit, iterations, size) \
   QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, name)   \
-    ->ArgName(std::format("{:08X}", size))         \
+    ->ArgName(std::format("{:08X}", size))          \
     ->Unit(unit)                                    \
     ->Iterations(iterations)                        \
     ->UseRealTime()                                 \
