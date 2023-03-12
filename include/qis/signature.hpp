@@ -1,5 +1,6 @@
-// Copyright (c) 2008-2016, Wojciech Muła
 // Copyright (c) 2023, Alexej Harm
+// Copyright (c) 2008-2016, Wojciech Muła
+//
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -54,6 +55,14 @@
 #  endif
 #endif
 
+#ifndef QIS_SIGNATURE_USE_EXCEPTIONS
+#  ifdef __cpp_exceptions
+#    define QIS_SIGNATURE_USE_EXCEPTIONS 1
+#  else
+#    define QIS_SIGNATURE_USE_EXCEPTIONS 0
+#  endif
+#endif
+
 #if QIS_SIGNATURE_USE_AVX
 #  include <immintrin.h>
 #else
@@ -67,6 +76,10 @@
 #  include <execution>
 #endif
 
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+#  include <exception>
+#endif
+
 // DEBUG: BEGIN
 #include <algorithm>
 #include <functional>
@@ -76,12 +89,24 @@ namespace qis {
 namespace detail::signature {
 
 template <bool mask>
-constexpr char cast(char upper, char lower) noexcept;
+constexpr char cast(char upper, char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
 
 template <bool mask>
 std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
 
 }  // namespace detail::signature
+
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+
+class invalid_signature : std::exception {
+public:
+  const char* what() const noexcept override
+  {
+    return "invalid signature";
+  }
+};
+
+#endif
 
 class signature {
 public:
@@ -89,21 +114,25 @@ public:
 
   constexpr signature() noexcept = default;
 
-  signature(std::string_view signature) : size_((signature.size() + 1) / 3)
+  signature(std::string_view signature) :
+    size_((signature.size() + 1) / 3), mask_(signature.find('?') != std::string_view::npos)
   {
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+    if ((signature.size() + 1) / 3 <= 0 || (signature.size() + 1) % 3 != 0) {
+      throw invalid_signature();
+    }
+#else
     assert((signature.size() + 1) / 3 > 0);
     assert((signature.size() + 1) % 3 == 0);
-    if (signature.empty()) {
-      return;
-    }
-    if (signature.find('?') == std::string_view::npos) {
-      data_ = std::make_unique<char[]>(size_);
-    } else {
+#endif
+    if (mask_) {
       data_ = std::make_unique<char[]>(size_ * 2);
       const auto mask = data_.get() + size_;
       for (std::size_t i = 0; i < size_; i++) {
         mask[i] = detail::signature::cast<true>(signature[i * 3], signature[i * 3 + 1]);
       }
+    } else {
+      data_ = std::make_unique<char[]>(size_);
     }
     const auto data = data_.get();
     for (std::size_t i = 0; i < size_; i++) {
@@ -135,9 +164,10 @@ private:
 
 inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
 {
+  if (!size) {
+    return signature::npos;
+  }
   assert(data);
-  assert(size);
-  assert(search.data());
   const auto s = static_cast<const char*>(data);
   const auto p = search.data();
   const auto k = search.size();
@@ -147,6 +177,7 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
   if (size < k) {
     return signature::npos;
   }
+  assert(p);
   if (search.mask()) {
     return detail::signature::scan<true>(s, size, p, k);
   }
@@ -156,7 +187,7 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
 namespace detail::signature {
 
 template <bool mask>
-inline constexpr char cast(char lower) noexcept
+inline constexpr char cast(char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
   if constexpr (mask) {
     return lower == '?' ? 0x0 : 0xF;
@@ -170,13 +201,19 @@ inline constexpr char cast(char lower) noexcept
     if (lower >= 'a' && lower <= 'f') {
       return lower - 'a' + 0xA;
     }
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+    if (lower != '?') {
+      throw invalid_signature();
+    }
+#else
     assert(lower == '?');
-    return 0;
+#endif
+    return 0x0;
   }
 }
 
 template <bool mask>
-inline constexpr char cast(char upper, char lower) noexcept
+inline constexpr char cast(char upper, char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
   return cast<mask>(upper) << 4 | cast<mask>(lower);
 }
@@ -349,7 +386,7 @@ __forceinline std::size_t find<false>(const char* s, std::size_t n, const char* 
   auto r = qis::signature::npos;
   switch (k) {
   case 1:
-    if (const auto it = std::find(s, s + n, p[0])) {
+    if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
       return it - s;
     } else {
       return r;

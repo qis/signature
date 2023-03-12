@@ -110,6 +110,12 @@ void write(std::span<std::uint8_t> memory, std::size_t position, std::string_vie
   }
 }
 
+void write(void* data, std::size_t size, std::size_t position, std::string_view signature) noexcept
+{
+  const auto memory = reinterpret_cast<std::uint8_t*>(data);
+  write({ memory, size }, position, signature);
+}
+
 void print(std::span<const std::uint8_t> memory, std::size_t max) noexcept
 {
   const auto size = std::min(memory.size(), max);

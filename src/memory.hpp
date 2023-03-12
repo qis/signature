@@ -14,6 +14,7 @@ std::vector<std::uint8_t> create(std::size_t size, std::string_view signature);
 
 // Writes given signature to data at given position.
 void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature) noexcept;
+void write(void* data, std::size_t size, std::size_t position, std::string_view signature) noexcept;
 
 // Prints given data to standard output in blocks.
 void print(std::span<const std::uint8_t> memory, std::size_t max = 1024) noexcept;
