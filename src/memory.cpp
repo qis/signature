@@ -1,15 +1,19 @@
 #pragma once
 #include "memory.hpp"
-#include <qis/signature.hpp>
 #include <algorithm>
 #include <format>
 #include <map>
 #include <mutex>
 #include <random>
-#include <span>
 #include <stdexcept>
 #include <string>
-#include <cstdio>
+#include <cassert>
+
+#define QIS_SIGNATURE_ABI memory
+#define QIS_SIGNATURE_USE_AVX 0
+#define QIS_SIGNATURE_USE_PAR 0
+#define QIS_SIGNATURE_USE_TBB 0
+#include <qis/signature.hpp>
 
 namespace mem {
 namespace {

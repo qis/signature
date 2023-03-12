@@ -15,12 +15,12 @@ public:
   {
     auto runs = reports;
     for (auto& run : runs) {
-      if (run.run_name.args.find_first_not_of("0123456789") == std::string::npos) {
+      if (run.run_name.args.find_first_not_of("0123456789:") == std::string::npos) {
         std::size_t v = 0;
         const auto data = run.run_name.args.data();
         const auto size = run.run_name.args.size();
-        const auto [it, ec] = std::from_chars(data, data + size, v);
-        if (ec == std::errc() && it == data + size && v) {
+        const auto [it, ec] = std::from_chars(data, data + size, v, 16);
+        if (ec == std::errc() && v) {
           if (v / 1_gb > 0 && v % 1_gb == 0) {
             run.run_name.args = std::format("{} gb", v / 1024 / 1024 / 1024);
           } else if (v / 1_mb > 0 && v % 1_mb == 0) {
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
   // Initialize memory blocks.
   const std::vector<std::size_t> blocks{
-    64_kb, 512_kb, 1_mb, 64_mb, 128_mb, 512_mb, 1_gb, 2_gb,
+    10_kb, 16_kb, 64_kb, 256_kb, 1_mb, 4_mb, 16_mb, 64_mb, 256_mb, 512_mb, 1_gb, 2_gb,
   };
 
   // Initialize data.
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
   // Run benchmarks.
   Reporter reporter;
   for (auto size : blocks) {
-    const auto spec = std::format(".*/{}", size);
+    const auto spec = std::format(".*/{:08X}", size);
     benchmark::RunSpecifiedBenchmarks(&reporter, spec);
     std::puts("");
   }

@@ -27,9 +27,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <algorithm>
 #include <memory>
 #include <string_view>
-#include <cassert>
 
 #ifndef QIS_SIGNATURE_USE_AVX
 #  ifdef __AVX2__
@@ -47,14 +47,6 @@
 #  endif
 #endif
 
-#ifndef QIS_SIGNATURE_USE_PAR
-#  if __has_include(<execution>)
-#    define QIS_SIGNATURE_USE_PAR 1
-#  else
-#    define QIS_SIGNATURE_USE_PAR 0
-#  endif
-#endif
-
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
 #  ifdef __cpp_exceptions
 #    define QIS_SIGNATURE_USE_EXCEPTIONS 1
@@ -66,26 +58,44 @@
 #if QIS_SIGNATURE_USE_AVX
 #  include <immintrin.h>
 #else
-#  include <algorithm>
 #  include <functional>
 #endif
 
 #if QIS_SIGNATURE_USE_TBB
 #  include <tbb/parallel_for.h>
-#elif QIS_SIGNATURE_USE_PAR
-#  include <execution>
+#  include <atomic>
+#  ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
+#    define QIS_SIGNATURE_CONCURRENCY_RANGES 64
+#  endif
+#  ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
+#    if QIS_SIGNATURE_USE_AVX
+#      define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
+#    else
+#      define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
+#    endif
+#  endif
 #endif
 
 #if QIS_SIGNATURE_USE_EXCEPTIONS
 #  include <exception>
+#else
+#  include <cassert>
 #endif
 
-// DEBUG: BEGIN
+#ifndef QIS_SIGNATURE_ABI
+#  define QIS_SIGNATURE_ABI v1
+#endif
+
+// TODO: Remove these when fully implemented.
+#include <tbb/parallel_for.h>
+#include <tbb/task.h>
 #include <algorithm>
+#include <atomic>
+#include <exception>
 #include <functional>
-// DEBUG: END
 
 namespace qis {
+inline namespace QIS_SIGNATURE_ABI {
 namespace detail::signature {
 
 template <bool mask>
@@ -137,7 +147,13 @@ public:
     const auto data = data_.get();
     for (std::size_t i = 0; i < size_; i++) {
       data[i] = detail::signature::cast<false>(signature[i * 3], signature[i * 3 + 1]);
-      assert(i == 0 || signature[i * 3 - 1] == ' ');
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+      if (i && signature[i * 3 - 1] != ' ') {
+        throw invalid_signature();
+      }
+#else
+      assert(!i || signature[i * 3 - 1] == ' ');
+#endif
     }
   }
 
@@ -164,20 +180,18 @@ private:
 
 inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
 {
-  if (!size) {
+  if (!size || !data) {
     return signature::npos;
   }
-  assert(data);
   const auto s = static_cast<const char*>(data);
   const auto p = search.data();
   const auto k = search.size();
   if (!k) {
     return 0;
   }
-  if (size < k) {
+  if (!p || size < k) {
     return signature::npos;
   }
-  assert(p);
   if (search.mask()) {
     return detail::signature::scan<true>(s, size, p, k);
   }
@@ -488,13 +502,44 @@ template <bool mask>
 inline std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
 #if QIS_SIGNATURE_USE_TBB
-  return find<mask>(s, n, p, k);
-#elif QIS_SIGNATURE_USE_PAR
-  return find<mask>(s, n, p, k);
-#else
-  return find<mask>(s, n, p, k);
+  constexpr std::size_t ranges = QIS_SIGNATURE_CONCURRENCY_RANGES;
+  constexpr std::size_t threshold = QIS_SIGNATURE_CONCURRENCY_THRESHOLD;
+  if (n > threshold && n > k * 2) {
+    // Determine block size.
+    const auto block_size = std::max({ threshold / ranges, n / ranges, k * 2 });
+
+    // Split data into ranges.
+    const tbb::blocked_range range(s, s + n - k, block_size);
+
+    // Find signature.
+    std::atomic_size_t pos = qis::signature::npos;
+    tbb::parallel_for(range, [s, p, k, &pos](const tbb::blocked_range<const char*>& range) noexcept {
+      // Get current range data, size, and offset.
+      const auto rs = range.begin();
+      const auto rn = range.size() + k;
+      const auto ro = static_cast<std::size_t>(rs - s);
+
+      // Check if range starts at a smaller offset, than an already found position.
+      if (const auto i = pos.load(std::memory_order_relaxed); i <= ro) {
+        return;
+      }
+
+      // Find signature in range.
+      if (const auto i = find<mask>(rs, rn, p, k); i != qis::signature::npos) {
+        std::size_t expected = qis::signature::npos;
+        while (!pos.compare_exchange_weak(expected, ro + i, std::memory_order_release)) {
+          if (expected <= i) {
+            return;
+          }
+        }
+      }
+    });
+    return pos.load(std::memory_order_acquire);
+  }
 #endif
+  return find<mask>(s, n, p, k);
 }
 
 }  // namespace detail::signature
+}  // namespace QIS_SIGNATURE_ABI
 }  // namespace qis

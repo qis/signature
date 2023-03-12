@@ -4,9 +4,11 @@
 #include <memory.hpp>
 #include <string>
 
-#ifndef QIS_TEST
-#  define QIS_TEST(name) TEST_CASE(name)
-#endif
+#define QIS_TEST_NAMESPACE(abi) #abi
+#define QIS_TEST_DECLARE(abi, name) TEST_CASE(QIS_TEST_NAMESPACE(abi) "::" name)
+#define QIS_TEST(name) QIS_TEST_DECLARE(QIS_SIGNATURE_ABI, name)
+
+namespace QIS_SIGNATURE_ABI {
 
 using namespace mem::literals;
 
@@ -152,29 +154,29 @@ QIS_TEST("scan")
       const auto byte = static_cast<std::uint8_t>(i);
       if (byte >= 0xB0 && byte <= 0xBF) {
         REQUIRE(qis::scan(&byte, 1, sig) == 0);
-        
+
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
-        
+
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 1);
-        
+
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 3);
       } else {
         REQUIRE(qis::scan(&byte, 1, sig) == qis::signature::npos);
-        
+
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
-        
+
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
-        
+
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
@@ -189,29 +191,29 @@ QIS_TEST("scan")
       const auto byte = static_cast<std::uint8_t>(i);
       if ((byte & 0x0F) == 0x0E) {
         REQUIRE(qis::scan(&byte, 1, sig) == 0);
-        
+
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
-        
+
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 1);
-        
+
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == 3);
       } else {
         REQUIRE(qis::scan(&byte, 1, sig) == qis::signature::npos);
-        
+
         str.assign("\xFF\xFF", 2);
         str[0] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
-        
+
         str.assign("\x00\x00\x00", 3);
         str[1] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
-        
+
         str.assign("\xFF\x00\xFF\x00", 4);
         str[3] = static_cast<char>(byte);
         REQUIRE(qis::scan(str.data(), str.size(), sig) == qis::signature::npos);
@@ -225,15 +227,15 @@ QIS_TEST("scan")
     for (unsigned i = 0x00; i <= 0xFF; i++) {
       const auto byte = static_cast<std::uint8_t>(i);
       REQUIRE(qis::scan(&byte, 1, sig) == 0);
-      
+
       str.assign("\xFF\xFF", 2);
       str[0] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
-      
+
       str.assign("\x00\x00\x00", 3);
       str[1] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
-      
+
       str.assign("\xFF\x00\xFF\x00", 4);
       str[3] = static_cast<char>(byte);
       REQUIRE(qis::scan(str.data(), str.size(), sig) == 0);
@@ -269,3 +271,5 @@ QIS_TEST("scan")
     }
   }
 }
+
+}  // namespace QIS_SIGNATURE_ABI

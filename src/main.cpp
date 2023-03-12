@@ -1,27 +1,23 @@
 #include "memory.hpp"
 #include <qis/signature.hpp>
-#include <chrono>
-#include <format>
+#include <mutex>
 #include <string>
+#include <iostream>
+
+#include <tbb/task.h>
 
 using namespace mem::literals;
 
 int main()
 {
-  using milliseconds = std::chrono::duration<double, std::chrono::milliseconds::period>;
-
-  const auto tp0 = std::chrono::high_resolution_clock::now();
-  const auto data = mem::get(2_gb);
-  const auto tp1 = std::chrono::high_resolution_clock::now();
-  const auto ms0 = std::chrono::duration_cast<milliseconds>(tp1 - tp0).count();
-  std::puts(std::format("{} bytes in {:6.1f} ms (generate)", data.size(), ms0).data());
-
-  const qis::signature search(mem::signature(3));
-  const auto tp2 = std::chrono::high_resolution_clock::now();
-  const auto pos = qis::scan(data.data(), data.size(), search);
-  const auto tp3 = std::chrono::high_resolution_clock::now();
-  const auto ms1 = std::chrono::duration_cast<milliseconds>(tp3 - tp2).count();
-  std::puts(std::format("{} bytes in {:6.1f} ms (scan)", pos, ms1).data());
-
-  mem::print({ data.data() + data.size() - 32, 32 });
+  std::mutex mutex;
+  std::string str("0123456789ABCDEF");
+  const auto s = str.data();
+  const auto n = str.size();
+  const tbb::blocked_range range(s, s + n, 5);
+  tbb::parallel_for(range, [&](const tbb::blocked_range<char*>& range) noexcept {
+    std::lock_guard lock(mutex);
+    std::cout << range.size() << std::endl;
+    tbb::task::current_context()->cancel_group_execution();
+  });
 }
