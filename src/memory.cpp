@@ -1,6 +1,9 @@
 #pragma once
 #include "memory.hpp"
 #include <qis/signature.hpp>
+#include <algorithm>
+#include <format>
+#include <map>
 #include <mutex>
 #include <random>
 #include <span>
@@ -11,24 +14,10 @@
 namespace mem {
 namespace {
 
-std::vector<std::uint8_t> g_memory;
 std::mutex g_mutex;
+std::map<std::size_t, std::vector<std::uint8_t>> g_memory;
 
 }  // namespace
-
-std::vector<std::uint8_t> random(std::size_t size)
-{
-  // Create memory.
-  std::vector<std::uint8_t> memory(size);
-
-  // Write random data.
-  std::random_device device;
-  std::uniform_int_distribution<unsigned> distribution(0x00, 0xFF);
-  for (std::size_t i = 0; i < size; i++) {
-    memory[i] = static_cast<std::uint8_t>(distribution(device));
-  }
-  return memory;
-}
 
 std::vector<std::uint8_t> create(std::size_t size, std::string_view signature)
 {
@@ -65,12 +54,12 @@ std::vector<std::uint8_t> create(std::size_t size, std::string_view signature)
   }
 
   // Copy data and replace unmasked bytes with random bytes.
-  std::random_device device;
-  std::uniform_int_distribution<unsigned> distribution(0x00, 0xFF);
-  std::size_t i = 0;
+  std::random_device rd;
+  std::uniform_int_distribution<unsigned> ud(0x00, 0xFF);
+  std::uint8_t i = 0;
   for (auto& byte : memory) {
-    byte = mask[i] ? data[i] : static_cast<std::uint8_t>(distribution(device));
-    i = (i + 1) % data_size;
+    byte = mask[i] ? data[i] : static_cast<std::uint8_t>(ud(rd));
+    i++;
   }
   return memory;
 }
@@ -160,24 +149,120 @@ void print(const void* data, std::size_t size, std::size_t max) noexcept
   print({ reinterpret_cast<const std::uint8_t*>(data), size }, max);
 }
 
-std::span<const std::uint8_t> get()
+std::vector<std::uint8_t> random(std::size_t size)
 {
-  std::lock_guard lock(g_mutex);
-  if (g_memory.empty()) {
-    g_memory.resize(2_gib);
-    std::vector<std::uint8_t> data(1_mib);
-    auto src = data.data();
-    for (std::size_t i = 0; i < 1_mib; i++) {
-      *src++ = static_cast<std::uint8_t>(i % 0xFF);
-    }
-    src = data.data();
-    auto dst = g_memory.data();
-    for (std::size_t i = 0; i < 2_gib; i += 1_mib) {
-      std::memcpy(dst, src, 1_mib);
-      dst += 1_mib;
-    }
+  // Check size.
+  if (!size) {
+    return {};
   }
-  return g_memory;
+
+  // Create memory.
+  std::vector<std::uint8_t> memory(size);
+
+  // Write random data.
+  std::uint8_t m = 0;
+  std::random_device rd;
+  std::mt19937_64 mt(rd());
+  std::uniform_int_distribution<std::uint64_t> ud;
+  auto dst = memory.data();
+  for (std::size_t i = 0, max = size / sizeof(std::uint64_t); i < max; i++) {
+    *reinterpret_cast<std::uint64_t*>(dst) = ud(mt);
+    for (std::size_t j = 0; j < sizeof(std::uint64_t); j++) {
+      switch (m) {
+      case 0:
+        if (dst[j] == 0xDB) {
+          m = 1;
+        }
+        break;
+      case 1:
+        m = dst[j] == 0x27 ? 2 : 0;
+        break;
+      case 2:
+        if (dst[j] == 0x5B) {
+          dst[j] = 0x5C;
+        }
+        m = 0;
+        break;
+      }
+    }
+    dst += sizeof(std::uint64_t);
+  }
+  switch (auto& byte = memory[size - 1]) {
+  case 0xDB:
+  case 0x27:
+  case 0x5B:
+    byte = 0xFE;
+    break;
+  }
+  return memory;
+}
+
+void initialize(std::vector<std::size_t> sizes)
+{
+  // Check sizes.
+  if (sizes.empty()) {
+    return;
+  }
+  const auto data_size = std::min(128_mb, *std::max_element(sizes.begin(), sizes.end()));
+  if (!data_size) {
+    return;
+  }
+
+  // Generate data.
+  const auto data = random(data_size);
+  
+  // Create signature.
+  const qis::signature search(signature());
+  assert(search.size() == 26);
+  assert(search.data());
+
+  // Allocate memory.
+  std::lock_guard lock(g_mutex);
+  for (auto size : sizes) {
+    // Check size.
+    if (!size) {
+      continue;
+    }
+
+    // Create memory.
+    std::vector<std::uint8_t> memory(size);
+
+    // Copy data.
+    auto dst = memory.data();
+    for (std::size_t i = 0; i < size; i += data_size) {
+      std::memcpy(dst + i, dst, std::min(data_size, size - i));
+    }
+
+    // Copy signature.
+    const auto copy = std::min(search.size(), size);
+    std::memcpy(memory.data() + size - copy, search.data(), copy);
+
+    // Store memory.
+    g_memory.emplace(size, std::move(memory));
+  }
+}
+
+void shutdown()
+{
+  // Free memory.
+  std::lock_guard lock(g_mutex);
+  g_memory.clear();
+}
+
+std::span<const std::uint8_t> get(std::size_t size)
+{
+  // Check size.
+  if (!size) {
+    return {};
+  }
+
+  // Look up memory.
+  if (auto it = g_memory.find(size); it != g_memory.end()) {
+    return it->second;
+  }
+
+  // Report error.
+  throw std::invalid_argument(std::format("memory size not initialized: {}", size));
 }
 
 }  // namespace mem

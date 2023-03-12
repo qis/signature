@@ -19,6 +19,7 @@
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
         "CONAN_CMAKE_SILENT_OUTPUT": true,
         "SIGNATURE_INSTALL_HEADERS": false,
+        "SIGNATURE_BUILD_BENCHMARKS": false,
         "SIGNATURE_BUILD_TESTS": true,
         "SIGNATURE_BUILD_MAIN": true
       }
