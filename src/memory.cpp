@@ -197,20 +197,20 @@ std::vector<std::uint8_t> random(std::size_t size)
   return memory;
 }
 
-void initialize(std::vector<std::size_t> sizes)
+void initialize(std::vector<std::size_t> blocks)
 {
   // Check sizes.
-  if (sizes.empty()) {
+  if (blocks.empty()) {
     return;
   }
-  const auto data_size = std::min(128_mb, *std::max_element(sizes.begin(), sizes.end()));
+  const auto data_size = std::min(128_mb, *std::max_element(blocks.begin(), blocks.end()));
   if (!data_size) {
     return;
   }
 
   // Generate data.
   const auto data = random(data_size);
-  
+
   // Create signature.
   const qis::signature search(signature());
   assert(search.size() == 26);
@@ -218,7 +218,7 @@ void initialize(std::vector<std::size_t> sizes)
 
   // Allocate memory.
   std::lock_guard lock(g_mutex);
-  for (auto size : sizes) {
+  for (auto size : blocks) {
     // Check size.
     if (!size) {
       continue;

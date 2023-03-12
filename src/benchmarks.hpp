@@ -24,49 +24,41 @@ QIS_BENCHMARK(scan, benchmark::State& state)
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kNanosecond)
   ->Iterations(8192)
-  ->Arg(64_kb)
-  ->ArgName("   1 kb");
+  ->Arg(64_kb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kNanosecond)
   ->Iterations(2048)
-  ->Arg(512_kb)
-  ->ArgName(" 512 kb");
+  ->Arg(512_kb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kNanosecond)
   ->Iterations(1024)
-  ->Arg(1_mb)
-  ->ArgName("   1 mb");
+  ->Arg(1_mb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kMicrosecond)
   ->Iterations(64)
-  ->Arg(64_mb)
-  ->ArgName("  64 mb");
+  ->Arg(64_mb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kMicrosecond)
   ->Iterations(32)
-  ->Arg(128_mb)
-  ->ArgName(" 128 mb");
+  ->Arg(128_mb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kMicrosecond)
   ->Iterations(16)
-  ->Arg(512_mb)
-  ->ArgName(" 512 mb");
+  ->Arg(512_mb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kMicrosecond)
   ->Iterations(8)
-  ->Arg(1_gb)
-  ->ArgName("   1 gb");
+  ->Arg(1_gb);
 
 QIS_BENCHMARK_RUN(scan)
   ->Unit(benchmark::kMillisecond)
   ->Iterations(4)
-  ->Arg(2_gb)
-  ->ArgName("   2 gb");
+  ->Arg(2_gb);
 
 // clang-format on

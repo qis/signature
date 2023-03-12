@@ -11,7 +11,7 @@ int main()
   using milliseconds = std::chrono::duration<double, std::chrono::milliseconds::period>;
 
   const auto tp0 = std::chrono::high_resolution_clock::now();
-  const auto data = mem::get(2_gib);
+  const auto data = mem::get(2_gb);
   const auto tp1 = std::chrono::high_resolution_clock::now();
   const auto ms0 = std::chrono::duration_cast<milliseconds>(tp1 - tp0).count();
   std::puts(std::format("{} bytes in {:6.1f} ms (generate)", data.size(), ms0).data());

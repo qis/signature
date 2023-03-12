@@ -1,5 +1,7 @@
 #include "memory.hpp"
 #include <benchmark/benchmark.h>
+#include <charconv>
+#include <format>
 #include <cstdio>
 #include <cstdlib>
 
@@ -13,11 +15,24 @@ public:
   {
     auto runs = reports;
     for (auto& run : runs) {
-      if (const auto pos = run.run_name.args.find(':'); pos != std::string::npos) {
-        run.run_name.args.erase(pos);
+      if (run.run_name.args.find_first_not_of("0123456789") == std::string::npos) {
+        std::size_t v = 0;
+        const auto data = run.run_name.args.data();
+        const auto size = run.run_name.args.size();
+        const auto [it, ec] = std::from_chars(data, data + size, v);
+        if (ec == std::errc() && it == data + size && v) {
+          if (v / 1_gb > 0 && v % 1_gb == 0) {
+            run.run_name.args = std::format("{} gb", v / 1024 / 1024 / 1024);
+          } else if (v / 1_mb > 0 && v % 1_mb == 0) {
+            run.run_name.args = std::format("{} mb", v / 1024 / 1024);
+          } else if (v / 1_kb > 0 && v % 1_kb == 0) {
+            run.run_name.args = std::format("{} kb", v / 1024);
+          } else {
+            run.run_name.args = std::format("{}", v);
+          }
+        }
       }
-      run.run_name.function_name.push_back(' ');
-      run.run_name.function_name.append(run.run_name.args);
+      run.run_name.function_name.append(" (" + run.run_name.args + ')');
       run.run_name.args.clear();
       run.run_name.iterations.clear();
       run.run_name.time_type.clear();
@@ -37,12 +52,21 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  // Initialize memory blocks.
+  const std::vector<std::size_t> blocks{
+    64_kb, 512_kb, 1_mb, 64_mb, 128_mb, 512_mb, 1_gb, 2_gb,
+  };
+
   // Initialize data.
   std::puts("Initializing data ...");
-  mem::initialize({ 64_kb, 512_kb, 1_mb, 64_mb, 128_mb, 512_mb, 1_gb, 2_gb });
+  mem::initialize(blocks);
 
   // Run benchmarks.
   Reporter reporter;
-  benchmark::RunSpecifiedBenchmarks(&reporter);
+  for (auto size : blocks) {
+    const auto spec = std::format(".*/{}", size);
+    benchmark::RunSpecifiedBenchmarks(&reporter, spec);
+    std::puts("");
+  }
   return EXIT_SUCCESS;
 }
