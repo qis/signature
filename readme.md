@@ -38,6 +38,8 @@ int main() {
 }
 ```
 
+Use [qis/xorstr](https://github.com/qis/xorstr) to hide the signature string from analysis tools.
+
 ## Build
 Build benchmarks and tests.
 
