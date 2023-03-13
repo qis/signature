@@ -88,7 +88,7 @@
 #if QIS_SIGNATURE_USE_EXCEPTIONS
 #define QIS_THROW_INVALID_SIGNATURE throw qis::invalid_signature()
 #else
-#define QIS_THROW_INVALID_SIGNATURE assert(false && "invalid signature")
+#define QIS_THROW_INVALID_SIGNATURE assert(!"invalid signature")
 #endif
 #endif
 
@@ -136,18 +136,18 @@ public:
   template <std::size_t N>
   explicit signature(const char (&data)[N]) : signature(std::string_view(data))
   {
-    static_assert(N / 3 != 0);
-    static_assert(N % 3 == 0);
+    static_assert(N / 3 != 0, "invalid signature");
+    static_assert(N % 3 == 0, "invalid signature");
   }
 
   template <std::size_t N, std::size_t K>
   explicit signature(const char (&data)[N], const char (&mask)[K]) :
     signature(std::string_view(data), std::string_view(mask))
   {
-    static_assert(N / 3 != 0);
-    static_assert(N % 3 == 0);
-    static_assert(K == 1 || K / 3 != 0);
-    static_assert(K == 1 || K % 3 == 0);
+    static_assert(N / 3 != 0, "invalid signature");
+    static_assert(N % 3 == 0, "invalid signature");
+    static_assert(K == 1 || K / 3 != 0, "invalid signature");
+    static_assert(K == 1 || K % 3 == 0, "invalid signature");
   }
 
   explicit signature(std::string_view data, std::string_view mask = {}) :
