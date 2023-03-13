@@ -100,14 +100,15 @@ private:
     std::string test_text;
     std::string_view abi(size_end, end);
     if (abi.size() >= 7 && abi[3] == '_') {
-      test_text.append(abi.substr(0, 3) == "avx" ? " avx" : "    ");
-      test_text.append(abi.substr(4, 3) == "tbb" ? " tbb" : "    ");
-      test_text.append(abi.size() > 7 ? " noe" : "    ");
+      test_text.append(abi.substr(0, 3) == "avx" ? "avx " : "    ");
+      test_text.append(abi.substr(4, 3) == "tbb" ? "tbb " : "    ");
+      test_text.append(abi.size() > 7 ? "noe " : "    ");
     } else {
       test_text = abi;
+      test_text.push_back(' ');
     }
 
-    return type_text + ' ' + test_text + ' ' + signature + ' ' + size_text;
+    return type_text + ' ' + test_text + signature + ' ' + size_text;
   }
 
   bool context_{ true };
