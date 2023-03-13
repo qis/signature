@@ -130,7 +130,7 @@ class signature {
 public:
   static constexpr std::size_t npos = std::string_view::npos;
 
-  inline signature() noexcept = default;
+  signature() noexcept = default;
 
   template <std::size_t N>
   explicit signature(const char (&data)[N]) : signature(std::string_view(data))
