@@ -555,6 +555,12 @@ QIS_TEST("signature& operator=(const signature&)")
 
 QIS_TEST("scan")
 {
+  const auto size = 1_mb;
+  mem::initialize(std::vector{ size });
+  const auto data = mem::get(1_mb);
+  const auto find = mem::find();
+  const auto scan = mem::scan();
+
   // nullptr, size = 0, data = nullptr, mask = nullptr
   // nullptr, size = 0, data = (valid), mask = nullptr
   // nullptr, size = 0, data = (valid), mask = (valid)

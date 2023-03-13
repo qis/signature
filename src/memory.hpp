@@ -34,7 +34,7 @@ std::vector<std::uint8_t> random(std::size_t size);
 // The data is guaranteed to end with at most 26 bytes of the following signature:
 // DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
-void initialize(std::span<std::size_t> sizes);
+void initialize(std::span<const std::size_t> sizes);
 
 // Frees memory allocated during the initialize call.
 void shutdown();
