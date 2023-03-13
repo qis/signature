@@ -18,7 +18,7 @@ int main()
   // Write data at the end of the memory block.
   std::memcpy(memory.data() + memory.size() - 5, "\x01\x02\x03\x04\x05", 5);
 
-  // Create a signature.
+  // Create signature.
   const qis::signature search("01 ?? ?? 04");
 
   // Scan memory block.
