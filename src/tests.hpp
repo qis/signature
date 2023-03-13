@@ -45,10 +45,12 @@ QIS_TEST("signature(string_view)")
 {
   SUBCASE("empty signature data")
   {
-    REQUIRE_THROWS_AS(qis::signature{ "" }, qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature{ " " }, qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature{ "   " }, qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature{ "     " }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv("") }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv(" ") }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv("  ") }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv("   ") }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv("    ") }, qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature{ sv("     ") }, qis::invalid_signature);
   }
 
   SUBCASE("signature data size: 1")
@@ -216,9 +218,11 @@ QIS_TEST("signature(string_view, string_view mask)")
     REQUIRE(s.size() == 1);
     REQUIRE(s.data() != nullptr);
     REQUIRE(s.mask() == nullptr);
-    REQUIRE_THROWS_AS(qis::signature("00", " "), qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature("00", "   "), qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature("00", "     "), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature("00", sv(" ")), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature("00", sv("  ")), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature("00", sv("   ")), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature("00", sv("    ")), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature("00", sv("     ")), qis::invalid_signature);
   }
 
   SUBCASE("signature mask size: 1")
@@ -563,8 +567,8 @@ QIS_TEST("scan")
   const auto find = mem::find();
   const auto scan = mem::scan();
 
-  qis::signature s0(find.substr(0, 2));
-  qis::signature s1("??");
+  qis::signature s0{ find.substr(0, 2) };
+  qis::signature s1{ "??" };
 
   REQUIRE(std::memcmp(s0.data(), m15b.data(), 1) == 0);
 

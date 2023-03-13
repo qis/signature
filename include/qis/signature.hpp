@@ -132,6 +132,23 @@ public:
 
   inline signature() noexcept = default;
 
+  template <std::size_t N>
+  explicit signature(const char (&data)[N]) : signature(std::string_view(data))
+  {
+    static_assert(N / 3 != 0);
+    static_assert(N % 3 == 0);
+  }
+
+  template <std::size_t N, std::size_t K>
+  explicit signature(const char (&data)[N], const char (&mask)[K]) :
+    signature(std::string_view(data), std::string_view(mask))
+  {
+    static_assert(N / 3 != 0);
+    static_assert(N % 3 == 0);
+    static_assert(K == 1 || K / 3 != 0);
+    static_assert(K == 1 || K % 3 == 0);
+  }
+
   explicit signature(std::string_view data, std::string_view mask = {}) :
     size_((data.size() + 1) / 3), mask_(!mask.empty() || data.find('?') != std::string_view::npos)
   {
