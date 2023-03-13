@@ -50,17 +50,18 @@ The benchmark report syntax reflects the `QIS_BENCHMARK` macro usage in
 [src/benchmarks.hpp](src/benchmarks.hpp).
 
 ```
------------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
------------------------------------------------------------------
-find avx     05 16 kb         150 ns          120 ns      1000000
-scan     tbb 06 32 kb         300 ns          280 ns      1000000
- ▲    ▲   ▲   ▲  ▲
- │    │   │   │  └─ Size of the searched memory block.
- │    │   │   └──── Size of the "find" or "scan" signature.
- │    │   └──────── Benchmark compiled with TBB support.
- │    └──────────── Benchmark compiled with /arch:AVX2.
- └───────────────── Signature used for the search.
+---------------------------------------------------------------------
+Benchmark                           Time             CPU   Iterations
+---------------------------------------------------------------------
+find avx     noe 05 16 kb         150 ns          120 ns      1000000
+scan     tbb     06 32 kb         300 ns          280 ns      1000000
+ ▲    ▲   ▲   ▲   ▲  ▲
+ │    │   │   │   │  └─ Size of the searched memory block.
+ │    │   │   │   └──── Size of the "find" or "scan" signature.
+ │    │   │   └──────── Benchmark compiled with exceptions disabled.
+ │    │   └──────────── Benchmark compiled with TBB support.
+ │    └──────────────── Benchmark compiled with /arch:AVX2.
+ └───────────────────── Signature used for the search.
 ```
 
 There are two types of signatures:
@@ -81,8 +82,8 @@ The searched memory block ends with the `find` signature and is guaranteed to
 never contain the `DB 27 5B` byte sequence anywhere else.
 
 In the example above:
-* 16 KiB of data were searched for `DB 27 5B FA FB` using the AVX2 algorithm.
-* 32 KiB of data were searched for `DB 27 5B ?? FB ?E` using the TBB algorithm.
+* Searched 16 KiB for `DB 27 5B FA FB` using AVX2 and exceptions disabled.
+* Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
 
 ### Results
 Results obtained with `benchmarks.exe --benchmark_min_time=3`.

@@ -19,7 +19,7 @@ public:
     if (context_) {
       context_ = false;
       auto info = context;
-      info.name_field_width = 22;
+      info.name_field_width = 26;
       if (!ConsoleReporter::ReportContext(info)) {
         return false;
       }
@@ -99,9 +99,10 @@ private:
 
     std::string test_text;
     std::string_view abi(size_end, end);
-    if (abi.size() == 7 && abi[3] == '_') {
+    if (abi.size() >= 7 && abi[3] == '_') {
       test_text.append(abi.substr(0, 3) == "avx" ? " avx" : "    ");
       test_text.append(abi.substr(4, 3) == "tbb" ? " tbb" : "    ");
+      test_text.append(abi.size() > 7 ? " noe" : "    ");
     } else {
       test_text = abi;
     }

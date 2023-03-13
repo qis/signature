@@ -5,6 +5,7 @@
 
 static_assert(QIS_SIGNATURE_USE_AVX);
 static_assert(QIS_SIGNATURE_USE_TBB);
+static_assert(QIS_SIGNATURE_USE_EXCEPTIONS);
 
 int main()
 {
