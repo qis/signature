@@ -1,6 +1,9 @@
 # Signature
 C++23 binary signature search algorithm implemented using AVX2 and TBB.
 
+**WARNING**: This project is not ready for production yet!<br/>
+This warning will be removed and the repo force pushed with the final version.
+
 ## Usage
 Install using CMake or copy the header file [include/qis/signature.hpp](include/qis/signature.hpp).
 
