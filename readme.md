@@ -120,7 +120,7 @@ scan std tbb 03 64 kb       12103 ns        12130 ns       349091
 
 </details>
 
-## Build & Install
+## CMake
 This is a header-only. Building and installing is optional.
 
 ### Build
