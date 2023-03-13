@@ -84,10 +84,10 @@ In the example above:
 * 16 KiB of data were searched for `DB 27 5B FA FB` using the AVX2 algorithm.
 * 32 KiB of data were searched for `DB 27 5B ?? FB ??` using the TBB algorithm.
 
+View results obtained with `benchmarks.exe --benchmark_min_time=3`:
+
 <details>
 <summary><b>Results</b></summary>
-
-Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 ```
 Run on (12 X 3720.15 MHz CPU s)
@@ -170,6 +170,7 @@ build\debug\tests.exe
 ```
 
 </details>
+
 <details>
 <summary><b>Install</b></summary>
 
