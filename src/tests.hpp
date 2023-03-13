@@ -555,8 +555,9 @@ QIS_TEST("signature& operator=(const signature&)")
 
 QIS_TEST("scan")
 {
-  mem::initialize(std::vector{ 15_b, 30_b, 1_mb });
+  mem::initialize(std::vector{ 15_b, 26_b, 30_b, 1_mb });
   const auto m15b = mem::get(15_b);
+  const auto m26b = mem::get(26_b);
   const auto m30b = mem::get(30_b);
   const auto m1mb = mem::get(1_mb);
   const auto find = mem::find();
@@ -591,6 +592,9 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s2.data(), m15b.data(), 15) == 0);
   REQUIRE(qis::scan(m15b.data(), 15, s2) == qis::signature::npos);
 
+  REQUIRE(std::memcmp(s2.data(), m26b.data(), 26) == 0);
+  REQUIRE(qis::scan(m26b.data(), 26, s2) == 0);
+
   REQUIRE(std::memcmp(s2.data(), m30b.data() + 4, 26) == 0);
   REQUIRE(qis::scan(m30b.data(), 30, s2) == 4);
 
@@ -605,6 +609,10 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s3.mask(), m15b.data(), 15) != 0);
   REQUIRE(qis::scan(m15b.data(), 15, s3) == qis::signature::npos);
 
+  REQUIRE(std::memcmp(s3.data(), m26b.data(), 26) != 0);
+  REQUIRE(std::memcmp(s3.mask(), m26b.data(), 26) != 0);
+  REQUIRE(qis::scan(m26b.data(), 26, s3) == 0);
+
   REQUIRE(std::memcmp(s3.data(), m30b.data() + 4, 26) != 0);
   REQUIRE(std::memcmp(s3.mask(), m30b.data() + 4, 26) != 0);
   REQUIRE(qis::scan(m30b.data(), 30, s3) == 4);
@@ -612,14 +620,6 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s3.data(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(std::memcmp(s3.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s3) == 1_mb - 26);
-
-  // (valid), size > 0, data = (valid), mask = nullptr, size < data
-  // (valid), size > 0, data = (valid), mask = nullptr, size = data
-  // (valid), size > 0, data = (valid), mask = nullptr, size > data
-
-  // (valid), size > 0, data = (valid), mask = (valid), size < data
-  // (valid), size > 0, data = (valid), mask = (valid), size = data
-  // (valid), size > 0, data = (valid), mask = (valid), size > data
 }
 
 }  // namespace QIS_SIGNATURE_ABI
