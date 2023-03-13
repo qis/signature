@@ -1,8 +1,10 @@
 #include "memory.hpp"
 #include <benchmark/benchmark.h>
+#include <algorithm>
 #include <charconv>
 #include <chrono>
 #include <format>
+#include <set>
 #include <cstdio>
 #include <cstdlib>
 
@@ -87,35 +89,54 @@ private:
   bool context_{ true };
 };
 
+std::set<std::pair<std::size_t, std::size_t>> benchmarks;
+
 int main(int argc, char** argv)
 {
+  // Measure initialization duration.
+  const auto tp0 = std::chrono::high_resolution_clock::now();
+
   // Initialize benchmark.
   benchmark::Initialize(&argc, argv);
   if (benchmark::ReportUnrecognizedArguments(argc, argv)) {
     return EXIT_FAILURE;
   }
 
-  // Initialize memory blocks.
-  const std::vector<std::size_t> blocks{
-    10_kb, 16_kb, 64_kb, 256_kb, 1_mb, 4_mb, 16_mb, 64_mb, 256_mb, 512_mb, 1_gb, 2_gb,
-  };
-
   // Initialize data.
   std::puts("Initializing data ...");
-  mem::initialize(blocks);
+  std::vector<std::size_t> sizes;
+  for (const auto& benchmark : benchmarks) {
+    sizes.push_back(benchmark.second);
+  }
+  mem::initialize(sizes);
+
+  // Measure benchmark duration.
+  const auto tp1 = std::chrono::high_resolution_clock::now();
 
   // Run benchmarks.
   Reporter reporter;
-  const auto tp0 = std::chrono::high_resolution_clock::now();
-  for (auto size : blocks) {
-    benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
-    std::puts("");
-    benchmark::RunSpecifiedBenchmarks(&reporter, std::format("2..:{:08X}:", size));
-    std::puts("");
+  for (auto size : sizes) {
+    const auto data = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
+      return e.first < 200 && e.second == size;
+    });
+    if (data != benchmarks.end()) {
+      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
+      std::puts("");
+    }
+    const auto mask = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
+      return e.first >= 200 && e.second == size;
+    });
+    if (mask != benchmarks.end()) {
+      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("2..:{:08X}:", size));
+      std::puts("");
+    }
   }
-  const auto tp1 = std::chrono::high_resolution_clock::now();
+
+  // Report initialization and benchmark durations.
+  const auto tp2 = std::chrono::high_resolution_clock::now();
   using seconds = std::chrono::duration<double, std::chrono::seconds::period>;
-  const auto s = std::chrono::duration_cast<seconds>(tp1 - tp0).count();
-  std::puts(std::format("finished in {:.1f} seconds", s).data());
+  const auto s0 = std::chrono::duration_cast<seconds>(tp1 - tp0).count();
+  const auto s1 = std::chrono::duration_cast<seconds>(tp2 - tp1).count();
+  std::puts(std::format("finished in {:.1f} + {:.1f} seconds", s0, s1).data());
   return EXIT_SUCCESS;
 }

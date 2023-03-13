@@ -201,7 +201,7 @@ std::vector<std::uint8_t> random(std::size_t size)
   return memory;
 }
 
-void initialize(std::vector<std::size_t> blocks)
+void initialize(std::span<std::size_t> blocks)
 {
   // Check sizes.
   if (blocks.empty()) {

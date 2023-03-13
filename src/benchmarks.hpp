@@ -3,21 +3,21 @@
 #include <benchmark/benchmark.h>
 #include <memory.hpp>
 #include <format>
+#include <set>
 
 // clang-format off
 
 #define QIS_BENCHMARK_REGISTER(abi, name) \
   BENCHMARK(abi::name)
 
-#define QIS_BENCHMARK_NAME(scan, size) \
-  std::format("{}:{:08X}:{}", scan, size, QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI))
-
 #define QIS_BENCHMARK(name, scan, size) \
-  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, name)         \
-    ->Name(QIS_BENCHMARK_NAME(scan, size))                \
+  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, name)     \
+    ->Name(benchmark_name(scan, size))                \
     ->ArgPair(size, static_cast<std::int64_t>(scan))
 
 // clang-format on
+
+extern std::set<std::pair<std::size_t, std::size_t>> benchmarks;
 
 namespace QIS_SIGNATURE_ABI {
 
@@ -25,6 +25,12 @@ using namespace mem::literals;
 using benchmark::kNanosecond;
 using benchmark::kMicrosecond;
 using benchmark::kMillisecond;
+
+static std::string benchmark_name(std::size_t scan, std::size_t size)
+{
+  benchmarks.emplace(scan, size);
+  return std::format("{}:{:08X}:{}", scan, size, QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI));
+}
 
 static void scan(benchmark::State& state)
 {
@@ -43,7 +49,6 @@ static constexpr std::size_t mask = 200;
 
 // clang-format off
 
-QIS_BENCHMARK(scan, data + 3,  10_kb);
 QIS_BENCHMARK(scan, data + 3,  16_kb);
 QIS_BENCHMARK(scan, data + 3,  64_kb);
 QIS_BENCHMARK(scan, data + 3, 256_kb);
