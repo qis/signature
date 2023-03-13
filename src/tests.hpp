@@ -394,12 +394,113 @@ QIS_TEST("signature(string_view, string_view mask)")
   }
 }
 
-QIS_TEST("signature(const void*, std::size_t)") {}
-QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)") {}
-QIS_TEST("signature(signature&&)") {}
-QIS_TEST("signature(const signature&)") {}
-QIS_TEST("signature& operator=(signature&&)") {}
-QIS_TEST("signature& operator=(const signature&)") {}
+QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
+{
+  const char* str = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09";
+
+  SUBCASE("data: nullptr, dsize: 0, mask: nullptr, msize: 0") {}
+  SUBCASE("data: nullptr, dsize: 1, mask: nullptr, msize: 0") {}
+  SUBCASE("data: (valid), dsize: 0, mask: nullptr, msize: 0") {}
+  SUBCASE("data: (valid), dsize: 1, mask: nullptr, msize: 0") {}
+
+  SUBCASE("data: nullptr, dsize: 0, mask: nullptr, msize: 1") {}
+  SUBCASE("data: nullptr, dsize: 1, mask: nullptr, msize: 1") {}
+  SUBCASE("data: (valid), dsize: 0, mask: nullptr, msize: 1") {}
+  SUBCASE("data: (valid), dsize: 1, mask: nullptr, msize: 1") {}
+
+  SUBCASE("data: nullptr, dsize: 0, mask: (valid), msize: 0") {}
+  SUBCASE("data: nullptr, dsize: 1, mask: (valid), msize: 0") {}
+  SUBCASE("data: (valid), dsize: 0, mask: (valid), msize: 0") {}
+  SUBCASE("data: (valid), dsize: 1, mask: (valid), msize: 0") {}
+
+  SUBCASE("data: nullptr, dsize: 0, mask: (valid), msize: 1") {}
+  SUBCASE("data: nullptr, dsize: 1, mask: (valid), msize: 1") {}
+  SUBCASE("data: (valid), dsize: 0, mask: (valid), msize: 1") {}
+  SUBCASE("data: (valid), dsize: 1, mask: (valid), msize: 1") {}
+}
+
+QIS_TEST("signature(signature&&)")
+{
+  qis::signature src{ "00 FF ??" };
+
+  const auto size = src.size();
+  const auto data = src.data();
+  const auto mask = src.mask();
+
+  REQUIRE(size == 3);
+  REQUIRE(data != nullptr);
+  REQUIRE(mask != nullptr);
+
+  qis::signature dst(std::move(src));
+  
+  REQUIRE(src.size() == 0);
+  REQUIRE(src.data() == nullptr);
+  REQUIRE(src.mask() == nullptr);
+
+  REQUIRE(dst.size() == 3);
+  REQUIRE(dst.data() == data);
+  REQUIRE(dst.mask() == mask);
+}
+
+QIS_TEST("signature(const signature&)")
+{
+  const qis::signature src{ "00 FF ??" };
+  qis::signature dst(src);
+
+  REQUIRE(src.size() == 3);
+  REQUIRE(src.data() != nullptr);
+  REQUIRE(src.mask() != nullptr);
+
+  REQUIRE(dst.size() == 3);
+  REQUIRE(dst.data() != nullptr);
+  REQUIRE(dst.mask() != nullptr);
+
+  REQUIRE(dst.data() != src.data());
+  REQUIRE(dst.mask() != src.mask());
+}
+
+QIS_TEST("signature& operator=(signature&&)")
+{
+  qis::signature src{ "00 FF ??" };
+
+  const auto size = src.size();
+  const auto data = src.data();
+  const auto mask = src.mask();
+
+  REQUIRE(size == 3);
+  REQUIRE(data != nullptr);
+  REQUIRE(mask != nullptr);
+
+  qis::signature dst;
+  dst = std::move(src);
+
+  REQUIRE(src.size() == 0);
+  REQUIRE(src.data() == nullptr);
+  REQUIRE(src.mask() == nullptr);
+
+  REQUIRE(dst.size() == 3);
+  REQUIRE(dst.data() == data);
+  REQUIRE(dst.mask() == mask);
+}
+
+QIS_TEST("signature& operator=(const signature&)")
+{
+  const qis::signature src{ "00 FF ??" };
+  qis::signature dst;
+  dst = src;
+
+  REQUIRE(src.size() == 3);
+  REQUIRE(src.data() != nullptr);
+  REQUIRE(src.mask() != nullptr);
+
+  REQUIRE(dst.size() == 3);
+  REQUIRE(dst.data() != nullptr);
+  REQUIRE(dst.mask() != nullptr);
+
+  REQUIRE(dst.data() != src.data());
+  REQUIRE(dst.mask() != src.mask());
+}
+
 QIS_TEST("scan") {}
 
 }  // namespace QIS_SIGNATURE_ABI
