@@ -224,6 +224,47 @@ public:
     std::copy(src, src + std::min(size_, msize), dst + size_);
   }
 
+  signature(signature&& other) noexcept :
+    data_(std::move(other.data_)), size_(other.size_), mask_(other.mask_)
+  {
+    other.reset();
+  }
+
+  signature(const signature& other) : size_(other.size_), mask_(other.mask_)
+  {
+    if (size_) {
+      const auto src = other.data_.get();
+      const auto size = mask_ ? size_ * 2 : size_;
+      data_ = std::make_unique<char[]>(size);
+      std::copy(src, src + size, data_.get());
+    }
+  }
+
+  signature& operator=(signature&& other) noexcept
+  {
+    data_ = std::move(other.data_);
+    size_ = other.size_;
+    mask_ = other.mask_;
+    other.reset();
+    return *this;
+  }
+
+  signature& operator=(const signature& other)
+  {
+    reset();
+    size_ = other.size_;
+    mask_ = other.mask_;
+    if (size_) {
+      const auto src = other.data_.get();
+      const auto size = mask_ ? size_ * 2 : size_;
+      data_ = std::make_unique<char[]>(size);
+      std::copy(src, src + size, data_.get());
+    }
+    return *this;
+  }
+
+  ~signature() = default;
+
   constexpr const char* data() const noexcept
   {
     return data_.get();
