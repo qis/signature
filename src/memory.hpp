@@ -55,6 +55,11 @@ std::string_view scan(std::size_t size = 26) noexcept;
 
 inline namespace literals {
 
+constexpr std::size_t operator""_b(std::size_t size)
+{
+  return size;
+}
+
 constexpr std::size_t operator""_kb(std::size_t size)
 {
   return size * 1024;

@@ -555,25 +555,30 @@ QIS_TEST("signature& operator=(const signature&)")
 
 QIS_TEST("scan")
 {
-  const auto size = 1_mb;
-  mem::initialize(std::vector{ size });
-  const auto data = mem::get(1_mb);
+  mem::initialize(std::vector{ 15_b, 30_b, 1_mb });
+  const auto m15b = mem::get(15_b);
+  const auto m30b = mem::get(30_b);
+  const auto m1mb = mem::get(1_mb);
+
   const auto find = mem::find();
   const auto scan = mem::scan();
 
-  // nullptr, size = 0, data = nullptr, mask = nullptr
-  // nullptr, size = 0, data = (valid), mask = nullptr
-  // nullptr, size = 0, data = (valid), mask = (valid)
+  const auto data = "00";
+  const auto mask = "??";
 
-  // (valid), size = 0, data = nullptr, mask = nullptr
-  // (valid), size = 0, data = (valid), mask = nullptr
-  // (valid), size = 0, data = (valid), mask = (valid)
+  REQUIRE(qis::scan(nullptr, 0, qis::signature()) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 0, qis::signature(data)) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 0, qis::signature(mask)) == qis::signature::npos);
 
-  // nullptr, size > 0, data = nullptr, mask = nullptr
-  // nullptr, size > 0, data = (valid), mask = nullptr
-  // nullptr, size > 0, data = (valid), mask = (valid)
+  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature()) == qis::signature::npos);
+  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature(data)) == qis::signature::npos);
+  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature(mask)) == qis::signature::npos);
 
-  // (valid), size > 0, data = nullptr, mask = nullptr
+  REQUIRE(qis::scan(nullptr, 1, qis::signature()) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 1, qis::signature(data)) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 1, qis::signature(mask)) == qis::signature::npos);
+
+  REQUIRE(qis::scan(m1mb.data(), 1, qis::signature()) == 0);
 
   // (valid), size > 0, data = (valid), mask = nullptr, size < data
   // (valid), size > 0, data = (valid), mask = nullptr, size = data
