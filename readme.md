@@ -77,8 +77,8 @@ DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
 ```
 
-The searched memory block ends with the `find` signature data and is guaranteed
-to never contain the `DB 27 5B` byte sequence anywhere else.
+The searched memory block ends with the `find` signature and is guaranteed to
+never contain the `DB 27 5B` byte sequence anywhere else.
 
 In the example above:
 * 16 KiB of data were searched for `DB 27 5B FA FB` using the AVX2 algorithm.
