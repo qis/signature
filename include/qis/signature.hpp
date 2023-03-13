@@ -82,6 +82,14 @@
 #  include <cassert>
 #endif
 
+#ifndef QIS_THROW_INVALID_SIGNATURE
+#  if QIS_SIGNATURE_USE_EXCEPTIONS
+#    define QIS_THROW_INVALID_SIGNATURE throw qis::invalid_signature()
+#  else
+#    define QIS_THROW_INVALID_SIGNATURE assert(false && "invalid signature")
+#  endif
+#endif
+
 #ifndef QIS_SIGNATURE_ABI
 #  define QIS_SIGNATURE_ABI v1
 #endif
@@ -93,13 +101,13 @@
 #include <atomic>
 #include <exception>
 #include <functional>
+#include <cassert>
 
 namespace qis {
 inline namespace QIS_SIGNATURE_ABI {
 namespace detail::signature {
 
-template <bool mask>
-constexpr char cast(char upper, char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
+constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
 
 template <bool mask>
 std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
@@ -124,37 +132,96 @@ public:
 
   constexpr signature() noexcept = default;
 
-  signature(std::string_view signature) :
-    size_((signature.size() + 1) / 3), mask_(signature.find('?') != std::string_view::npos)
+  signature(std::string_view data, std::string_view mask = {}) :
+    size_((data.size() + 1) / 3), mask_(!mask.empty() || data.find('?') != std::string_view::npos)
   {
-#if QIS_SIGNATURE_USE_EXCEPTIONS
-    if ((signature.size() + 1) / 3 <= 0 || (signature.size() + 1) % 3 != 0) {
-      throw invalid_signature();
+    using detail::signature::cast;
+
+    // Verify data and mask sizes.
+    if (!size_ || (data.size() + 1) % 3 != 0) {
+      QIS_THROW_INVALID_SIGNATURE;
     }
-#else
-    assert((signature.size() + 1) / 3 > 0);
-    assert((signature.size() + 1) % 3 == 0);
-#endif
-    if (mask_) {
-      data_ = std::make_unique<char[]>(size_ * 2);
-      const auto mask = data_.get() + size_;
-      for (std::size_t i = 0; i < size_; i++) {
-        mask[i] = detail::signature::cast<true>(signature[i * 3], signature[i * 3 + 1]);
-      }
-    } else {
-      data_ = std::make_unique<char[]>(size_);
+    if (!mask.empty() && ((mask.size() + 1) / 3 == 0 || (mask.size() + 1) % 3 != 0)) {
+      QIS_THROW_INVALID_SIGNATURE;
     }
-    const auto data = data_.get();
+
+    // Allocate memory.
+    if (!size_) {
+      return;
+    }
+    data_ = std::make_unique<char[]>(mask_ ? size_ * 2 : size_);
+
+    // Write data.
+    auto src = data.data();
+    auto dst = data_.get();
     for (std::size_t i = 0; i < size_; i++) {
-      data[i] = detail::signature::cast<false>(signature[i * 3], signature[i * 3 + 1]);
-#if QIS_SIGNATURE_USE_EXCEPTIONS
-      if (i && signature[i * 3 - 1] != ' ') {
-        throw invalid_signature();
+      if (i && *src++ != ' ') {
+        QIS_THROW_INVALID_SIGNATURE;
       }
-#else
-      assert(!i || signature[i * 3 - 1] == ' ');
-#endif
+      const auto upper = *src++;
+      const auto lower = *src++;
+      *dst++ = cast(upper) << 4 | cast(lower);
     }
+
+    // Write mask.
+    if (!mask_) {
+      return;
+    }
+    src = data.data();
+    for (std::size_t i = 0; i < size_; i++, src++) {
+      const auto upper = *src++;
+      const auto lower = *src++;
+      *dst++ = (upper == '?' ? 0x00 : 0xF0) | (lower == '?' ? 0x00 : 0x0F);
+    }
+
+    // Replace mask.
+    if (mask.empty()) {
+      return;
+    }
+    const auto size = std::min(size_, mask.size());
+    src = mask.data();
+    dst = data_.get() + size_;
+    for (std::size_t i = 0; i < size; i++) {
+      if (i && *src++ != ' ') {
+        QIS_THROW_INVALID_SIGNATURE;
+      }
+      const auto upper = *src++;
+      const auto lower = *src++;
+      if (upper == '?' || lower == '?') {
+        QIS_THROW_INVALID_SIGNATURE;
+      }
+      *dst++ = cast(upper) << 4 | cast(lower);
+    }
+  }
+
+  signature(const void* data, std::size_t dsize, const void* mask = nullptr, std::size_t msize = 0) :
+    size_(dsize), mask_(msize != 0)
+  {
+    // Verify data and mask.
+    if (dsize && !data) {
+      QIS_THROW_INVALID_SIGNATURE;
+    }
+    if (msize && !mask) {
+      QIS_THROW_INVALID_SIGNATURE;
+    }
+
+    // Allocate memory.
+    if (!size_) {
+      return;
+    }
+    data_ = std::make_unique<char[]>(mask_ ? size_ * 2 : size_);
+
+    // Write data.
+    auto src = reinterpret_cast<const char*>(data);
+    const auto dst = data_.get();
+    std::copy(src, src + dsize, dst);
+
+    // Write mask.
+    if (!mask_) {
+      return;
+    }
+    src = reinterpret_cast<const char*>(mask);
+    std::copy(src, src + std::min(size_, msize), dst + size_);
   }
 
   constexpr const char* data() const noexcept
@@ -170,6 +237,13 @@ public:
   constexpr std::size_t size() const noexcept
   {
     return size_;
+  }
+
+  void reset() noexcept
+  {
+    size_ = 0;
+    mask_ = false;
+    data_.reset();
   }
 
 private:
@@ -200,36 +274,21 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
 
 namespace detail::signature {
 
-template <bool mask>
-inline constexpr char cast(char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
+inline constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
-  if constexpr (mask) {
-    return lower == '?' ? 0x0 : 0xF;
-  } else {
-    if (lower >= '0' && lower <= '9') {
-      return lower - '0';
-    }
-    if (lower >= 'A' && lower <= 'F') {
-      return lower - 'A' + 0xA;
-    }
-    if (lower >= 'a' && lower <= 'f') {
-      return lower - 'a' + 0xA;
-    }
-#if QIS_SIGNATURE_USE_EXCEPTIONS
-    if (lower != '?') {
-      throw invalid_signature();
-    }
-#else
-    assert(lower == '?');
-#endif
-    return 0x0;
+  if (signature >= '0' && signature <= '9') {
+    return signature - '0';
   }
-}
-
-template <bool mask>
-inline constexpr char cast(char upper, char lower) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
-{
-  return cast<mask>(upper) << 4 | cast<mask>(lower);
+  if (signature >= 'A' && signature <= 'F') {
+    return signature - 'A' + 0xA;
+  }
+  if (signature >= 'a' && signature <= 'f') {
+    return signature - 'a' + 0xA;
+  }
+  if (signature != '?') {
+    QIS_THROW_INVALID_SIGNATURE;
+  }
+  return 0;
 }
 
 template <bool mask>
