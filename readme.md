@@ -71,7 +71,7 @@ There are two types of signatures:
 DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 ```
 
-* `scan` contains masked bytes (`??`) and is generally slower to search for.
+* `scan` contains unmasked bytes (`??`) and is generally slower to search for.
 
 ```sh
 DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
