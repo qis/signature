@@ -63,15 +63,15 @@ scan     tbb 06 32 kb         300 ns          280 ns      1000000
  └───────────────── Signature used for the search.
 ```
 
-There are two types of signatures.
+There are two types of signatures:
 
-`find` has all bytes defined and the search algorithm can be optimized for it.
+* `find` has all bytes defined and the search algorithm can be optimized for it.
 
 ```
 DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 ```
 
-`scan` contains masked bytes (`??`) and is generally slower to search for.
+* `scan` contains masked bytes (`??`) and is generally slower to search for.
 
 ```
 DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
