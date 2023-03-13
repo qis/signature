@@ -2,7 +2,7 @@
 C++23 binary signature search algorithm optimized using AVX2.
 
 ## Usage
-Install using CMake or copy the header file <include/qis/signature.hpp>.
+Install using CMake or copy the header file [include/qis/signature.hpp](include/qis/signature.hpp).
 
 ```cpp
 #include <qis/signature.hpp>
