@@ -120,7 +120,12 @@ scan std tbb 03 64 kb       12103 ns        12130 ns       349091
 
 </details>
 
-## Build
+## Build & Install
+This is a header-only. Building and installing is optional.
+
+<details>
+<summary><b>Build Instructions</b></summary>
+
 Build benchmarks and tests.
 
 1. Install [Python 3][py3].
@@ -164,13 +169,19 @@ build\release\benchmarks.exe --benchmark_min_time=3
 build\debug\tests.exe
 ```
 
-## Install
+</details>
+
+<details>
+<summary><b>Install Instructions</b></summary>
+
 Install header file and CMake config.
 
 ```cmd
 cmake --preset install -DCMAKE_INSTALL_PREFIX="path/to/destination"
 cmake --build --preset install --target install
 ```
+
+</details>
 
 [py3]: https://www.python.org/downloads/windows/
 [conan]: https://conan.io/center/
