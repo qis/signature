@@ -179,7 +179,7 @@ Install header file and CMake config.
 
 ```cmd
 cmake --preset install -DCMAKE_INSTALL_PREFIX="path/to/destination"
-cmake --build --preset install --target install
+cmake --build build/install --target install
 ```
 
 </details>

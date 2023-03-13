@@ -1,5 +1,4 @@
 [requires]
-boost/[x]
 benchmark/[x]
 doctest/[x]
 onetbb/[x]
