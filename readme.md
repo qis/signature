@@ -124,7 +124,7 @@ scan std tbb 03 64 kb       12103 ns        12130 ns       349091
 This is a header-only. Building and installing is optional.
 
 <details>
-<summary><b>Build Instructions</b></summary>
+<summary><b>Build</b></summary>
 
 Build benchmarks and tests.
 
@@ -170,9 +170,8 @@ build\debug\tests.exe
 ```
 
 </details>
-
 <details>
-<summary><b>Install Instructions</b></summary>
+<summary><b>Install</b></summary>
 
 Install header file and CMake config.
 
