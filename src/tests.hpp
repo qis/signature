@@ -553,6 +553,29 @@ QIS_TEST("signature& operator=(const signature&)")
   REQUIRE(dst.mask() != src.mask());
 }
 
-QIS_TEST("scan") {}
+QIS_TEST("scan")
+{
+  // nullptr, size = 0, data = nullptr, mask = nullptr
+  // nullptr, size = 0, data = (valid), mask = nullptr
+  // nullptr, size = 0, data = (valid), mask = (valid)
+
+  // (valid), size = 0, data = nullptr, mask = nullptr
+  // (valid), size = 0, data = (valid), mask = nullptr
+  // (valid), size = 0, data = (valid), mask = (valid)
+
+  // nullptr, size > 0, data = nullptr, mask = nullptr
+  // nullptr, size > 0, data = (valid), mask = nullptr
+  // nullptr, size > 0, data = (valid), mask = (valid)
+
+  // (valid), size > 0, data = nullptr, mask = nullptr
+
+  // (valid), size > 0, data = (valid), mask = nullptr, size < data
+  // (valid), size > 0, data = (valid), mask = nullptr, size = data
+  // (valid), size > 0, data = (valid), mask = nullptr, size > data
+
+  // (valid), size > 0, data = (valid), mask = (valid), size < data
+  // (valid), size > 0, data = (valid), mask = (valid), size = data
+  // (valid), size > 0, data = (valid), mask = (valid), size > data
+}
 
 }  // namespace QIS_SIGNATURE_ABI
