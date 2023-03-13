@@ -274,7 +274,7 @@ std::string_view find(std::size_t size) noexcept
   assert(size <= 26);
   // clang-format off
   return std::string_view{
-    "DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89"
+    "DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89"
   }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
   // clang-format on
 }

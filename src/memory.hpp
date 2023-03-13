@@ -32,7 +32,7 @@ std::vector<std::uint8_t> random(std::size_t size);
 // The data is guaranteed not to contain the complete DB 27 5B signature.
 // If size is greater, than 128 MiB, then the the first 128 MiB will be randomly generated and repeated.
 // The data is guaranteed to end with at most 26 bytes of the following signature:
-// DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+// DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
 void initialize(std::span<const std::size_t> sizes);
 
@@ -44,12 +44,12 @@ void shutdown();
 std::span<const std::uint8_t> get(std::size_t size);
 
 // Returns a substring of given size to the following signature:
-// DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+// DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
 std::string_view find(std::size_t size = 26) noexcept;
 
 // Returns a substring of given size to the following signature:
-// DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
+// DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
 std::string_view scan(std::size_t size = 26) noexcept;
 
