@@ -87,6 +87,7 @@ In the example above:
 ### Results
 
 <details>
+
 Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 ```
