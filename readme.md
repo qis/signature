@@ -85,9 +85,9 @@ In the example above:
 * 32 KiB of data were searched for `DB 27 5B ?? FB ??` using the TBB algorithm.
 
 ### Results
-View results obtained with `benchmarks.exe --benchmark_min_time=3`:
 
 <details>
+Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 ```
 Run on (12 X 3720.15 MHz CPU s)
