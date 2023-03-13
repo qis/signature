@@ -396,27 +396,79 @@ QIS_TEST("signature(string_view, string_view mask)")
 
 QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
 {
-  const char* str = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09";
+  const char* bin = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09";
 
-  SUBCASE("data: nullptr, dsize: 0, mask: nullptr, msize: 0") {}
-  SUBCASE("data: nullptr, dsize: 1, mask: nullptr, msize: 0") {}
-  SUBCASE("data: (valid), dsize: 0, mask: nullptr, msize: 0") {}
-  SUBCASE("data: (valid), dsize: 1, mask: nullptr, msize: 0") {}
+  SUBCASE("data: nullptr, dsize: 0")
+  {
+    qis::signature s0(nullptr, 0, nullptr, 0);
+    REQUIRE(s0.size() == 0);
+    REQUIRE(s0.data() == nullptr);
+    REQUIRE(s0.mask() == nullptr);
 
-  SUBCASE("data: nullptr, dsize: 0, mask: nullptr, msize: 1") {}
-  SUBCASE("data: nullptr, dsize: 1, mask: nullptr, msize: 1") {}
-  SUBCASE("data: (valid), dsize: 0, mask: nullptr, msize: 1") {}
-  SUBCASE("data: (valid), dsize: 1, mask: nullptr, msize: 1") {}
+    REQUIRE_THROWS_AS(qis::signature(nullptr, 0, nullptr, 1), qis::invalid_signature);
 
-  SUBCASE("data: nullptr, dsize: 0, mask: (valid), msize: 0") {}
-  SUBCASE("data: nullptr, dsize: 1, mask: (valid), msize: 0") {}
-  SUBCASE("data: (valid), dsize: 0, mask: (valid), msize: 0") {}
-  SUBCASE("data: (valid), dsize: 1, mask: (valid), msize: 0") {}
+    qis::signature s2(nullptr, 0, bin, 0);
+    REQUIRE(s2.size() == 0);
+    REQUIRE(s2.data() == nullptr);
+    REQUIRE(s2.mask() == nullptr);
 
-  SUBCASE("data: nullptr, dsize: 0, mask: (valid), msize: 1") {}
-  SUBCASE("data: nullptr, dsize: 1, mask: (valid), msize: 1") {}
-  SUBCASE("data: (valid), dsize: 0, mask: (valid), msize: 1") {}
-  SUBCASE("data: (valid), dsize: 1, mask: (valid), msize: 1") {}
+    qis::signature s3(nullptr, 0, bin, 1);
+    REQUIRE(s3.size() == 0);
+    REQUIRE(s3.data() == nullptr);
+    REQUIRE(s3.mask() == nullptr);
+  }
+
+  SUBCASE("data: nullptr, dsize: 1")
+  {
+    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, nullptr, 0), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, nullptr, 1), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, bin, 0), qis::invalid_signature);
+    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, bin, 1), qis::invalid_signature);
+  }
+
+  SUBCASE("data: (valid), dsize: 0")
+  {
+    qis::signature s0(bin, 0, nullptr, 0);
+    REQUIRE(s0.size() == 0);
+    REQUIRE(s0.data() == nullptr);
+    REQUIRE(s0.mask() == nullptr);
+
+    REQUIRE_THROWS_AS(qis::signature(bin, 0, nullptr, 1), qis::invalid_signature);
+
+    qis::signature s2(bin, 0, bin, 0);
+    REQUIRE(s2.size() == 0);
+    REQUIRE(s2.data() == nullptr);
+    REQUIRE(s2.mask() == nullptr);
+
+    qis::signature s3(bin, 0, bin, 1);
+    REQUIRE(s3.size() == 0);
+    REQUIRE(s3.data() == nullptr);
+    REQUIRE(s3.mask() == nullptr);
+  }
+
+  SUBCASE("data: (valid), dsize: 1")
+  {
+    qis::signature s0(bin, 1, nullptr, 0);
+    REQUIRE(s0.size() == 1);
+    REQUIRE(s0.data() != nullptr);
+    REQUIRE(s0.data() != bin);
+    REQUIRE(s0.mask() == nullptr);
+
+    REQUIRE_THROWS_AS(qis::signature(bin, 1, nullptr, 1), qis::invalid_signature);
+
+    qis::signature s2(bin, 1, bin, 0);
+    REQUIRE(s2.size() == 1);
+    REQUIRE(s2.data() != nullptr);
+    REQUIRE(s2.data() != bin);
+    REQUIRE(s2.mask() == nullptr);
+
+    qis::signature s3(bin, 1, bin, 1);
+    REQUIRE(s3.size() == 1);
+    REQUIRE(s3.data() != nullptr);
+    REQUIRE(s3.data() != bin);
+    REQUIRE(s3.mask() != nullptr);
+    REQUIRE(s3.mask() != bin);
+  }
 }
 
 QIS_TEST("signature(signature&&)")
@@ -432,7 +484,7 @@ QIS_TEST("signature(signature&&)")
   REQUIRE(mask != nullptr);
 
   qis::signature dst(std::move(src));
-  
+
   REQUIRE(src.size() == 0);
   REQUIRE(src.data() == nullptr);
   REQUIRE(src.mask() == nullptr);
