@@ -1,23 +1,32 @@
-#include "memory.hpp"
 #include <qis/signature.hpp>
-#include <mutex>
-#include <string>
-#include <iostream>
+#include <vector>
+#include <cassert>
+#include <cstring>
 
-#include <tbb/task.h>
+// Optional: Check that the binary was compiled with /arch:AVX2.
+static_assert(QIS_SIGNATURE_USE_AVX);
 
-using namespace mem::literals;
+// Optional: Check that the header <tbb/parallel_for.h> was found.
+static_assert(QIS_SIGNATURE_USE_TBB);
 
 int main()
 {
-  std::mutex mutex;
-  std::string str("0123456789ABCDEF");
-  const auto s = str.data();
-  const auto n = str.size();
-  const tbb::blocked_range range(s, s + n, 5);
-  tbb::parallel_for(range, [&](const tbb::blocked_range<char*>& range) noexcept {
-    std::lock_guard lock(mutex);
-    std::cout << range.size() << std::endl;
-    tbb::task::current_context()->cancel_group_execution();
-  });
+  // Create a 1 GiB memory block.
+  std::vector<std::uint8_t> memory;
+  memory.resize(1024 * 1024 * 1024, 0);
+
+  // Write data at the end of the memory block.
+  std::memcpy(memory.data() + memory.size() - 5, "\x01\x02\x03\x04\x05", 5);
+
+  // Create a signature.
+  const qis::signature search("01 ?? ?? 04");
+
+  // Scan memory for the signature.
+  const auto pos = qis::scan(memory.data(), memory.size(), search);
+
+  // Check that the data was found.
+  assert(pos != qis::signature::npos);
+
+  // Check data position.
+  assert(pos == memory.size() - 5);
 }
