@@ -5,8 +5,8 @@ C++23 binary signature search algorithm implemented using AVX2 and TBB.
 This warning will be removed and the repo force pushed with the final version.
 
 ## Usage
-Install using CMake or copy the header file
-[include/qis/signature.hpp](include/qis/signature.hpp).
+Copy the [include/qis/signature.hpp](include/qis/signature.hpp) header file
+or install the `INTERFACE` library using CMake.
 
 ```cpp
 #include <qis/signature.hpp>
