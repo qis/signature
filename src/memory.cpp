@@ -1,4 +1,3 @@
-#pragma once
 #include "memory.hpp"
 #include <algorithm>
 #include <format>

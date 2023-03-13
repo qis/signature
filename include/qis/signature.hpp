@@ -48,7 +48,7 @@
 #endif
 
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
-#ifdef __cpp_exceptions
+#if defined(__cpp_exceptions) && __cpp_exceptions
 #define QIS_SIGNATURE_USE_EXCEPTIONS 1
 #else
 #define QIS_SIGNATURE_USE_EXCEPTIONS 0

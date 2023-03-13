@@ -152,22 +152,22 @@ conan install . -if third_party -pr conan.profile
 5. Configure project.
 
 ```cmd
-cmake --preset release
-cmake --preset debug
+cmake --preset msvc-release
+cmake --preset msvc-debug
 ```
 
 6. Build benchmarks and tests.
 
 ```cmd
-cmake --build --preset release --target benchmarks
-cmake --build --preset debug --target tests
+cmake --build --preset msvc-release --target benchmarks
+cmake --build --preset msvc-debug --target tests
 ```
 
 7. Run benchmarks and tests.
 
 ```cmd
-build\release\benchmarks.exe --benchmark_min_time=3
-build\debug\tests.exe
+build\msvc\release\benchmarks.exe --benchmark_min_time=3
+build\msvc\debug\tests.exe
 ```
 
 </details>
