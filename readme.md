@@ -85,10 +85,9 @@ In the example above:
 * 32 KiB of data were searched for `DB 27 5B ?? FB ??` using the TBB algorithm.
 
 ### Results
+Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 <details>
-
-Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 ```
 Run on (12 X 3720.15 MHz CPU s)
@@ -125,9 +124,9 @@ scan std tbb 03 64 kb       12103 ns        12130 ns       349091
 This is a header-only. Building and installing is optional.
 
 ### Build
-<details>
-
 Build benchmarks and tests.
+
+<details>
 
 1. Install [Python 3][py3].
 2. Install [Conan][conan].
