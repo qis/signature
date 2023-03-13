@@ -39,7 +39,7 @@ int main() {
 ```
 
 ## Build
-This is a header-only library. Building is only necessary for benchmarks and tests.
+Build benchmarks and tests.
 
 1. Install [Python 3][py3].
 2. Install [Conan][conan].
@@ -83,7 +83,7 @@ build\debug\tests.exe
 ```
 
 ## Install
-This is a header-only library. Installing is only necessary to generate a CMake config.
+Install header file and CMake config.
 
 ```cmd
 cmake --preset install -DCMAKE_INSTALL_PREFIX="path/to/destination"
