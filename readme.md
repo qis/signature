@@ -6,7 +6,7 @@ This warning will be removed and the repo force pushed with the final version.
 
 ## Usage
 Copy the [include/qis/signature.hpp](include/qis/signature.hpp) header file
-**or** install the `INTERFACE` library using CMake.
+**or** install this project as an `INTERFACE` library using CMake.
 
 ```cpp
 #include <qis/signature.hpp>
