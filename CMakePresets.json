@@ -9,69 +9,50 @@
       "hidden": true,
       "name": "default",
       "generator": "Ninja",
-      "installDir": "${sourceDir}/install",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
       "cacheVariables": {
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+        "CONAN_CMAKE_SILENT_OUTPUT": true,
+        "SIGNATURE_INSTALL_HEADERS": false,
         "SIGNATURE_BUILD_BENCHMARKS": true,
         "SIGNATURE_BUILD_TESTS": true,
         "SIGNATURE_BUILD_MAIN": true
       }
     },
     {
-      "name": "msvc-debug",
-      "displayName": "MSVC Debug",
-      "binaryDir": "${sourceDir}/build/msvc/debug",
+      "name": "debug",
+      "displayName": "Debug",
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "msvc-release",
-      "displayName": "MSVC Release",
-      "binaryDir": "${sourceDir}/build/msvc/release",
+      "name": "release",
+      "displayName": "Release",
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
-      "name": "llvm-debug",
-      "displayName": "LLVM Debug",
-      "binaryDir": "${sourceDir}/build/llvm/debug",
-      "inherits": "default",
+      "name": "debug-clang",
+      "displayName": "Debug (Clang)",
+      "inherits": "debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang-cl"
       }
     },
     {
-      "name": "llvm-release",
-      "displayName": "LLVM Release",
-      "binaryDir": "${sourceDir}/build/llvm/release",
-      "inherits": "default",
+      "name": "release-clang",
+      "displayName": "Release (Clang)",
+      "inherits": "release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang-cl"
-      }
-    },
-    {
-      "name": "install",
-      "displayName": "Install",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/install",
-      "installDir": "${sourceDir}/install",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
       }
     }
   ]

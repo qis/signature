@@ -159,15 +159,15 @@ cmake --preset msvc-debug
 6. Build benchmarks and tests.
 
 ```cmd
-cmake --build --preset msvc-release --target benchmarks
-cmake --build --preset msvc-debug --target tests
+cmake --build --preset release --target benchmarks
+cmake --build --preset debug --target tests
 ```
 
 7. Run benchmarks and tests.
 
 ```cmd
-build\msvc\release\benchmarks.exe --benchmark_min_time=3
-build\msvc\debug\tests.exe
+build\release\benchmarks.exe --benchmark_min_time=3
+build\debug\tests.exe
 ```
 
 </details>
@@ -178,8 +178,8 @@ Install header file and CMake config.
 <details>
 
 ```cmd
-cmake --preset install -DCMAKE_INSTALL_PREFIX="path/to/destination"
-cmake --build build/install --target install
+cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="install"
+cmake --build build --target install
 ```
 
 </details>
