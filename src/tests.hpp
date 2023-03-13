@@ -1,4 +1,5 @@
 #pragma once
+#define QIS_SIGNATURE_EXTRA_ASSERTS
 #include <qis/signature.hpp>
 #include <doctest/doctest.h>
 #include <memory.hpp>
@@ -624,6 +625,28 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s3.data(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(std::memcmp(s3.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s3) == 1_mb - 26);
+
+  REQUIRE(find[1] != 'F');
+  std::string find_miss(find);
+  find_miss[1] = 'F';
+
+  qis::signature s4(find_miss);
+  REQUIRE(s4.size() == 26);
+  REQUIRE(s4.mask() == nullptr);
+  REQUIRE(std::memcmp(s4.data(), m1mb.data() + 1_mb - 26, 26) != 0);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s4) == qis::signature::npos);
+
+  REQUIRE(scan[1] != 'F');
+  REQUIRE(scan[1] != '?');
+  std::string scan_miss(scan);
+  scan_miss[1] = 'F';
+
+  qis::signature s5(scan_miss);
+  REQUIRE(s5.size() == 26);
+  REQUIRE(s5.mask() != nullptr);
+  REQUIRE(std::memcmp(s5.data(), m1mb.data() + 1_mb - 26, 26) != 0);
+  REQUIRE(std::memcmp(s5.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::signature::npos);
 }
 
 }  // namespace QIS_SIGNATURE_ABI

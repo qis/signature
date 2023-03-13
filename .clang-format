@@ -5,7 +5,7 @@ BasedOnStyle: LLVM
 # Indent
 ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 2
-IndentPPDirectives: AfterHash
+IndentPPDirectives: None
 IndentRequiresClause: true
 LambdaBodyIndentation: Signature
 

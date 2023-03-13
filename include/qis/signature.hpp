@@ -32,66 +32,68 @@
 #include <string_view>
 
 #ifndef QIS_SIGNATURE_USE_AVX
-#  ifdef __AVX2__
-#    define QIS_SIGNATURE_USE_AVX 1
-#  else
-#    define QIS_SIGNATURE_USE_AVX 0
-#  endif
+#ifdef __AVX2__
+#define QIS_SIGNATURE_USE_AVX 1
+#else
+#define QIS_SIGNATURE_USE_AVX 0
+#endif
 #endif
 
 #ifndef QIS_SIGNATURE_USE_TBB
-#  if __has_include(<tbb/parallel_for.h>)
-#    define QIS_SIGNATURE_USE_TBB 1
-#  else
-#    define QIS_SIGNATURE_USE_TBB 0
-#  endif
+#if __has_include(<tbb/parallel_for.h>)
+#define QIS_SIGNATURE_USE_TBB 1
+#else
+#define QIS_SIGNATURE_USE_TBB 0
+#endif
 #endif
 
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
-#  ifdef __cpp_exceptions
-#    define QIS_SIGNATURE_USE_EXCEPTIONS 1
-#  else
-#    define QIS_SIGNATURE_USE_EXCEPTIONS 0
-#  endif
+#ifdef __cpp_exceptions
+#define QIS_SIGNATURE_USE_EXCEPTIONS 1
+#else
+#define QIS_SIGNATURE_USE_EXCEPTIONS 0
+#endif
 #endif
 
 #if QIS_SIGNATURE_USE_AVX
-#  include <immintrin.h>
+#include <immintrin.h>
 #else
-#  include <functional>
+#include <functional>
 #endif
 
 #if QIS_SIGNATURE_USE_TBB
-#  include <tbb/parallel_for.h>
-#  include <atomic>
-#  ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
-#    define QIS_SIGNATURE_CONCURRENCY_RANGES 64
-#  endif
-#  ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
-#    if QIS_SIGNATURE_USE_AVX
-#      define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
-#    else
-#      define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
-#    endif
-#  endif
+#include <tbb/parallel_for.h>
+#include <atomic>
+#ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
+#define QIS_SIGNATURE_CONCURRENCY_RANGES 64
+#endif
+#ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
+#if QIS_SIGNATURE_USE_AVX
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
+#else
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
+#endif
+#endif
 #endif
 
 #if QIS_SIGNATURE_USE_EXCEPTIONS
-#  include <exception>
-#else
-#  include <cassert>
+#include <exception>
+#endif
+
+#if !QIS_SIGNATURE_USE_EXCEPTIONS || defined(QIS_SIGNATURE_EXTRA_ASSERTS)
+#include <cassert>
 #endif
 
 #ifndef QIS_THROW_INVALID_SIGNATURE
-#  if QIS_SIGNATURE_USE_EXCEPTIONS
-#    define QIS_THROW_INVALID_SIGNATURE throw qis::invalid_signature()
-#  else
-#    define QIS_THROW_INVALID_SIGNATURE assert(false && "invalid signature")
-#  endif
+#if QIS_SIGNATURE_USE_EXCEPTIONS
+#define QIS_THROW_INVALID_SIGNATURE throw qis::invalid_signature()
+#else
+#define QIS_THROW_INVALID_SIGNATURE assert(false && "invalid signature")
+#endif
 #endif
 
 #ifndef QIS_SIGNATURE_ABI
-#  define QIS_SIGNATURE_ABI v1
+#define QIS_SIGNATURE_ABI v1
 #endif
 
 // TODO: Remove these when fully implemented.
@@ -101,7 +103,6 @@
 #include <atomic>
 #include <exception>
 #include <functional>
-#include <cassert>
 
 namespace qis {
 inline namespace QIS_SIGNATURE_ABI {
@@ -360,11 +361,21 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] constexpr bool memcmp1(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   return a[0] == b[0];
 }
 
 [[maybe_unused]] inline bool memcmp2(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
   const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
   return a16 == b16;
@@ -372,6 +383,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp3(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return (a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF);
@@ -379,6 +395,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp4(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return a32 == b32;
@@ -386,6 +407,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp5(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x000000FFFFFFFFFF) == 0;
@@ -393,6 +419,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp6(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x0000FFFFFFFFFFFF) == 0;
@@ -400,6 +431,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp7(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x00FFFFFFFFFFFFFF) == 0;
@@ -407,6 +443,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp8(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return a64 == b64;
@@ -414,6 +455,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp9(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return (a64 == b64) && (a[8] == b[8]);
@@ -421,6 +467,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp10(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a + 8);
@@ -430,6 +481,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp11(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
@@ -439,6 +495,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 [[maybe_unused]] inline bool memcmp12(const char* a, const char* b) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(a);
+  assert(b);
+  assert(a != b);
+#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
@@ -448,6 +509,11 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 
 inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+#endif
   const __m256i broadcasted[2]{
     _mm256_set1_epi8(p[0]),
     _mm256_set1_epi8(p[1]),
@@ -475,6 +541,13 @@ inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) 
 template <std::size_t k>
 std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto memcmp) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(memcmp);
+#endif
   const auto s0 = _mm256_set1_epi8(p[0]);
   const auto s1 = _mm256_set1_epi8(p[k - 1]);
   for (std::size_t i = 0; i < n; i += 32) {
@@ -496,6 +569,13 @@ std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto
 
 inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
   const auto s0 = _mm256_set1_epi8(p[0]);
   const auto s1 = _mm256_set1_epi8(p[k - 1]);
   for (std::size_t i = 0; i < n; i += 32) {
@@ -518,6 +598,13 @@ inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char*
 template <>
 inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
   auto r = qis::signature::npos;
   switch (k) {
   case 1:
@@ -569,6 +656,13 @@ inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std:
 template <>
 inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
   std::size_t i = 0;
   const auto m = p + k;
   const auto compare = [&](char lhs, char rhs) noexcept {
@@ -591,6 +685,13 @@ inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::
 template <>
 inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
   const auto e = s + n;
   if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
     return i - s;
@@ -601,6 +702,13 @@ inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std:
 template <>
 inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
   std::size_t i = 0;
   const auto m = p + k;
   const auto compare = [&](char lhs, char rhs) noexcept {
@@ -622,6 +730,13 @@ inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::
 template <bool mask>
 std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
 #if QIS_SIGNATURE_USE_TBB
   constexpr std::size_t ranges = QIS_SIGNATURE_CONCURRENCY_RANGES;
   constexpr std::size_t threshold = QIS_SIGNATURE_CONCURRENCY_THRESHOLD;
