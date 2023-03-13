@@ -130,9 +130,9 @@ class signature {
 public:
   static constexpr std::size_t npos = std::string_view::npos;
 
-  constexpr signature() noexcept = default;
+  inline signature() noexcept = default;
 
-  signature(std::string_view data, std::string_view mask = {}) :
+  explicit signature(std::string_view data, std::string_view mask = {}) :
     size_((data.size() + 1) / 3), mask_(!mask.empty() || data.find('?') != std::string_view::npos)
   {
     using detail::signature::cast;
@@ -141,7 +141,7 @@ public:
     if (!size_ || (data.size() + 1) % 3 != 0) {
       QIS_THROW_INVALID_SIGNATURE;
     }
-    if (!mask.empty() && ((mask.size() + 1) / 3 == 0 || (mask.size() + 1) % 3 != 0)) {
+    if (!mask.empty() && (mask.size() < 2 || (mask.size() + 1) % 3 != 0)) {
       QIS_THROW_INVALID_SIGNATURE;
     }
 
@@ -178,7 +178,7 @@ public:
     if (mask.empty()) {
       return;
     }
-    const auto size = std::min(size_, mask.size());
+    const auto size = std::min(size_, (mask.size() + 1) / 3);
     src = mask.data();
     dst = data_.get() + size_;
     for (std::size_t i = 0; i < size; i++) {
@@ -194,7 +194,11 @@ public:
     }
   }
 
-  signature(const void* data, std::size_t dsize, const void* mask = nullptr, std::size_t msize = 0) :
+  explicit signature(
+    const void* data,
+    std::size_t dsize,
+    const void* mask = nullptr,
+    std::size_t msize = 0) :
     size_(dsize), mask_(msize != 0)
   {
     // Verify data and mask.
@@ -315,7 +319,7 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
 
 namespace detail::signature {
 
-inline constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
+constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
   if (signature >= '0' && signature <= '9') {
     return signature - '0';
@@ -342,63 +346,63 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
   return a[0] == b[0];
 }
 
-[[maybe_unused]] __forceinline bool memcmp2(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp2(const char* a, const char* b) noexcept
 {
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
   const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
   return a16 == b16;
 }
 
-[[maybe_unused]] __forceinline bool memcmp3(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp3(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return (a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF);
 }
 
-[[maybe_unused]] __forceinline bool memcmp4(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp4(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return a32 == b32;
 }
 
-[[maybe_unused]] __forceinline bool memcmp5(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp5(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x000000FFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] __forceinline bool memcmp6(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp6(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x0000FFFFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] __forceinline bool memcmp7(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp7(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x00FFFFFFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] __forceinline bool memcmp8(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp8(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return a64 == b64;
 }
 
-[[maybe_unused]] __forceinline bool memcmp9(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp9(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return (a64 == b64) && (a[8] == b[8]);
 }
 
-[[maybe_unused]] __forceinline bool memcmp10(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp10(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -407,7 +411,7 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
   return (a64 == b64) && (a16 == b16);
 }
 
-[[maybe_unused]] __forceinline bool memcmp11(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp11(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -416,7 +420,7 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
   return (a64 == b64) && ((a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF));
 }
 
-[[maybe_unused]] __forceinline bool memcmp12(const char* a, const char* b) noexcept
+[[maybe_unused]] inline bool memcmp12(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -425,7 +429,7 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
   return (a64 == b64) && (a32 == b32);
 }
 
-__forceinline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) noexcept
+inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) noexcept
 {
   const __m256i broadcasted[2]{
     _mm256_set1_epi8(p[0]),
@@ -452,7 +456,7 @@ __forceinline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const ch
 }
 
 template <std::size_t k>
-__forceinline std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto memcmp) noexcept
+std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto memcmp) noexcept
 {
   const auto s0 = _mm256_set1_epi8(p[0]);
   const auto s1 = _mm256_set1_epi8(p[k - 1]);
@@ -473,7 +477,7 @@ __forceinline std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const
   return qis::signature::npos;
 }
 
-__forceinline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
   const auto s0 = _mm256_set1_epi8(p[0]);
   const auto s1 = _mm256_set1_epi8(p[k - 1]);
@@ -495,7 +499,7 @@ __forceinline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, cons
 }
 
 template <>
-__forceinline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
   auto r = qis::signature::npos;
   switch (k) {
@@ -546,7 +550,7 @@ __forceinline std::size_t find<false>(const char* s, std::size_t n, const char* 
 }
 
 template <>
-__forceinline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
   std::size_t i = 0;
   const auto m = p + k;
@@ -568,7 +572,7 @@ __forceinline std::size_t find<true>(const char* s, std::size_t n, const char* p
 #else
 
 template <>
-__forceinline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
   const auto e = s + n;
   if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
@@ -578,7 +582,7 @@ __forceinline std::size_t find<false>(const char* s, std::size_t n, const char* 
 }
 
 template <>
-__forceinline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
   std::size_t i = 0;
   const auto m = p + k;
@@ -599,7 +603,7 @@ __forceinline std::size_t find<true>(const char* s, std::size_t n, const char* p
 #endif
 
 template <bool mask>
-inline std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
 #if QIS_SIGNATURE_USE_TBB
   constexpr std::size_t ranges = QIS_SIGNATURE_CONCURRENCY_RANGES;
