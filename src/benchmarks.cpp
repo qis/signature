@@ -100,7 +100,7 @@ private:
     std::string test_text;
     std::string_view abi(size_end, end);
     if (abi.size() == 7 && abi[3] == '_') {
-      test_text.append(abi.substr(0, 3));
+      test_text.append(abi.substr(0, 3) == "avx" ? " avx" : "    ");
       test_text.append(abi.substr(4, 3) == "tbb" ? " tbb" : "    ");
     } else {
       test_text = abi;

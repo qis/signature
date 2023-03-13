@@ -99,23 +99,23 @@ CPU Caches:
 -----------------------------------------------------------------
 Benchmark                       Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     03 16 kb         295 ns          296 ns     14222222
-find avx tbb 03 16 kb         345 ns          345 ns     12800000
-find std     03 16 kb       13275 ns        13268 ns       323855
-find std tbb 03 16 kb        7586 ns         7577 ns       548571
-scan avx     03 16 kb         296 ns          297 ns     14222222
-scan avx tbb 03 16 kb         345 ns          345 ns     11686957
-scan std     03 16 kb       13104 ns        13135 ns       320000
-scan std tbb 03 16 kb        7595 ns         7615 ns       537600
+find  avx     03 16 kb        319 ns          321 ns      2240000
+find  avx tbb 03 16 kb        315 ns          314 ns      2240000
+find          03 16 kb      14044 ns        13951 ns        44800
+find      tbb 03 16 kb       7925 ns         7847 ns        89600
+scan  avx     03 16 kb        317 ns          321 ns      2240000
+scan  avx tbb 03 16 kb        315 ns          321 ns      2240000
+scan          03 16 kb      13961 ns        13811 ns        49778
+scan      tbb 03 16 kb       7732 ns         7673 ns        89600
 
-find avx     03 64 kb        1456 ns         1454 ns      2890323
-find avx tbb 03 64 kb        1452 ns         1449 ns      2890323
-find std     03 64 kb       52256 ns        52368 ns        81455
-find std tbb 03 64 kb       12036 ns        11970 ns       344615
-scan avx     03 64 kb        1456 ns         1453 ns      2859574
-scan avx tbb 03 64 kb        1445 ns         1449 ns      2921739
-scan std     03 64 kb       52489 ns        52571 ns        79059
-scan std tbb 03 64 kb       12103 ns        12130 ns       349091
+find  avx     03 64 kb       1587 ns         1604 ns       448000
+find  avx tbb 03 64 kb       1571 ns         1569 ns       448000
+find          03 64 kb      55477 ns        56250 ns        10000
+find      tbb 03 64 kb      12353 ns        12277 ns        56000
+scan  avx     03 64 kb       1552 ns         1569 ns       448000
+scan  avx tbb 03 64 kb       1566 ns         1569 ns       448000
+scan          03 64 kb      55702 ns        56250 ns        10000
+scan      tbb 03 64 kb      12348 ns        12277 ns        56000
 ```
 
 </details>
