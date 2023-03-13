@@ -172,10 +172,9 @@ build\debug\tests.exe
 </details>
 
 ### Install
+Install header file and CMake config.
 
 <details>
-
-Install header file and CMake config.
 
 ```cmd
 cmake --preset install -DCMAKE_INSTALL_PREFIX="path/to/destination"
