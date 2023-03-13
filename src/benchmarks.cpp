@@ -23,6 +23,7 @@ public:
       if (!ConsoleReporter::ReportContext(info)) {
         return false;
       }
+#ifdef QIS_BENCHMARK_PRINT_LEGEND
       std::string legend;
       auto i = std::back_inserter(legend);
       std::format_to(i, "\nSignature Type\n");
@@ -37,6 +38,7 @@ public:
       std::format_to(i, "* Size of the searched memory block.\n");
       std::format_to(i, "* Signature found at the end of the memory block.\n");
       std::puts(legend.data());
+#endif
     }
     return true;
   }
