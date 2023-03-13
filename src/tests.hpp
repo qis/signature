@@ -559,26 +559,59 @@ QIS_TEST("scan")
   const auto m15b = mem::get(15_b);
   const auto m30b = mem::get(30_b);
   const auto m1mb = mem::get(1_mb);
-
   const auto find = mem::find();
   const auto scan = mem::scan();
 
-  const auto data = "00";
-  const auto mask = "??";
+  qis::signature s0(find.substr(0, 2));
+  qis::signature s1("??");
+
+  REQUIRE(std::memcmp(s0.data(), m15b.data(), 1) == 0);
+
+  REQUIRE(qis::scan(m15b.data(), 1, s0) == 0);
+  REQUIRE(qis::scan(m15b.data(), 1, s1) == 0);
 
   REQUIRE(qis::scan(nullptr, 0, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 0, qis::signature(data)) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 0, qis::signature(mask)) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 0, s0) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 0, s1) == qis::signature::npos);
 
-  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature(data)) == qis::signature::npos);
-  REQUIRE(qis::scan(m1mb.data(), 0, qis::signature(mask)) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, qis::signature()) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, s0) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, s1) == qis::signature::npos);
 
   REQUIRE(qis::scan(nullptr, 1, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 1, qis::signature(data)) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 1, qis::signature(mask)) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 1, s0) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 1, s1) == qis::signature::npos);
 
-  REQUIRE(qis::scan(m1mb.data(), 1, qis::signature()) == 0);
+  REQUIRE(qis::scan(m15b.data(), 1, qis::signature()) == 0);
+
+  qis::signature s2(find);
+  REQUIRE(s2.size() == 26);
+  REQUIRE(s2.mask() == nullptr);
+
+  REQUIRE(std::memcmp(s2.data(), m15b.data(), 15) == 0);
+  REQUIRE(qis::scan(m15b.data(), 15, s2) == qis::signature::npos);
+
+  REQUIRE(std::memcmp(s2.data(), m30b.data() + 4, 26) == 0);
+  REQUIRE(qis::scan(m30b.data(), 30, s2) == 4);
+
+  REQUIRE(std::memcmp(s2.data(), m1mb.data() + 1_mb - 26, 26) == 0);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s2) == 1_mb - 26);
+
+  qis::signature s3(scan);
+  REQUIRE(s3.size() == 26);
+  REQUIRE(s3.mask() != nullptr);
+
+  REQUIRE(std::memcmp(s3.data(), m15b.data(), 15) != 0);
+  REQUIRE(std::memcmp(s3.mask(), m15b.data(), 15) != 0);
+  REQUIRE(qis::scan(m15b.data(), 15, s3) == qis::signature::npos);
+
+  REQUIRE(std::memcmp(s3.data(), m30b.data() + 4, 26) != 0);
+  REQUIRE(std::memcmp(s3.mask(), m30b.data() + 4, 26) != 0);
+  REQUIRE(qis::scan(m30b.data(), 30, s3) == 4);
+
+  REQUIRE(std::memcmp(s3.data(), m1mb.data() + 1_mb - 26, 26) != 0);
+  REQUIRE(std::memcmp(s3.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s3) == 1_mb - 26);
 
   // (valid), size > 0, data = (valid), mask = nullptr, size < data
   // (valid), size > 0, data = (valid), mask = nullptr, size = data
