@@ -4,7 +4,7 @@
 #include <charconv>
 #include <chrono>
 #include <format>
-#include <set>
+#include <vector>
 #include <cstdio>
 #include <cstdlib>
 
@@ -18,7 +18,25 @@ public:
   {
     if (context_) {
       context_ = false;
-      return ConsoleReporter::ReportContext(context);
+      auto info = context;
+      info.name_field_width = 22;
+      if (!ConsoleReporter::ReportContext(info)) {
+        return false;
+      }
+      std::string legend;
+      auto i = std::back_inserter(legend);
+      std::format_to(i, "\nSignature Type\n");
+      std::format_to(i, "* find: {}\n", mem::find());
+      std::format_to(i, "* scan: {}\n", mem::scan());
+      std::format_to(i, "\nCompilation Flags\n");
+      std::format_to(i, "* avx: QIS_SIGNATURE_USE_AVX 1\n");
+      std::format_to(i, "* tbb: QIS_SIGNATURE_USE_TBB 1\n");
+      std::format_to(i, "\nSignature Length\n");
+      std::format_to(i, "* Searched for number of bytes from \"find\" or \"scan\".\n");
+      std::format_to(i, "\nData Size\n");
+      std::format_to(i, "* Size of the searched memory block.\n");
+      std::format_to(i, "* Signature found at the end of the memory block.\n");
+      std::puts(legend.data());
     }
     return true;
   }
@@ -44,8 +62,8 @@ private:
     const auto begin = name.data();
     const auto end = begin + name.size();
 
-    std::size_t scan = 0;
-    auto [scan_end, scan_ec] = std::from_chars(begin, end, scan);
+    std::size_t type = 0;
+    auto [scan_end, scan_ec] = std::from_chars(begin, end, type);
     if (scan_ec != std::errc() || ++scan_end >= end) {
       return name;
     }
@@ -67,11 +85,14 @@ private:
       size_text = std::format("{}", size);
     }
 
-    std::string scan_text;
-    if (scan > 200) {
-      scan_text = std::format("mask {:02d}", scan - 200);
+    std::string type_text;
+    std::string signature;
+    if (type > 200) {
+      type_text = "scan";
+      signature = std::format("{:02d}", type - 200);
     } else {
-      scan_text = std::format("data {:02d}", scan - 100);
+      type_text = "find";
+      signature = std::format("{:02d}", type - 100);
     }
 
     std::string test_text;
@@ -83,13 +104,13 @@ private:
       test_text = abi;
     }
 
-    return scan_text + ' ' + test_text + ' ' + size_text;
+    return type_text + ' ' + test_text + ' ' + signature + ' ' + size_text;
   }
 
   bool context_{ true };
 };
 
-std::set<std::pair<std::size_t, std::size_t>> benchmarks;
+std::vector<std::pair<std::size_t, std::size_t>> benchmarks;
 
 int main(int argc, char** argv)
 {
@@ -103,12 +124,17 @@ int main(int argc, char** argv)
   }
 
   // Initialize data.
-  std::puts("Initializing data ...");
+  std::fputs("Initializing data ...", stdout);
+  std::fflush(stdout);
   std::vector<std::size_t> sizes;
-  for (const auto& benchmark : benchmarks) {
-    sizes.push_back(benchmark.second);
-  }
+  sizes.resize(benchmarks.size());
+  std::transform(benchmarks.begin(), benchmarks.end(), sizes.begin(), [](const auto& e) {
+    return e.second;
+  });
+  std::sort(sizes.begin(), sizes.end());
+  sizes.erase(std::unique(sizes.begin(), sizes.end()), sizes.end());
   mem::initialize(sizes);
+  std::puts("\n");
 
   // Measure benchmark duration.
   const auto tp1 = std::chrono::high_resolution_clock::now();
@@ -116,18 +142,19 @@ int main(int argc, char** argv)
   // Run benchmarks.
   Reporter reporter;
   for (auto size : sizes) {
-    const auto data = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
+    const auto find = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first < 200 && e.second == size;
     });
-    if (data != benchmarks.end()) {
+    if (find != benchmarks.end()) {
       benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
-      std::puts("");
     }
-    const auto mask = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
+    const auto scan = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first >= 200 && e.second == size;
     });
-    if (mask != benchmarks.end()) {
+    if (scan != benchmarks.end()) {
       benchmark::RunSpecifiedBenchmarks(&reporter, std::format("2..:{:08X}:", size));
+    }
+    if (find != benchmarks.end() || scan != benchmarks.end()) {
       std::puts("");
     }
   }

@@ -216,7 +216,7 @@ void initialize(std::span<std::size_t> blocks)
   const auto data = random(data_size);
 
   // Create signature.
-  const qis::signature search(mem::data());
+  const qis::signature search(find());
   assert(search.size() == 26);
   assert(search.data());
 
@@ -269,7 +269,7 @@ std::span<const std::uint8_t> get(std::size_t size)
   throw std::invalid_argument(std::format("memory size not initialized: {}", size));
 }
 
-std::string_view data(std::size_t size) noexcept
+std::string_view find(std::size_t size) noexcept
 {
   assert(size <= 26);
   // clang-format off
@@ -279,7 +279,7 @@ std::string_view data(std::size_t size) noexcept
   // clang-format on
 }
 
-std::string_view mask(std::size_t size) noexcept
+std::string_view scan(std::size_t size) noexcept
 {
   assert(size <= 26);
   // clang-format off

@@ -41,7 +41,7 @@ cmake --build --preset debug --target tests
 7. Run benchmarks and tests.
 
 ```cmd
-build\release\benchmarks.exe
+build\release\benchmarks.exe --benchmark_min_time=3
 build\debug\tests.exe
 ```
 
