@@ -71,10 +71,10 @@ There are two types of signatures:
 DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 ```
 
-* `scan` contains unmasked bytes (`??`) and is generally slower to search for.
+* `scan` contains unmasked 4-bit entries (`?`) and is generally slower to search for.
 
 ```sh
-DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
+DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
 ```
 
 The searched memory block ends with the `find` signature and is guaranteed to
@@ -82,7 +82,7 @@ never contain the `DB 27 5B` byte sequence anywhere else.
 
 In the example above:
 * 16 KiB of data were searched for `DB 27 5B FA FB` using the AVX2 algorithm.
-* 32 KiB of data were searched for `DB 27 5B ?? FB ??` using the TBB algorithm.
+* 32 KiB of data were searched for `DB 27 5B ?? FB ?E` using the TBB algorithm.
 
 ### Results
 Results obtained with `benchmarks.exe --benchmark_min_time=3`.
