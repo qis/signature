@@ -4,6 +4,9 @@
 #include <vector>
 #include <cstddef>
 
+#define QIS_STRINGIFY(s) #s
+#define QIS_STRINGIFY_EXPAND(s) QIS_STRINGIFY(s)
+
 namespace mem {
 
 // Creates data of given size while repeating the signature.
@@ -30,6 +33,7 @@ std::vector<std::uint8_t> random(std::size_t size);
 // If size is greater, than 128 MiB, then the the first 128 MiB will be randomly generated and repeated.
 // The data is guaranteed to end with at most 26 bytes of the following signature:
 // DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+//  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
 void initialize(std::vector<std::size_t> sizes);
 
 // Frees memory allocated during the initialize call.
@@ -39,14 +43,15 @@ void shutdown();
 // Throws std::bad_alloc if the given size was not listed during the initialize call.
 std::span<const std::uint8_t> get(std::size_t size);
 
-inline constexpr std::string_view signature(std::size_t size = 26) noexcept
-{
-  // clang-format off
-  return std::string_view{
-    "DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89"
-  }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
-  // clang-format on
-}
+// Returns a substring of given size to the following signature:
+// DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+//  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
+std::string_view data(std::size_t size = 26) noexcept;
+
+// Returns a substring of given size to the following signature:
+// DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
+//  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
+std::string_view mask(std::size_t size = 26) noexcept;
 
 inline namespace literals {
 

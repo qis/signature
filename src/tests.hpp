@@ -4,9 +4,7 @@
 #include <memory.hpp>
 #include <string>
 
-#define QIS_TEST_NAMESPACE(abi) #abi
-#define QIS_TEST_DECLARE(abi, name) TEST_CASE(QIS_TEST_NAMESPACE(abi) "::" name)
-#define QIS_TEST(name) QIS_TEST_DECLARE(QIS_SIGNATURE_ABI, name)
+#define QIS_TEST(name) TEST_CASE(QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI) "::" name)
 
 namespace QIS_SIGNATURE_ABI {
 

@@ -216,7 +216,7 @@ void initialize(std::vector<std::size_t> blocks)
   const auto data = random(data_size);
 
   // Create signature.
-  const qis::signature search(signature());
+  const qis::signature search(mem::data());
   assert(search.size() == 26);
   assert(search.data());
 
@@ -267,6 +267,26 @@ std::span<const std::uint8_t> get(std::size_t size)
 
   // Report error.
   throw std::invalid_argument(std::format("memory size not initialized: {}", size));
+}
+
+std::string_view data(std::size_t size) noexcept
+{
+  assert(size <= 26);
+  // clang-format off
+  return std::string_view{
+    "DB 27 5B FA FB 53 A0 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89"
+  }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
+  // clang-format on
+}
+
+std::string_view mask(std::size_t size) noexcept
+{
+  assert(size <= 26);
+  // clang-format off
+  return std::string_view{
+    "DB 27 5B ?? FB ?? ?? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??"
+  }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
+  // clang-format on
 }
 
 }  // namespace mem
