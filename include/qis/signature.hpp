@@ -337,18 +337,18 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
 
 namespace detail::signature {
 
-constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
+constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
-  if (signature >= '0' && signature <= '9') {
-    return signature - '0';
+  if (xdigit >= '0' && xdigit <= '9') {
+    return xdigit - '0';
   }
-  if (signature >= 'A' && signature <= 'F') {
-    return signature - 'A' + 0xA;
+  if (xdigit >= 'A' && xdigit <= 'F') {
+    return xdigit - 'A' + 0xA;
   }
-  if (signature >= 'a' && signature <= 'f') {
-    return signature - 'a' + 0xA;
+  if (xdigit >= 'a' && xdigit <= 'f') {
+    return xdigit - 'a' + 0xA;
   }
-  if (signature != '?') {
+  if (xdigit != '?') {
     QIS_THROW_INVALID_SIGNATURE;
   }
   return 0;
