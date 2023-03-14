@@ -25,7 +25,7 @@
     },
     {
       "hidden": true,
-      "name": "windows-msvc-x64",
+      "name": "code-analysis-msvc",
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "intelliSenseMode": "windows-msvc-x64",
@@ -35,7 +35,7 @@
     },
     {
       "hidden": true,
-      "name": "windows-clang-x64",
+      "name": "code-analysis-llvm",
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "intelliSenseMode": "windows-clang-x64",
@@ -46,7 +46,7 @@
     {
       "name": "debug",
       "displayName": "Debug",
-      "inherits": [ "default", "windows-msvc-x64" ],
+      "inherits": [ "default", "code-analysis-msvc" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -54,7 +54,7 @@
     {
       "name": "release",
       "displayName": "Release",
-      "inherits": [ "default", "windows-msvc-x64" ],
+      "inherits": [ "default", "code-analysis-msvc" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -62,26 +62,37 @@
     {
       "name": "debug-clang",
       "displayName": "Debug (clang)",
-      "inherits": [ "default", "windows-clang-x64" ],
+      "inherits": [ "default", "code-analysis-llvm" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ]
+        }
       }
     },
     {
       "name": "release-clang",
       "displayName": "Release (clang)",
-      "inherits": [ "default", "windows-clang-x64" ],
+      "inherits": [ "default", "code-analysis-llvm" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_COMPILER": "clang"
+        "CMAKE_CXX_COMPILER": "clang",
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ]
+        }
       }
     },
     {
       "name": "debug-clang-cl",
       "displayName": "Debug (clang-cl)",
-      "inherits": [ "default", "windows-clang-x64" ],
+      "inherits": [ "default", "code-analysis-llvm" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang-cl"
@@ -90,7 +101,7 @@
     {
       "name": "release-clang-cl",
       "displayName": "Release (clang-cl)",
-      "inherits": [ "default", "windows-clang-x64" ],
+      "inherits": [ "default", "code-analysis-llvm" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang-cl"
