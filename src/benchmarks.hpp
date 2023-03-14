@@ -16,6 +16,7 @@
 #define QIS_BENCHMARK(scan, size)                      \
   QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, signature) \
     ->Name(benchmark_name(scan, size))                 \
+    ->Iterations(benchmark_iterations(size))           \
     ->ArgPair(size, static_cast<std::int64_t>(scan))
 
 #define QIS_BENCHMARK_ABORT(message)                   \
@@ -44,6 +45,19 @@ static std::string benchmark_name(std::size_t type, std::size_t size)
   }
   benchmarks.emplace_back(type, size);
   return std::format("{}:{:08X}:{}", type, size, QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI));
+}
+
+static benchmark::IterationCount benchmark_iterations(std::size_t s) noexcept
+{
+  // clang-format off
+  return s <=  64_kb ? 4096
+       : s <= 256_kb ? 2048
+       : s <=   1_mb ? 1024
+       : s <=   4_mb ? 512
+       : s <=  16_mb ? 64
+       : s <=  64_mb ? 32
+       : s <= 256_mb ? 16 : 8;
+  // clang-format on
 }
 
 static void signature(benchmark::State& state)

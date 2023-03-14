@@ -1,6 +1,7 @@
 /*
 .*
 !/include/
+!/res/
 !/src/
 !/.clangd
 !/.clang-format
@@ -14,5 +15,3 @@
 !/conanfile.txt
 !/license.txt
 !/readme.md
-!/test.cmd
-!/test.sh

@@ -4,8 +4,8 @@
 #include <charconv>
 #include <chrono>
 #include <format>
+#include <iostream>
 #include <vector>
-#include <cstdio>
 #include <cstdlib>
 
 using namespace mem::literals;
@@ -14,32 +14,14 @@ class Reporter : public benchmark::ConsoleReporter {
 public:
   using ConsoleReporter::ConsoleReporter;
 
+  void printed_header(bool value) noexcept
+  {
+    printed_header_ = value;
+  }
+
   bool ReportContext(const Context& context) override
   {
-    if (context_) {
-      context_ = false;
-      auto info = context;
-      info.name_field_width = 26;
-      if (!ConsoleReporter::ReportContext(info)) {
-        return false;
-      }
-#ifdef QIS_BENCHMARK_PRINT_LEGEND
-      std::string legend;
-      auto i = std::back_inserter(legend);
-      std::format_to(i, "\nSignature Type\n");
-      std::format_to(i, "* find: {}\n", mem::find());
-      std::format_to(i, "* scan: {}\n", mem::scan());
-      std::format_to(i, "\nCompilation Flags\n");
-      std::format_to(i, "* avx: QIS_SIGNATURE_USE_AVX 1\n");
-      std::format_to(i, "* tbb: QIS_SIGNATURE_USE_TBB 1\n");
-      std::format_to(i, "\nSignature Length\n");
-      std::format_to(i, "* Searched for number of bytes from \"find\" or \"scan\".\n");
-      std::format_to(i, "\nData Size\n");
-      std::format_to(i, "* Size of the searched memory block.\n");
-      std::format_to(i, "* Signature found at the end of the memory block.\n");
-      std::puts(legend.data());
-#endif
-    }
+    name_field_width_ = 26;
     return true;
   }
 
@@ -110,17 +92,12 @@ private:
 
     return type_text + ' ' + test_text + signature + ' ' + size_text;
   }
-
-  bool context_{ true };
 };
 
 std::vector<std::pair<std::size_t, std::size_t>> benchmarks;
 
 int main(int argc, char** argv)
 {
-  // Measure initialization duration.
-  const auto tp0 = std::chrono::high_resolution_clock::now();
-
   // Initialize benchmark.
   benchmark::Initialize(&argc, argv);
   if (benchmark::ReportUnrecognizedArguments(argc, argv)) {
@@ -128,8 +105,6 @@ int main(int argc, char** argv)
   }
 
   // Initialize data.
-  std::fputs("Initializing data ...", stdout);
-  std::fflush(stdout);
   std::vector<std::size_t> sizes;
   sizes.resize(benchmarks.size());
   std::transform(benchmarks.begin(), benchmarks.end(), sizes.begin(), [](const auto& e) {
@@ -138,10 +113,6 @@ int main(int argc, char** argv)
   std::sort(sizes.begin(), sizes.end());
   sizes.erase(std::unique(sizes.begin(), sizes.end()), sizes.end());
   mem::initialize(sizes);
-  std::puts("\n");
-
-  // Measure benchmark duration.
-  const auto tp1 = std::chrono::high_resolution_clock::now();
 
   // Run benchmarks.
   Reporter reporter;
@@ -149,25 +120,41 @@ int main(int argc, char** argv)
     const auto find = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first < 200 && e.second == size;
     });
-    if (find != benchmarks.end()) {
-      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
-    }
     const auto scan = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first >= 200 && e.second == size;
     });
+    if (find != benchmarks.end() || scan != benchmarks.end()) {
+      std::string size_text;
+      if (size / 1_gb > 0 && size % 1_gb == 0) {
+        size_text = std::format("{} GiB", size / 1024 / 1024 / 1024);
+      } else if (size / 1_mb > 0 && size % 1_mb == 0) {
+        size_text = std::format("{} MiB", size / 1024 / 1024);
+      } else if (size / 1_kb > 0 && size % 1_kb == 0) {
+        size_text = std::format("{} KiB", size / 1024);
+      } else {
+        size_text = std::format("{} Bytes", size);
+      }
+      std::cout << "<details>" << std::endl;
+      std::cout << "<summary>" + size_text + "</summary>" << std::endl;
+      std::cout << std::endl;
+      std::cout << "```" << std::endl;
+      reporter.printed_header(false);
+    }
+    if (find != benchmarks.end()) {
+      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
+    }
+    if (find != benchmarks.end() && scan != benchmarks.end()) {
+      std::cout << std::endl;
+    }
     if (scan != benchmarks.end()) {
       benchmark::RunSpecifiedBenchmarks(&reporter, std::format("2..:{:08X}:", size));
     }
     if (find != benchmarks.end() || scan != benchmarks.end()) {
-      std::puts("");
+      std::cout << "```" << std::endl;
+      std::cout << std::endl;
+      std::cout << "</details>" << std::endl;
+      std::cout << std::endl;
     }
   }
-
-  // Report initialization and benchmark durations.
-  const auto tp2 = std::chrono::high_resolution_clock::now();
-  using seconds = std::chrono::duration<double, std::chrono::seconds::period>;
-  const auto s0 = std::chrono::duration_cast<seconds>(tp1 - tp0).count();
-  const auto s1 = std::chrono::duration_cast<seconds>(tp2 - tp1).count();
-  std::puts(std::format("finished in {:.1f} + {:.1f} seconds", s0, s1).data());
   return EXIT_SUCCESS;
 }

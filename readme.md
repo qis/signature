@@ -51,8 +51,8 @@ int main() {
 Use [qis/xorstr](https://github.com/qis/xorstr) to hide the signature
 string from analysis tools.
 
-# Benchmark
-The benchmark report syntax reflects the `QIS_BENCHMARK` macro usage in
+## Benchmarks
+The benchmarks report syntax reflects the `QIS_BENCHMARK` macro usage in
 [src/benchmarks.hpp](src/benchmarks.hpp).
 
 ```
@@ -91,41 +91,20 @@ In the example above:
 * Searched 16 KiB for `DB 27 5B FA FB` using AVX2 and exceptions disabled.
 * Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
 
-<details>
-<summary>Results</summary>
-
-Results obtained with `benchmarks.exe --benchmark_min_time=3`.
+### Results
+All benchmarks were executed on the same system.
 
 ```
-Run on (12 X 3720.15 MHz CPU s)
+Run on (12 X 3713.02 MHz CPU s)
 CPU Caches:
   L1 Data 32 KiB (x6)
   L1 Instruction 32 KiB (x6)
   L2 Unified 256 KiB (x6)
   L3 Unified 12288 KiB (x1)
------------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
------------------------------------------------------------------
-find  avx     03 16 kb        319 ns          321 ns      2240000
-find  avx tbb 03 16 kb        315 ns          314 ns      2240000
-find          03 16 kb      14044 ns        13951 ns        44800
-find      tbb 03 16 kb       7925 ns         7847 ns        89600
-scan  avx     03 16 kb        317 ns          321 ns      2240000
-scan  avx tbb 03 16 kb        315 ns          321 ns      2240000
-scan          03 16 kb      13961 ns        13811 ns        49778
-scan      tbb 03 16 kb       7732 ns         7673 ns        89600
-
-find  avx     03 64 kb       1587 ns         1604 ns       448000
-find  avx tbb 03 64 kb       1571 ns         1569 ns       448000
-find          03 64 kb      55477 ns        56250 ns        10000
-find      tbb 03 64 kb      12353 ns        12277 ns        56000
-scan  avx     03 64 kb       1552 ns         1569 ns       448000
-scan  avx tbb 03 64 kb       1566 ns         1569 ns       448000
-scan          03 64 kb      55702 ns        56250 ns        10000
-scan      tbb 03 64 kb      12348 ns        12277 ns        56000
 ```
 
-</details>
+* See [res/windows.md](res/windows.md) for Windows results.
+* See [res/linux.md](res/linux.md) for Linux results.
 
 ## Build & Install
 This is a header-only. Building and installing is optional.
