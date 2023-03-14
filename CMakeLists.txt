@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 project(signature VERSION 0.1.0 LANGUAGES CXX)
 
 # Options
-option(SIGNATURE_BUILD_BENCHMARKS "Build benchmarks" OFF)
-option(SIGNATURE_BUILD_TESTS "Build tests" OFF)
 option(SIGNATURE_BUILD_MAIN "Build main" OFF)
+option(SIGNATURE_BUILD_TESTS "Build tests" OFF)
+option(SIGNATURE_BUILD_BENCHMARKS "Build benchmarks" OFF)
 
 option(SIGNATURE_INSTALL_HEADERS "Install signature headers" ON)
 option(SIGNATURE_INSTALL_CONFIG "Install signature config" ${SIGNATURE_INSTALL_HEADERS})
@@ -106,15 +106,14 @@ endif()
 
 add_library(qis::signature ALIAS signature)
 
-# Benchmarks
-if(SIGNATURE_BUILD_BENCHMARKS)
-  find_package(benchmark REQUIRED)
-  file(GLOB benchmark_headers src/memory.hpp src/benchmarks.hpp)
-  file(GLOB benchmark_sources src/memory.cpp src/benchmarks.cpp src/benchmarks/*.cpp)
-  add_executable(benchmarks ${benchmark_headers} ${benchmark_sources})
-  target_link_libraries(benchmarks PRIVATE benchmark::benchmark TBB::tbb signature)
-  target_include_directories(benchmarks PRIVATE src)
-  signature_configure_target(benchmarks ${benchmark_sources})
+# Main
+if(SIGNATURE_BUILD_MAIN)
+  file(GLOB sources src/main.cpp)
+  add_executable(main ${sources})
+  target_compile_features(main PRIVATE cxx_std_23)
+  target_include_directories(main PRIVATE include src)
+  target_link_libraries(main PRIVATE TBB::tbb)
+  signature_configure_target(main ${sources})
 endif()
 
 # Tests
@@ -128,12 +127,13 @@ if(SIGNATURE_BUILD_TESTS)
   signature_configure_target(tests ${tests_sources})
 endif()
 
-# Main
-if(SIGNATURE_BUILD_MAIN)
-  file(GLOB main_headers src/memory.hpp)
-  file(GLOB main_sources src/memory.cpp src/main.cpp)
-  add_executable(main ${main_headers} ${main_sources})
-  target_link_libraries(main PRIVATE TBB::tbb signature)
-  target_include_directories(main PRIVATE src)
-  signature_configure_target(main ${main_sources})
+# Benchmarks
+if(SIGNATURE_BUILD_BENCHMARKS)
+  find_package(benchmark REQUIRED)
+  file(GLOB benchmark_headers src/memory.hpp src/benchmarks.hpp)
+  file(GLOB benchmark_sources src/memory.cpp src/benchmarks.cpp src/benchmarks/*.cpp)
+  add_executable(benchmarks ${benchmark_headers} ${benchmark_sources})
+  target_link_libraries(benchmarks PRIVATE benchmark::benchmark TBB::tbb signature)
+  target_include_directories(benchmarks PRIVATE src)
+  signature_configure_target(benchmarks ${benchmark_sources})
 endif()
