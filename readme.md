@@ -252,8 +252,8 @@ build/release-clang/benchmarks --benchmark_min_time=3
 Install header file and CMake config.
 
 ```cmd
-cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="install"
-cmake --build build --target install
+cmake -G Ninja -B build/install -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="install"
+cmake --build build/install --target install
 ```
 
 </details>

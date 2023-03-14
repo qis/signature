@@ -24,9 +24,29 @@
       }
     },
     {
+      "hidden": true,
+      "name": "windows-msvc-x64",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-msvc-x64",
+          "enableMicrosoftCodeAnalysis": true
+        }
+      }
+    },
+    {
+      "hidden": true,
+      "name": "windows-clang-x64",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x64",
+          "enableClangTidyCodeAnalysis": true
+        }
+      }
+    },
+    {
       "name": "debug",
       "displayName": "Debug",
-      "inherits": "default",
+      "inherits": [ "default", "windows-msvc-x64" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -34,7 +54,7 @@
     {
       "name": "release",
       "displayName": "Release",
-      "inherits": "default",
+      "inherits": [ "default", "windows-msvc-x64" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -42,32 +62,37 @@
     {
       "name": "debug-clang",
       "displayName": "Debug (clang)",
-      "inherits": "debug",
+      "inherits": [ "default", "windows-clang-x64" ],
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "clang"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang",
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       }
     },
     {
       "name": "release-clang",
       "displayName": "Release (clang)",
-      "inherits": "release",
+      "inherits": [ "default", "windows-clang-x64" ],
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang"
       }
     },
     {
       "name": "debug-clang-cl",
       "displayName": "Debug (clang-cl)",
-      "inherits": "debug",
+      "inherits": [ "default", "windows-clang-x64" ],
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang-cl"
       }
     },
     {
       "name": "release-clang-cl",
       "displayName": "Release (clang-cl)",
-      "inherits": "release",
+      "inherits": [ "default", "windows-clang-x64" ],
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_COMPILER": "clang-cl"
       }
     }
