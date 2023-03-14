@@ -243,6 +243,12 @@ cmake --build build/install --target install
 
 </details>
 
+<!--
+git update-index --chmod=+x res/benchmark.sh
+git update-index --assume-unchanged res/windows.md
+git update-index --assume-unchanged res/linux.md
+-->
+
 [py3]: https://www.python.org/downloads/windows/
 [conan]: https://conan.io/center/
 [cmake]: https://cmake.org/download/
