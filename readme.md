@@ -136,24 +136,61 @@ Build benchmarks and tests.
 pip install "conan<2.0.0"
 ```
 
-3. Clone project in `x64 Native Tools Command Prompt for VS 2022`.
+3. Install [Visual Studio][vs] with C++ and CMake support on Windows.
+4. Install [CMake][cmake] and [LLVM][llvm] on Linux.
+
+```sh
+# CMake
+sudo rm -rf /opt/cmake; sudo mkdir -p /opt/cmake
+wget https://github.com/Kitware/CMake/releases/download/v3.25.3/cmake-3.25.3-linux-x86_64.tar.gz
+sudo tar xf cmake-3.25.3-linux-x86_64.tar.gz -C /opt/cmake --strip-components=1
+
+sudo tee /etc/profile.d/cmake.sh >/dev/null <<'EOF'
+export PATH="/opt/cmake/bin:${PATH}"
+EOF
+
+sudo chmod 0755 /etc/profile.d/cmake.sh
+. /etc/profile.d/cmake.sh
+
+# LLVM
+sudo rm -rf /opt/llvm; sudo mkdir -p /opt/llvm
+wget https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.6/clang+llvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+sudo tar xf clang+llvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04.tar.xz -C /opt/llvm --strip-components=1
+
+sudo tee /etc/profile.d/llvm.sh >/dev/null <<'EOF'
+export PATH="/opt/llvm/bin:${PATH}"
+EOF
+
+sudo chmod 0755 /etc/profile.d/llvm.sh
+. /etc/profile.d/llvm.sh
+
+sudo tee /etc/ld.so.conf.d/llvm.conf >/dev/null <<'EOF'
+/opt/llvm/lib/x86_64-unknown-linux-gnu
+/opt/llvm/lib
+EOF
+
+sudo ldconfig
+```
+
+5. Clone project in `x64 Native Tools Command Prompt for VS 2022` on Windows or
+   any shell that has `cmake >= 3.23` and `clang >= 15.0` in `PATH` on Linux.
 
 ```sh
 git clone https://github.com/qis/signature signature
 cd signature
 ```
 
-4. Install dependencies.
+6. Install dependencies.
 
 ```sh
 # Windows
-conan install . -if third_party -pr conan.profile
+conan install . -if third_party/msvc -pr conan.msvc
 
 # Linux
-conan install . -if third_party
+conan install . -if third_party/llvm -pr conan.llvm
 ```
 
-5. Configure project.
+7. Configure project.
 
 ```sh
 cmake --list-presets
@@ -171,39 +208,41 @@ cmake --preset debug-clang-cl
 cmake --preset release-clang-cl
 ```
 
-6. Build configurations.
+8. Build configurations.
 
 ```sh
 # Windows
 cmake --build build/debug --target tests
-cmake --build build/release --target benchmarks
+cmake --build build/release
 
 # Windows & Linux
 cmake --build build/debug-clang --target tests
-cmake --build build/release-clang --target benchmarks
+cmake --build build/release-clang
 
 # Windows
 cmake --build build/debug-clang-cl --target tests
-cmake --build build/release-clang-cl --target benchmarks
+cmake --build build/release-clang-cl
 ```
 
-7. Run tests and benchmarks on Windows.
+9. Run tests and benchmarks.
 
-```cmd
+```sh
+# Windows
 build\debug\tests.exe
+build\release\tests.exe
 build\release\benchmarks.exe --benchmark_min_time=3
 
 build\debug-clang\tests.exe
+build\release-clang\tests.exe
 build\release-clang\benchmarks.exe --benchmark_min_time=3
 
 build\debug-clang-cl\tests.exe
+build\release-clang-cl\tests.exe
 build\release-clang-cl\benchmarks.exe --benchmark_min_time=3
-```
 
-8. Run tests and benchmarks on Linux.
-
-```sh
+# Linux
 build/debug-clang/tests
+build/release-clang/tests
 build/release-clang/benchmarks --benchmark_min_time=3
 ```
 
@@ -223,3 +262,5 @@ cmake --build build --target install
 
 [py3]: https://www.python.org/downloads/windows/
 [conan]: https://conan.io/center/
+[cmake]: https://cmake.org/download/
+[vs]: https://visualstudio.microsoft.com/vs/

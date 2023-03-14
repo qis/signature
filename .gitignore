@@ -10,6 +10,8 @@
 !/CMakeLists.txt
 !/CMakePresets.json
 !/conan.profile
+!/conan.msvc
+!/conan.llvm
 !/conanfile.txt
 !/license.txt
 !/readme.md
