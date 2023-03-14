@@ -85,10 +85,10 @@ In the example above:
 * Searched 16 KiB for `DB 27 5B FA FB` using AVX2 and exceptions disabled.
 * Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
 
-### Results
-Results obtained with `benchmarks.exe --benchmark_min_time=3`.
-
 <details>
+<summary>Results</summary>
+
+Results obtained with `benchmarks.exe --benchmark_min_time=3`.
 
 ```
 Run on (12 X 3720.15 MHz CPU s)
