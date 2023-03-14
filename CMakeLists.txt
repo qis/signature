@@ -18,57 +18,72 @@ if(NOT SIGNATURE_INSTALL_LIBDIR)
   set(SIGNATURE_INSTALL_LIBDIR .)
 endif()
 
-# Dependencies
+# Build Configuration
 if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
+  # Set conan install directory.
   if(WIN32)
     set(third_party third_party/msvc)
   else()
     set(third_party third_party/llvm)
   endif()
+
+  # Copy binaries installed with conan to build directory.
   if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${third_party}/bin)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${third_party}/bin/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
   endif()
+
+  # Add conan install directory to module and config search paths.
   list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${third_party})
   list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${third_party})
+
+  # Find common dependencies.
   find_package(TBB REQUIRED COMPONENTS tbb)
-  if(WIN32)
-  endif()
+
+  # Remove exceptions and RTTI options from MSVC compiler flags.
   if(MSVC)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     string(REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   endif()
-endif()
 
-function(signature_compile_options target)
-  if(WIN32)
-    target_compile_definitions(${target} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
-  else()
-    target_compile_options(${target} PRIVATE -stdlib=libc++)
-    target_compile_definitions(${target} PRIVATE -D_LIBCPP_ENABLE_EXPERIMENTAL=1)
-    target_link_libraries(${target} PRIVATE c++ c++experimental)
-  endif()
-  if(MSVC)
-    target_compile_options(${target} PRIVATE /arch:AVX2)
-  else()
-    target_compile_options(${target} PRIVATE -mavx2)
-  endif()
-  foreach(source IN LISTS ARGN)
-    if(source MATCHES "_noe\.")
-      if(MSVC)
-        set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHs-c-;/GR-")
-      else()
-        set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "-fno-exceptions;-fno-rtti")
-      endif()
-      if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        set_source_files_properties(${source} PROPERTIES COMPILE_DEFINITIONS "_HAS_EXCEPTIONS=0")
-      endif()
+  # Configures the target and sources.
+  function(signature_configure_target target)
+    # Configure the standard library.
+    if(WIN32)
+      target_compile_definitions(${target} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
     else()
-      if(MSVC)
-        set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHsc;/GR")
-      endif()
+      target_compile_definitions(${target} PRIVATE -D_LIBCPP_ENABLE_EXPERIMENTAL=1)
+      target_compile_options(${target} PRIVATE -stdlib=libc++)
+      target_link_libraries(${target} PRIVATE c++ c++experimental)
     endif()
-  endforeach()
-endfunction()
+
+    # Enable AVX2 support.
+    if(MSVC)
+      target_compile_options(${target} PRIVATE /arch:AVX2)
+    else()
+      target_compile_options(${target} PRIVATE -mavx2)
+    endif()
+
+    # Configure sources.
+    foreach(source IN LISTS ARGN)
+      if(source MATCHES "_noe\.")
+        # Disable exceptions and RTTI for source filenames that end with "_noe".
+        if(MSVC)
+          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHs-c-;/GR-")
+        else()
+          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "-fno-exceptions;-fno-rtti")
+        endif()
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+          set_source_files_properties(${source} PROPERTIES COMPILE_DEFINITIONS "_HAS_EXCEPTIONS=0")
+        endif()
+      else()
+        # Enable exceptions and RTTI for source filenames that don't end with "_noe"'.
+        if(MSVC)
+          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHsc;/GR")
+        endif()
+      endif()
+    endforeach()
+  endfunction()
+endif()
 
 # Library
 file(GLOB headers include/qis/*.hpp)
@@ -99,7 +114,7 @@ if(SIGNATURE_BUILD_BENCHMARKS)
   add_executable(benchmarks ${benchmark_headers} ${benchmark_sources})
   target_link_libraries(benchmarks PRIVATE benchmark::benchmark TBB::tbb signature)
   target_include_directories(benchmarks PRIVATE src)
-  signature_compile_options(benchmarks ${benchmark_sources})
+  signature_configure_target(benchmarks ${benchmark_sources})
 endif()
 
 # Tests
@@ -110,7 +125,7 @@ if(SIGNATURE_BUILD_TESTS)
   add_executable(tests ${tests_headers} ${tests_sources})
   target_link_libraries(tests PRIVATE doctest::doctest TBB::tbb signature)
   target_include_directories(tests PRIVATE src)
-  signature_compile_options(tests ${tests_sources})
+  signature_configure_target(tests ${tests_sources})
 endif()
 
 # Main
@@ -120,5 +135,5 @@ if(SIGNATURE_BUILD_MAIN)
   add_executable(main ${main_headers} ${main_sources})
   target_link_libraries(main PRIVATE TBB::tbb signature)
   target_include_directories(main PRIVATE src)
-  signature_compile_options(main ${main_sources})
+  signature_configure_target(main ${main_sources})
 endif()
