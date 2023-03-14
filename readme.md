@@ -136,8 +136,7 @@ Build benchmarks and tests.
 pip install "conan<2.0.0"
 ```
 
-3. Install [Visual Studio][vs] with C++ and CMake support on Windows.
-4. Install [CMake][cmake] and [LLVM][llvm] on Linux.
+3. Install [CMake][cmake] and [LLVM][llvm] on **Linux**.
 
 ```sh
 # CMake
@@ -171,6 +170,8 @@ EOF
 
 sudo ldconfig
 ```
+
+4. Install [Visual Studio][vs] with C++ and CMake support on **Windows**.
 
 5. Clone project in `x64 Native Tools Command Prompt for VS 2022` on Windows or
    any shell that has `cmake >= 3.23` and `clang >= 15.0` in `PATH` on Linux.
@@ -263,4 +264,5 @@ cmake --build build --target install
 [py3]: https://www.python.org/downloads/windows/
 [conan]: https://conan.io/center/
 [cmake]: https://cmake.org/download/
+[llvm]: https://llvm.org/
 [vs]: https://visualstudio.microsoft.com/vs/
