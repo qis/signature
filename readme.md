@@ -173,8 +173,7 @@ sudo ldconfig
 
 4. Install [Visual Studio][vs] with C++ and CMake support on **Windows**.
 
-5. Clone project in `x64 Native Tools Command Prompt for VS 2022` on Windows or
-   any shell that has `cmake >= 3.23` and `clang >= 15.0` in `PATH` on Linux.
+5. Clone project. Use `x64 Native Tools Command Prompt for VS 2022` on Windows.
 
 ```sh
 git clone https://github.com/qis/signature signature
