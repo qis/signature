@@ -121,13 +121,11 @@ scan      tbb 03 64 kb      12348 ns        12277 ns        56000
 
 </details>
 
-## CMake
+## Build & Install
 This is a header-only. Building and installing is optional.
 
-### Build
-Build benchmarks and tests.
-
 <details>
+<summary>Build</summary>
 
 1. Install [Python 3][py3].
 2. Install [Conan][conan].
@@ -248,10 +246,10 @@ build/release-clang/benchmarks --benchmark_min_time=3
 
 </details>
 
-### Install
-Install header file and CMake config.
-
 <details>
+<summary>Install</summary>
+
+Install header file and CMake config.
 
 ```cmd
 cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="install"
