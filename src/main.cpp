@@ -20,7 +20,7 @@ int main()
   const qis::signature search("01 ?? E? 04");
 
   // Scan memory block.
-  const auto pos = qis::scan(memory.data(), memory.size(), search);
+  [[maybe_unused]] const auto pos = qis::scan(memory.data(), memory.size(), search);
 
   // Check that the data was found.
   assert(pos != qis::signature::npos);
