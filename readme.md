@@ -103,8 +103,8 @@ CPU Caches:
   L3 Unified 12288 KiB (x1)
 ```
 
-* See [res/windows.md](res/windows.md) for Windows results.
-* See [res/linux.md](res/linux.md) for Linux results.
+* See [windows.md](res/windows.md) for Windows results.
+* See [linux.md](res/linux.md) for Linux results.
 
 ## Build & Install
 This is a header-only. Building and installing is optional.
