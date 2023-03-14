@@ -55,22 +55,22 @@ std::string_view scan(std::size_t size = 26) noexcept;
 
 inline namespace literals {
 
-constexpr std::size_t operator""_b(std::size_t size)
+constexpr std::size_t operator""_b(unsigned long long size)
 {
   return size;
 }
 
-constexpr std::size_t operator""_kb(std::size_t size)
+constexpr std::size_t operator""_kb(unsigned long long size)
 {
   return size * 1024;
 }
 
-constexpr std::size_t operator""_mb(std::size_t size)
+constexpr std::size_t operator""_mb(unsigned long long size)
 {
   return size * 1024 * 1024;
 }
 
-constexpr std::size_t operator""_gb(std::size_t size)
+constexpr std::size_t operator""_gb(unsigned long long size)
 {
   return size * 1024 * 1024 * 1024;
 }

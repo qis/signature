@@ -41,15 +41,31 @@
     },
     {
       "name": "debug-clang",
-      "displayName": "Debug (Clang)",
+      "displayName": "Debug (clang)",
+      "inherits": "debug",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang"
+      }
+    },
+    {
+      "name": "release-clang",
+      "displayName": "Release (clang)",
+      "inherits": "release",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang"
+      }
+    },
+    {
+      "name": "debug-clang-cl",
+      "displayName": "Debug (clang-cl)",
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "clang-cl"
       }
     },
     {
-      "name": "release-clang",
-      "displayName": "Release (Clang)",
+      "name": "release-clang-cl",
+      "displayName": "Release (clang-cl)",
       "inherits": "release",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "clang-cl"

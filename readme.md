@@ -132,42 +132,79 @@ Build benchmarks and tests.
 1. Install [Python 3][py3].
 2. Install [Conan][conan].
 
-```cmd
+```sh
 pip install "conan<2.0.0"
 ```
 
 3. Clone project in `x64 Native Tools Command Prompt for VS 2022`.
 
-```cmd
+```sh
 git clone https://github.com/qis/signature signature
 cd signature
 ```
 
 4. Install dependencies.
 
-```cmd
+```sh
+# Windows
 conan install . -if third_party -pr conan.profile
+
+# Linux
+conan install . -if third_party
 ```
 
 5. Configure project.
 
-```cmd
-cmake --preset release
+```sh
+cmake --list-presets
+
+# Windows
 cmake --preset debug
+cmake --preset release
+
+# Windows & Linux
+cmake --preset debug-clang
+cmake --preset release-clang
+
+# Windows
+cmake --preset debug-clang-cl
+cmake --preset release-clang-cl
 ```
 
-6. Build benchmarks and tests.
+6. Build configurations.
 
-```cmd
-cmake --build build/release --target benchmarks
+```sh
+# Windows
 cmake --build build/debug --target tests
+cmake --build build/release --target benchmarks
+
+# Windows & Linux
+cmake --build build/debug-clang --target tests
+cmake --build build/release-clang --target benchmarks
+
+# Windows
+cmake --build build/debug-clang-cl --target tests
+cmake --build build/release-clang-cl --target benchmarks
 ```
 
-7. Run benchmarks and tests.
+7. Run tests and benchmarks on Windows.
 
 ```cmd
-build\release\benchmarks.exe --benchmark_min_time=3
 build\debug\tests.exe
+build\release\benchmarks.exe --benchmark_min_time=3
+
+build\debug-clang\tests.exe
+build\release-clang\benchmarks.exe --benchmark_min_time=3
+
+build\debug-clang-cl\tests.exe
+build\release-clang-cl\benchmarks.exe --benchmark_min_time=3
+```
+
+8. Run tests and benchmarks on Linux.
+
+```sh
+build/debug-clang/tests
+build/release-clang/benchmarks --benchmark_min_time=3
 ```
 
 </details>
