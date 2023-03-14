@@ -1,7 +1,7 @@
 [requires]
-benchmark/[x]
-doctest/[x]
-onetbb/[x]
+benchmark/[*]
+doctest/[*]
+onetbb/[*]
 
 [generators]
 cmake_find_package
