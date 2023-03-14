@@ -2,6 +2,7 @@
 .*
 !/include/
 !/src/
+!/third_party/
 !/.clangd
 !/.clang-format
 !/.clang-tidy
