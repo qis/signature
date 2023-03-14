@@ -133,7 +133,7 @@ Build benchmarks and tests.
 2. Install [Conan][conan].
 
 ```cmd
-pip install conan
+pip install "conan<2.0.0"
 ```
 
 3. Clone project in `x64 Native Tools Command Prompt for VS 2022`.

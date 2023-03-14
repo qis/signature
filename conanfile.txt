@@ -5,3 +5,6 @@ onetbb/[x]
 
 [generators]
 cmake_find_package
+
+[imports]
+bin, *.dll -> ./bin
