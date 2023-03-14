@@ -244,16 +244,9 @@ cmake --build build/install --target install
 </details>
 
 <!--
-git update-index --chmod=+x res/benchmark.sh
-
-git update-index --no-skip-worktree res/linux.md
-git update-index --no-skip-worktree res/windows.md
-
-git add res/linux.md
-git add res/windows.md
-
-git update-index --skip-worktree res/linux.md
-git update-index --skip-worktree res/windows.md
+git update-index --no-skip-worktree res/linux.md res/windows.md
+git add res/linux.md res/windows.md
+git update-index --skip-worktree res/linux.md res/windows.md
 -->
 
 [py3]: https://www.python.org/downloads/windows/

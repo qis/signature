@@ -662,4 +662,3 @@ scan     tbb noe 24 2 gb    117029050 ns    107483062 ns            8
 ```
 
 </details>
-
