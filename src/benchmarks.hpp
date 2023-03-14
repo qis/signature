@@ -96,29 +96,82 @@ enum type : std::size_t {
 
 // clang-format off
 
-QIS_BENCHMARK(find + 10,  16_kb);
-QIS_BENCHMARK(find + 10,  64_kb);
-QIS_BENCHMARK(find + 10, 256_kb);
-QIS_BENCHMARK(find + 10,   1_mb);
-QIS_BENCHMARK(find + 10,   4_mb);
-QIS_BENCHMARK(find + 10,  16_mb);
-QIS_BENCHMARK(find + 10,  64_mb);
-QIS_BENCHMARK(find + 10, 256_mb);
-QIS_BENCHMARK(find + 10, 512_mb);
-QIS_BENCHMARK(find + 10,   1_gb);
-QIS_BENCHMARK(find + 10,   2_gb);
+QIS_BENCHMARK(find + 6, 16_kb);
+QIS_BENCHMARK(scan + 6, 16_kb);
+QIS_BENCHMARK(find + 12, 16_kb);
+QIS_BENCHMARK(scan + 12, 16_kb);
+QIS_BENCHMARK(find + 24, 16_kb);
+QIS_BENCHMARK(scan + 24, 16_kb);
 
-QIS_BENCHMARK(scan + 10,  16_kb);
-QIS_BENCHMARK(scan + 10,  64_kb);
-QIS_BENCHMARK(scan + 10, 256_kb);
-QIS_BENCHMARK(scan + 10,   1_mb);
-QIS_BENCHMARK(scan + 10,   4_mb);
-QIS_BENCHMARK(scan + 10,  16_mb);
-QIS_BENCHMARK(scan + 10,  64_mb);
-QIS_BENCHMARK(scan + 10, 256_mb);
-QIS_BENCHMARK(scan + 10, 512_mb);
-QIS_BENCHMARK(scan + 10,   1_gb);
-QIS_BENCHMARK(scan + 10,   2_gb);
+QIS_BENCHMARK(find + 6, 64_kb);
+QIS_BENCHMARK(scan + 6, 64_kb);
+QIS_BENCHMARK(find + 12, 64_kb);
+QIS_BENCHMARK(scan + 12, 64_kb);
+QIS_BENCHMARK(find + 24, 64_kb);
+QIS_BENCHMARK(scan + 24, 64_kb);
+
+QIS_BENCHMARK(find + 6, 256_kb);
+QIS_BENCHMARK(scan + 6, 256_kb);
+QIS_BENCHMARK(find + 12, 256_kb);
+QIS_BENCHMARK(scan + 12, 256_kb);
+QIS_BENCHMARK(find + 24, 256_kb);
+QIS_BENCHMARK(scan + 24, 256_kb);
+
+QIS_BENCHMARK(find + 6, 1_mb);
+QIS_BENCHMARK(scan + 6, 1_mb);
+QIS_BENCHMARK(find + 12, 1_mb);
+QIS_BENCHMARK(scan + 12, 1_mb);
+QIS_BENCHMARK(find + 24, 1_mb);
+QIS_BENCHMARK(scan + 24, 1_mb);
+
+QIS_BENCHMARK(find + 6, 4_mb);
+QIS_BENCHMARK(scan + 6, 4_mb);
+QIS_BENCHMARK(find + 12, 4_mb);
+QIS_BENCHMARK(scan + 12, 4_mb);
+QIS_BENCHMARK(find + 24, 4_mb);
+QIS_BENCHMARK(scan + 24, 4_mb);
+
+QIS_BENCHMARK(find + 6, 16_mb);
+QIS_BENCHMARK(scan + 6, 16_mb);
+QIS_BENCHMARK(find + 12, 16_mb);
+QIS_BENCHMARK(scan + 12, 16_mb);
+QIS_BENCHMARK(find + 24, 16_mb);
+QIS_BENCHMARK(scan + 24, 16_mb);
+
+QIS_BENCHMARK(find + 6, 64_mb);
+QIS_BENCHMARK(scan + 6, 64_mb);
+QIS_BENCHMARK(find + 12, 64_mb);
+QIS_BENCHMARK(scan + 12, 64_mb);
+QIS_BENCHMARK(find + 24, 64_mb);
+QIS_BENCHMARK(scan + 24, 64_mb);
+
+QIS_BENCHMARK(find + 6, 256_mb);
+QIS_BENCHMARK(scan + 6, 256_mb);
+QIS_BENCHMARK(find + 12, 256_mb);
+QIS_BENCHMARK(scan + 12, 256_mb);
+QIS_BENCHMARK(find + 24, 256_mb);
+QIS_BENCHMARK(scan + 24, 256_mb);
+
+QIS_BENCHMARK(find + 6, 512_mb);
+QIS_BENCHMARK(scan + 6, 512_mb);
+QIS_BENCHMARK(find + 12, 512_mb);
+QIS_BENCHMARK(scan + 12, 512_mb);
+QIS_BENCHMARK(find + 24, 512_mb);
+QIS_BENCHMARK(scan + 24, 512_mb);
+
+QIS_BENCHMARK(find + 6, 1_gb);
+QIS_BENCHMARK(scan + 6, 1_gb);
+QIS_BENCHMARK(find + 12, 1_gb);
+QIS_BENCHMARK(scan + 12, 1_gb);
+QIS_BENCHMARK(find + 24, 1_gb);
+QIS_BENCHMARK(scan + 24, 1_gb);
+
+QIS_BENCHMARK(find + 6, 2_gb);
+QIS_BENCHMARK(scan + 6, 2_gb);
+QIS_BENCHMARK(find + 12, 2_gb);
+QIS_BENCHMARK(scan + 12, 2_gb);
+QIS_BENCHMARK(find + 24, 2_gb);
+QIS_BENCHMARK(scan + 24, 2_gb);
 
 // clang-format on
 

@@ -105,25 +105,42 @@ int main(int argc, char** argv)
   }
 
   // Initialize data.
+  std::vector<std::size_t> finds;
+  std::vector<std::size_t> scans;
   std::vector<std::size_t> sizes;
-  sizes.resize(benchmarks.size());
-  std::transform(benchmarks.begin(), benchmarks.end(), sizes.begin(), [](const auto& e) {
-    return e.second;
-  });
+  for (auto& e : benchmarks) {
+    if (e.first < 200) {
+      finds.push_back(e.first);
+    } else {
+      scans.push_back(e.first);
+    }
+    sizes.push_back(e.second);
+  }
+
+  std::sort(finds.begin(), finds.end());
+  finds.erase(std::unique(finds.begin(), finds.end()), finds.end());
+
+  std::sort(scans.begin(), scans.end());
+  scans.erase(std::unique(scans.begin(), scans.end()), scans.end());
+
   std::sort(sizes.begin(), sizes.end());
   sizes.erase(std::unique(sizes.begin(), sizes.end()), sizes.end());
+
   mem::initialize(sizes);
 
   // Run benchmarks.
   Reporter reporter;
   for (auto size : sizes) {
+    // clang-format off
     const auto find = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first < 200 && e.second == size;
-    });
+    }) != benchmarks.end();
     const auto scan = std::find_if(benchmarks.begin(), benchmarks.end(), [size](const auto& e) {
       return e.first >= 200 && e.second == size;
-    });
-    if (find != benchmarks.end() || scan != benchmarks.end()) {
+    }) != benchmarks.end();
+    // clang-format on
+
+    if (find || scan) {
       std::string size_text;
       if (size / 1_gb > 0 && size % 1_gb == 0) {
         size_text = std::format("{} GiB", size / 1024 / 1024 / 1024);
@@ -140,16 +157,22 @@ int main(int argc, char** argv)
       std::cout << "```" << std::endl;
       reporter.printed_header(false);
     }
-    if (find != benchmarks.end()) {
-      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("1..:{:08X}:", size));
+    if (find) {
+      for (auto type : finds) {
+        const auto spec = std::format("{}:{:08X}:", type, size);
+        benchmark::RunSpecifiedBenchmarks(&reporter, spec);
+      }
     }
-    if (find != benchmarks.end() && scan != benchmarks.end()) {
+    if (find && scan) {
       std::cout << std::endl;
     }
-    if (scan != benchmarks.end()) {
-      benchmark::RunSpecifiedBenchmarks(&reporter, std::format("2..:{:08X}:", size));
+    if (scan) {
+      for (auto type : scans) {
+        const auto spec = std::format("{}:{:08X}:", type, size);
+        benchmark::RunSpecifiedBenchmarks(&reporter, spec);
+      }
     }
-    if (find != benchmarks.end() || scan != benchmarks.end()) {
+    if (find || scan) {
       std::cout << "```" << std::endl;
       std::cout << std::endl;
       std::cout << "</details>" << std::endl;
