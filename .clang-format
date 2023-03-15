@@ -81,13 +81,33 @@ IncludeCategories:
     Priority: 2
     SortPriority: 0
 
+  # Windows Core Headers
+  - Regex: '^<(ntifs|windows)\.h>'
+    Priority: 6
+
+  # Windows Driver Headers
+  - Regex: '^<(ntddk|ntddkbd|ntddmou|ntstatus|wdm)\.h>'
+    Priority: 7
+
+  # DirectX Headers
+  - Regex: '^<(d2d.*|d3d.*|dxgi.*|dwrite.*|dinput.*|dcomp)\.h>'
+    Priority: 8
+
+  # Windows Runtime Headers
+  - Regex: '^<wrl/'
+    Priority: 9
+
+  # Windows Headers
+  - Regex: '^<(wdf|commctrl|shellapi|tlhelp32|winioctl|winternl|winsock2|ws2tcpip|mswsock|unknwn)\.h>'
+    Priority: 10
+
   # Benchmark Headers
   - Regex: '^<benchmark/'
     Priority: 3
     SortPriority: 0
 
   # Test Framework Headers
-  - Regex: '^<(doctest|gtest|gmock)/'
+  - Regex: '^<(gtest|gmock|doctest)/'
     Priority: 4
     SortPriority: 0
 
@@ -97,11 +117,17 @@ IncludeCategories:
 
   # C Compatibility Headers
   - Regex: '^<c(a|c|e|f|i|l|m|s|t|u|w)'
-    Priority: 7
+    Priority: 12
 
   # C++ Standard Library Headers
   - Regex: '^<'
-    Priority: 6
+    Priority: 11
+
+# Sources: a.hpp is main include for a.cpp, a_test.cpp, etc.
+IncludeIsMainRegex: '(_test|_win32|_posix)?$'
+
+# Headers: a.hpp, a_base.hpp, etc. are main includes for a.cpp
+IncludeIsMainSourceRegex: '(_base|_impl)?$'
 ---
 Language: ObjC
 DisableFormat: true
