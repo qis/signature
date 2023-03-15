@@ -49,7 +49,7 @@
 #endif
 
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
-#if defined(__cpp_exceptions) && __cpp_exceptions
+#ifdef __cpp_exceptions
 #define QIS_SIGNATURE_USE_EXCEPTIONS 1
 #else
 #define QIS_SIGNATURE_USE_EXCEPTIONS 0
@@ -91,12 +91,16 @@
 #endif
 #endif
 
-#ifndef QIS_SIGNATURE_ABI
-#define QIS_SIGNATURE_ABI v1
+#ifndef QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
+#define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
+#endif
+
+#ifndef QIS_SIGNATURE_INLINE_NAMESPACE_END
+#define QIS_SIGNATURE_INLINE_NAMESPACE_END
 #endif
 
 namespace qis {
-inline namespace QIS_SIGNATURE_ABI {
+QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
 namespace detail::signature {
 
 constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
@@ -780,5 +784,5 @@ std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k
 }
 
 }  // namespace detail::signature
-}  // namespace QIS_SIGNATURE_ABI
+QIS_SIGNATURE_INLINE_NAMESPACE_END
 }  // namespace qis

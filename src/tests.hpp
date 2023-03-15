@@ -1,4 +1,6 @@
 #pragma once
+#define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN inline namespace QIS_SIGNATURE_ABI {
+#define QIS_SIGNATURE_INLINE_NAMESPACE_END }
 #define QIS_SIGNATURE_EXTRA_ASSERTS
 #include <qis/signature.hpp>
 #if !QIS_SIGNATURE_USE_EXCEPTIONS

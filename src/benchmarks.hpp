@@ -1,4 +1,6 @@
 #pragma once
+#define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN inline namespace QIS_SIGNATURE_ABI {
+#define QIS_SIGNATURE_INLINE_NAMESPACE_END }
 #include <qis/signature.hpp>
 #include <benchmark/benchmark.h>
 #include <memory.hpp>
