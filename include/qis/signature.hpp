@@ -393,7 +393,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
 
 #if QIS_SIGNATURE_USE_AVX
 
-[[maybe_unused]] constexpr bool memcmp1(const char* a, const char* b) noexcept
+constexpr bool memcmp1(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -403,7 +403,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return a[0] == b[0];
 }
 
-[[maybe_unused]] inline bool memcmp2(const char* a, const char* b) noexcept
+inline bool memcmp2(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -415,7 +415,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return a16 == b16;
 }
 
-[[maybe_unused]] inline bool memcmp3(const char* a, const char* b) noexcept
+inline bool memcmp3(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -427,7 +427,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return (a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF);
 }
 
-[[maybe_unused]] inline bool memcmp4(const char* a, const char* b) noexcept
+inline bool memcmp4(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -439,7 +439,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return a32 == b32;
 }
 
-[[maybe_unused]] inline bool memcmp5(const char* a, const char* b) noexcept
+inline bool memcmp5(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -451,7 +451,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return ((a64 ^ b64) & 0x000000FFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] inline bool memcmp6(const char* a, const char* b) noexcept
+inline bool memcmp6(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -463,7 +463,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return ((a64 ^ b64) & 0x0000FFFFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] inline bool memcmp7(const char* a, const char* b) noexcept
+inline bool memcmp7(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -475,7 +475,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return ((a64 ^ b64) & 0x00FFFFFFFFFFFFFF) == 0;
 }
 
-[[maybe_unused]] inline bool memcmp8(const char* a, const char* b) noexcept
+inline bool memcmp8(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -487,7 +487,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return a64 == b64;
 }
 
-[[maybe_unused]] inline bool memcmp9(const char* a, const char* b) noexcept
+inline bool memcmp9(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -499,7 +499,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return (a64 == b64) && (a[8] == b[8]);
 }
 
-[[maybe_unused]] inline bool memcmp10(const char* a, const char* b) noexcept
+inline bool memcmp10(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -513,7 +513,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return (a64 == b64) && (a16 == b16);
 }
 
-[[maybe_unused]] inline bool memcmp11(const char* a, const char* b) noexcept
+inline bool memcmp11(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
@@ -527,7 +527,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return (a64 == b64) && ((a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF));
 }
 
-[[maybe_unused]] inline bool memcmp12(const char* a, const char* b) noexcept
+inline bool memcmp12(const char* a, const char* b) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(a);
