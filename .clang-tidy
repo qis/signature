@@ -38,12 +38,12 @@ performance-*,\
 readability-*,\
 -readability-else-after-return,\
 -readability-function-size,\
--readability-identifier-length"
+-readability-identifier-length,\
 -readability-implicit-bool-conversion,\
 -readability-magic-numbers,\
 -readability-named-parameter,\
 -readability-qualified-auto,\
--readability-uppercase-literal-suffix,
+-readability-uppercase-literal-suffix
 HeaderFilterRegex: '\.hpp$'
 AnalyzeTemporaryDtors: false
 FormatStyle: file
