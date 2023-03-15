@@ -28,6 +28,7 @@
 
 #pragma once
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string_view>
 
@@ -57,8 +58,6 @@
 
 #if QIS_SIGNATURE_USE_AVX
 #include <immintrin.h>
-#else
-#include <functional>
 #endif
 
 #if QIS_SIGNATURE_USE_TBB
@@ -96,14 +95,6 @@
 #define QIS_SIGNATURE_ABI v1
 #endif
 
-// TODO: Remove these when fully implemented.
-#include <tbb/parallel_for.h>
-#include <tbb/task.h>
-#include <algorithm>
-#include <atomic>
-#include <exception>
-#include <functional>
-
 namespace qis {
 inline namespace QIS_SIGNATURE_ABI {
 namespace detail::signature {
@@ -111,7 +102,7 @@ namespace detail::signature {
 constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
 
 template <bool mask>
-std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
+std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
 
 }  // namespace detail::signature
 
@@ -330,9 +321,9 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
     return signature::npos;
   }
   if (search.mask()) {
-    return detail::signature::scan<true>(s, size, p, k);
+    return detail::signature::scan_safe<true>(s, size, p, k);
   }
-  return detail::signature::scan<false>(s, size, p, k);
+  return detail::signature::scan_safe<false>(s, size, p, k);
 }
 
 namespace detail::signature {
@@ -355,7 +346,50 @@ constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 }
 
 template <bool mask>
-std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
+std::size_t find_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
+
+template <>
+inline std::size_t find_safe<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+{
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
+  const auto e = s + n;
+  if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
+    return i - s;
+  }
+  return qis::signature::npos;
+}
+
+template <>
+inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+{
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
+  std::size_t i = 0;
+  const auto m = p + k;
+  const auto compare = [&](char lhs, char rhs) noexcept {
+    if ((lhs & m[i++]) == rhs) {
+      return true;
+    }
+    i = 0;
+    return false;
+  };
+  const auto e = s + n;
+  if (const auto i = std::search(s, e, std::default_searcher(p, p + k, compare)); i != e) {
+    return i - s;
+  }
+  return qis::signature::npos;
+}
 
 #if QIS_SIGNATURE_USE_AVX
 
@@ -595,6 +629,9 @@ inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char*
   return qis::signature::npos;
 }
 
+template <bool mask>
+std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
+
 template <>
 inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
@@ -656,73 +693,15 @@ inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std:
 template <>
 inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  std::size_t i = 0;
-  const auto m = p + k;
-  const auto compare = [&](char lhs, char rhs) noexcept {
-    if ((lhs & m[i++]) == rhs) {
-      return true;
-    }
-    i = 0;
-    return false;
-  };
-  const auto e = s + n;
-  const auto searcher = std::default_searcher(p, p + k, compare);
-  if (const auto i = std::search(s, e, searcher); i != e) {
-    return i - s;
-  }
-  return qis::signature::npos;
+  return find_safe<true>(s, n, p, k);
 }
 
 #else
 
-template <>
-inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+template <bool mask>
+std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  const auto e = s + n;
-  if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
-    return i - s;
-  }
-  return qis::signature::npos;
-}
-
-template <>
-inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  std::size_t i = 0;
-  const auto m = p + k;
-  const auto compare = [&](char lhs, char rhs) noexcept {
-    if ((lhs & m[i++]) == rhs) {
-      return true;
-    }
-    i = 0;
-    return false;
-  };
-  const auto e = s + n;
-  if (const auto i = std::search(s, e, std::default_searcher(p, p + k, compare)); i != e) {
-    return i - s;
-  }
-  return qis::signature::npos;
+  return find_safe<mask>(s, n, p, k);
 }
 
 #endif
@@ -774,6 +753,30 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
   }
 #endif
   return find<mask>(s, n, p, k);
+}
+
+template <bool mask>
+std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+{
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(s);
+  assert(n);
+  assert(p);
+  assert(k);
+  assert(n >= k);
+#endif
+  const auto rest = std::max(std::size_t(64), k * 2);
+  if (n < rest * 2) {
+    return find_safe<mask>(s, n, p, k);
+  }
+  if (const auto pos = scan<mask>(s, n - rest, p, k); pos != qis::signature::npos) {
+    return pos;
+  }
+  const auto size = rest + k;
+  if (const auto pos = find_safe<mask>(s + n - size, size, p, k); pos != qis::signature::npos) {
+    return n - size + pos;
+  }
+  return qis::signature::npos;
 }
 
 }  // namespace detail::signature

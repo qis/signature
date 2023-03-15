@@ -695,8 +695,8 @@ QIS_TEST("memory access")
   check(mem::find());
   check(mem::scan());
 
-  //DWORD protect = 0;
-  //REQUIRE(VirtualProtect(end, si.dwPageSize, PAGE_NOACCESS, &protect));
+  DWORD protect = 0;
+  REQUIRE(VirtualProtect(end, si.dwPageSize, PAGE_NOACCESS, &protect));
 
   check(mem::find());
   check(mem::scan());
