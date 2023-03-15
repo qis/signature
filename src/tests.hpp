@@ -12,6 +12,11 @@
 #include <sstream>
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <memory>
+#endif
+
 #define QIS_TEST(name) TEST_CASE(QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI) ": " name)
 
 namespace QIS_SIGNATURE_ABI {
@@ -651,5 +656,52 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s5.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::signature::npos);
 }
+
+#ifdef _WIN32
+
+QIS_TEST("memory access")
+{
+  mem::initialize(std::vector{ 1_mb });
+  const auto m1mb = mem::get(1_mb);
+
+  SYSTEM_INFO si{};
+  GetSystemInfo(&si);
+  REQUIRE(si.dwPageSize >= 256);
+
+  const auto find = mem::find();
+  const auto scan = mem::scan();
+  qis::signature data(find);
+
+  std::shared_ptr<char> memory(
+    reinterpret_cast<char*>(VirtualAlloc(nullptr, si.dwPageSize * 2, MEM_COMMIT, PAGE_READWRITE)),
+    [&](auto address) noexcept {
+      VirtualFree(address, si.dwPageSize * 2, MEM_RELEASE);
+    });
+
+  auto begin = memory.get();
+  auto end = begin + si.dwPageSize;
+
+  const auto check = [&](std::string_view str) {
+    for (std::size_t i = 1; i < str.size() / 3 + 1; i++) {
+      qis::signature sig(str.substr(0, i * 3 - 1));
+      for (std::size_t size = 1; size < 256; size++) {
+        const auto mmax = end - size;
+        std::memcpy(mmax, m1mb.data(), size);
+        REQUIRE(qis::scan(mmax, size, sig) == qis::signature::npos);
+      }
+    }
+  };
+
+  check(mem::find());
+  check(mem::scan());
+
+  //DWORD protect = 0;
+  //REQUIRE(VirtualProtect(end, si.dwPageSize, PAGE_NOACCESS, &protect));
+
+  check(mem::find());
+  check(mem::scan());
+}
+
+#endif
 
 }  // namespace QIS_SIGNATURE_ABI
