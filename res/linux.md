@@ -10,55 +10,55 @@ Benchmark results sorted by scanned memory block sizes.
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 16 kb        1127 ns         1128 ns         4096
-find avx     noe 06 16 kb        1135 ns         1121 ns         4096
-find avx tbb     06 16 kb        1155 ns         1148 ns         4096
-find avx tbb noe 06 16 kb        1163 ns         1149 ns         4096
-find             06 16 kb        7818 ns         7853 ns         4096
-find         noe 06 16 kb        7826 ns         7858 ns         4096
-find     tbb     06 16 kb        6869 ns         6893 ns         4096
-find     tbb noe 06 16 kb        6867 ns         6886 ns         4096
-find avx         12 16 kb        1169 ns         1150 ns         4096
-find avx     noe 12 16 kb        1156 ns         1134 ns         4096
-find avx tbb     12 16 kb        1173 ns         1164 ns         4096
-find avx tbb noe 12 16 kb        1157 ns         1155 ns         4096
-find             12 16 kb        4446 ns         4486 ns         4096
-find         noe 12 16 kb        4361 ns         4388 ns         4096
-find     tbb     12 16 kb        6408 ns         6437 ns         4096
-find     tbb noe 12 16 kb        6272 ns         6309 ns         4096
-find avx         24 16 kb        1636 ns         1626 ns         4096
-find avx     noe 24 16 kb        1640 ns         1633 ns         4096
-find avx tbb     24 16 kb        1647 ns         1634 ns         4096
-find avx tbb noe 24 16 kb        1642 ns         1629 ns         4096
-find             24 16 kb        2640 ns         2663 ns         4096
-find         noe 24 16 kb        2647 ns         2679 ns         4096
-find     tbb     24 16 kb        6207 ns         6247 ns         4096
-find     tbb noe 24 16 kb        6247 ns         6272 ns         4096
+find avx         06 16 kb        1173 ns         1175 ns         4096
+find avx     noe 06 16 kb        1199 ns         1191 ns         4096
+find avx tbb     06 16 kb        1206 ns         1194 ns         4096
+find avx tbb noe 06 16 kb        1188 ns         1174 ns         4096
+find             06 16 kb        7488 ns         7484 ns         4096
+find         noe 06 16 kb        7464 ns         7467 ns         4096
+find     tbb     06 16 kb        7233 ns         7239 ns         4096
+find     tbb noe 06 16 kb        7180 ns         7190 ns         4096
+find avx         12 16 kb        1423 ns         1449 ns         4096
+find avx     noe 12 16 kb        1236 ns         1220 ns         4096
+find avx tbb     12 16 kb        1246 ns         1236 ns         4096
+find avx tbb noe 12 16 kb        1266 ns         1244 ns         4096
+find             12 16 kb        4226 ns         4213 ns         4096
+find         noe 12 16 kb        4257 ns         4253 ns         4096
+find     tbb     12 16 kb        6587 ns         6587 ns         4096
+find     tbb noe 12 16 kb        6614 ns         6629 ns         4096
+find avx         24 16 kb        1704 ns         1689 ns         4096
+find avx     noe 24 16 kb        1718 ns         1702 ns         4096
+find avx tbb     24 16 kb        1728 ns         1720 ns         4096
+find avx tbb noe 24 16 kb        1758 ns         1756 ns         4096
+find             24 16 kb        2836 ns         2819 ns         4096
+find         noe 24 16 kb        2752 ns         2747 ns         4096
+find     tbb     24 16 kb        6610 ns         6600 ns         4096
+find     tbb noe 24 16 kb        6687 ns         6689 ns         4096
 
-scan avx         06 16 kb        6331 ns         6402 ns         4096
-scan avx     noe 06 16 kb        6259 ns         6296 ns         4096
-scan avx tbb     06 16 kb        6090 ns         6174 ns         4096
-scan avx tbb noe 06 16 kb        6249 ns         6252 ns         4096
-scan             06 16 kb        5922 ns         5963 ns         4096
-scan         noe 06 16 kb        5747 ns         5783 ns         4096
-scan     tbb     06 16 kb        6173 ns         6205 ns         4096
-scan     tbb noe 06 16 kb        6240 ns         6278 ns         4096
-scan avx         12 16 kb        6020 ns         6075 ns         4096
-scan avx     noe 12 16 kb        5838 ns         5884 ns         4096
-scan avx tbb     12 16 kb        5833 ns         5876 ns         4096
-scan avx tbb noe 12 16 kb        6039 ns         6081 ns         4096
-scan             12 16 kb        6060 ns         6106 ns         4096
-scan         noe 12 16 kb        6134 ns         6172 ns         4096
-scan     tbb     12 16 kb        6032 ns         6073 ns         4096
-scan     tbb noe 12 16 kb        6093 ns         6121 ns         4096
-scan avx         24 16 kb        6094 ns         6147 ns         4096
-scan avx     noe 24 16 kb        6102 ns         6119 ns         4096
-scan avx tbb     24 16 kb        6147 ns         6179 ns         4096
-scan avx tbb noe 24 16 kb        6174 ns         6218 ns         4096
-scan             24 16 kb        6116 ns         6147 ns         4096
-scan         noe 24 16 kb        5796 ns         5842 ns         4096
-scan     tbb     24 16 kb        6173 ns         6207 ns         4096
-scan     tbb noe 24 16 kb        6026 ns         6063 ns         4096
+scan avx         06 16 kb        6307 ns         6339 ns         4096
+scan avx     noe 06 16 kb        8431 ns         8492 ns         4096
+scan avx tbb     06 16 kb        6099 ns         6126 ns         4096
+scan avx tbb noe 06 16 kb        6070 ns         6111 ns         4096
+scan             06 16 kb        6093 ns         6122 ns         4096
+scan         noe 06 16 kb        6124 ns         6152 ns         4096
+scan     tbb     06 16 kb        6563 ns         6603 ns         4096
+scan     tbb noe 06 16 kb        6712 ns         6753 ns         4096
+scan avx         12 16 kb        6071 ns         6115 ns         4096
+scan avx     noe 12 16 kb        8386 ns         8434 ns         4096
+scan avx tbb     12 16 kb        6106 ns         6144 ns         4096
+scan avx tbb noe 12 16 kb        6083 ns         6125 ns         4096
+scan             12 16 kb        5870 ns         5910 ns         4096
+scan         noe 12 16 kb        5728 ns         5757 ns         4096
+scan     tbb     12 16 kb        6420 ns         6453 ns         4096
+scan     tbb noe 12 16 kb        6770 ns         6800 ns         4096
+scan avx         24 16 kb        6072 ns         6113 ns         4096
+scan avx     noe 24 16 kb        7970 ns         8037 ns         4096
+scan avx tbb     24 16 kb        5901 ns         5926 ns         4096
+scan avx tbb noe 24 16 kb        6079 ns         6127 ns         4096
+scan             24 16 kb        6121 ns         6158 ns         4096
+scan         noe 24 16 kb        6093 ns         6130 ns         4096
+scan     tbb     24 16 kb        6420 ns         6458 ns         4096
+scan     tbb noe 24 16 kb        7004 ns         7042 ns         4096
 ```
 
 </details>
@@ -70,55 +70,55 @@ scan     tbb noe 24 16 kb        6026 ns         6063 ns         4096
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 64 kb        2647 ns         2643 ns         4096
-find avx     noe 06 64 kb        2522 ns         2530 ns         4096
-find avx tbb     06 64 kb        2552 ns         2547 ns         4096
-find avx tbb noe 06 64 kb        2440 ns         2464 ns         4096
-find             06 64 kb       28347 ns        28432 ns         4096
-find         noe 06 64 kb       27097 ns        27172 ns         4096
-find     tbb     06 64 kb        9219 ns         9252 ns         4096
-find     tbb noe 06 64 kb        9498 ns         9531 ns         4096
-find avx         12 64 kb        2595 ns         2641 ns         4096
-find avx     noe 12 64 kb        2613 ns         2621 ns         4096
-find avx tbb     12 64 kb        2578 ns         2586 ns         4096
-find avx tbb noe 12 64 kb        2454 ns         2454 ns         4096
-find             12 64 kb       14032 ns        14094 ns         4096
-find         noe 12 64 kb       13971 ns        14026 ns         4096
-find     tbb     12 64 kb        7830 ns         7858 ns         4096
-find     tbb noe 12 64 kb        7737 ns         7751 ns         4096
-find avx         24 64 kb        4062 ns         4042 ns         4096
-find avx     noe 24 64 kb        4006 ns         3986 ns         4096
-find avx tbb     24 64 kb        4426 ns         4427 ns         4096
-find avx tbb noe 24 64 kb        4116 ns         4128 ns         4096
-find             24 64 kb        7994 ns         8032 ns         4096
-find         noe 24 64 kb        7887 ns         7941 ns         4096
-find     tbb     24 64 kb        7381 ns         7409 ns         4096
-find     tbb noe 24 64 kb        7081 ns         7111 ns         4096
+find avx         06 64 kb        2655 ns         2642 ns         4096
+find avx     noe 06 64 kb        2653 ns         2642 ns         4096
+find avx tbb     06 64 kb        2629 ns         2622 ns         4096
+find avx tbb noe 06 64 kb        2583 ns         2590 ns         4096
+find             06 64 kb       27149 ns        27171 ns         4096
+find         noe 06 64 kb       27400 ns        27412 ns         4096
+find     tbb     06 64 kb        9743 ns         9744 ns         4096
+find     tbb noe 06 64 kb        9757 ns         9770 ns         4096
+find avx         12 64 kb        2699 ns         2696 ns         4096
+find avx     noe 12 64 kb        2704 ns         2699 ns         4096
+find avx tbb     12 64 kb        2730 ns         2726 ns         4096
+find avx tbb noe 12 64 kb        2577 ns         2587 ns         4096
+find             12 64 kb       14842 ns        14840 ns         4096
+find         noe 12 64 kb       14696 ns        14706 ns         4096
+find     tbb     12 64 kb        8206 ns         8214 ns         4096
+find     tbb noe 12 64 kb        8224 ns         8262 ns         4096
+find avx         24 64 kb        4347 ns         4331 ns         4096
+find avx     noe 24 64 kb        4223 ns         4222 ns         4096
+find avx tbb     24 64 kb        3998 ns         3993 ns         4096
+find avx tbb noe 24 64 kb        4002 ns         4012 ns         4096
+find             24 64 kb        7750 ns         7743 ns         4096
+find         noe 24 64 kb        7716 ns         7714 ns         4096
+find     tbb     24 64 kb        7575 ns         7583 ns         4096
+find     tbb noe 24 64 kb        7488 ns         7497 ns         4096
 
-scan avx         06 64 kb       21563 ns        21630 ns         4096
-scan avx     noe 06 64 kb       22039 ns        22109 ns         4096
-scan avx tbb     06 64 kb       20588 ns        20668 ns         4096
-scan avx tbb noe 06 64 kb       20646 ns        20703 ns         4096
-scan             06 64 kb       20569 ns        20636 ns         4096
-scan         noe 06 64 kb       20826 ns        20919 ns         4096
-scan     tbb     06 64 kb        9279 ns         9315 ns         4096
-scan     tbb noe 06 64 kb        9174 ns         9206 ns         4096
-scan avx         12 64 kb       21695 ns        21746 ns         4096
-scan avx     noe 12 64 kb       20726 ns        20790 ns         4096
-scan avx tbb     12 64 kb       20653 ns        20716 ns         4096
-scan avx tbb noe 12 64 kb       20735 ns        20798 ns         4096
-scan             12 64 kb       20656 ns        20722 ns         4096
-scan         noe 12 64 kb       20629 ns        20710 ns         4096
-scan     tbb     12 64 kb        9267 ns         9292 ns         4096
-scan     tbb noe 12 64 kb        9146 ns         9182 ns         4096
-scan avx         24 64 kb       21883 ns        21975 ns         4096
-scan avx     noe 24 64 kb       21311 ns        21392 ns         4096
-scan avx tbb     24 64 kb       20685 ns        20756 ns         4096
-scan avx tbb noe 24 64 kb       20849 ns        20921 ns         4096
-scan             24 64 kb       20608 ns        20677 ns         4096
-scan         noe 24 64 kb       20848 ns        20923 ns         4096
-scan     tbb     24 64 kb        9290 ns         9314 ns         4096
-scan     tbb noe 24 64 kb        9101 ns         9126 ns         4096
+scan avx         06 64 kb       21355 ns        21420 ns         4096
+scan avx     noe 06 64 kb       30215 ns        30287 ns         4096
+scan avx tbb     06 64 kb       20751 ns        20814 ns         4096
+scan avx tbb noe 06 64 kb       20665 ns        20716 ns         4096
+scan             06 64 kb       20638 ns        20700 ns         4096
+scan         noe 06 64 kb       20744 ns        20802 ns         4096
+scan     tbb     06 64 kb       10640 ns        10678 ns         4096
+scan     tbb noe 06 64 kb       11558 ns        11595 ns         4096
+scan avx         12 64 kb       21438 ns        21501 ns         4096
+scan avx     noe 12 64 kb       29252 ns        29311 ns         4096
+scan avx tbb     12 64 kb       20714 ns        20777 ns         4096
+scan avx tbb noe 12 64 kb       20582 ns        20659 ns         4096
+scan             12 64 kb       20601 ns        20663 ns         4096
+scan         noe 12 64 kb       20606 ns        20661 ns         4096
+scan     tbb     12 64 kb       10394 ns        10436 ns         4096
+scan     tbb noe 12 64 kb       11880 ns        11888 ns         4096
+scan avx         24 64 kb       21849 ns        21915 ns         4096
+scan avx     noe 24 64 kb       30504 ns        30562 ns         4096
+scan avx tbb     24 64 kb       20674 ns        20730 ns         4096
+scan avx tbb noe 24 64 kb       20807 ns        20864 ns         4096
+scan             24 64 kb       21049 ns        21129 ns         4096
+scan         noe 24 64 kb       21891 ns        21949 ns         4096
+scan     tbb     24 64 kb       10563 ns        10598 ns         4096
+scan     tbb noe 24 64 kb       11468 ns        11504 ns         4096
 ```
 
 </details>
@@ -130,55 +130,55 @@ scan     tbb noe 24 64 kb        9101 ns         9126 ns         4096
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 256 kb       8695 ns         8681 ns         2048
-find avx     noe 06 256 kb       8149 ns         8146 ns         2048
-find avx tbb     06 256 kb       8069 ns         8061 ns         2048
-find avx tbb noe 06 256 kb       8045 ns         8051 ns         2048
-find             06 256 kb     105902 ns       106003 ns         2048
-find         noe 06 256 kb     105214 ns       105307 ns         2048
-find     tbb     06 256 kb      20441 ns        20351 ns         2048
-find     tbb noe 06 256 kb      19937 ns        19838 ns         2048
-find avx         12 256 kb       8511 ns         8507 ns         2048
-find avx     noe 12 256 kb       7980 ns         7975 ns         2048
-find avx tbb     12 256 kb       7693 ns         7693 ns         2048
-find avx tbb noe 12 256 kb       7747 ns         7746 ns         2048
-find             12 256 kb      53499 ns        53559 ns         2048
-find         noe 12 256 kb      53382 ns        53473 ns         2048
-find     tbb     12 256 kb      14070 ns        13956 ns         2048
-find     tbb noe 12 256 kb      15261 ns        15192 ns         2048
-find avx         24 256 kb      14654 ns        14672 ns         2048
-find avx     noe 24 256 kb      13301 ns        13285 ns         2048
-find avx tbb     24 256 kb      13431 ns        13436 ns         2048
-find avx tbb noe 24 256 kb      13408 ns        13411 ns         2048
-find             24 256 kb      27603 ns        27668 ns         2048
-find         noe 24 256 kb      27846 ns        27913 ns         2048
-find     tbb     24 256 kb      11518 ns        11419 ns         2048
-find     tbb noe 24 256 kb      11421 ns        11333 ns         2048
+find avx         06 256 kb       8800 ns         8805 ns         2048
+find avx     noe 06 256 kb       8332 ns         8340 ns         2048
+find avx tbb     06 256 kb       8363 ns         8352 ns         2048
+find avx tbb noe 06 256 kb       8230 ns         8238 ns         2048
+find             06 256 kb     105497 ns       105552 ns         2048
+find         noe 06 256 kb     105519 ns       105558 ns         2048
+find     tbb     06 256 kb      20345 ns        20221 ns         2048
+find     tbb noe 06 256 kb      20030 ns        19921 ns         2048
+find avx         12 256 kb       8601 ns         8611 ns         2048
+find avx     noe 12 256 kb       8055 ns         8069 ns         2048
+find avx tbb     12 256 kb       8348 ns         8348 ns         2048
+find avx tbb noe 12 256 kb       8386 ns         8398 ns         2048
+find             12 256 kb      54326 ns        54355 ns         2048
+find         noe 12 256 kb      53531 ns        53557 ns         2048
+find     tbb     12 256 kb      15254 ns        15105 ns         2048
+find     tbb noe 12 256 kb      14597 ns        14498 ns         2048
+find avx         24 256 kb      14659 ns        14664 ns         2048
+find avx     noe 24 256 kb      14446 ns        14463 ns         2048
+find avx tbb     24 256 kb      14571 ns        14584 ns         2048
+find avx tbb noe 24 256 kb      13789 ns        13780 ns         2048
+find             24 256 kb      27771 ns        27794 ns         2048
+find         noe 24 256 kb      27731 ns        27766 ns         2048
+find     tbb     24 256 kb      12106 ns        11991 ns         2048
+find     tbb noe 24 256 kb      12059 ns        11949 ns         2048
 
-scan avx         06 256 kb      83553 ns        83643 ns         2048
-scan avx     noe 06 256 kb      81715 ns        81773 ns         2048
-scan avx tbb     06 256 kb      80382 ns        80456 ns         2048
-scan avx tbb noe 06 256 kb      80511 ns        80579 ns         2048
-scan             06 256 kb      80061 ns        80119 ns         2048
-scan         noe 06 256 kb      81402 ns        81465 ns         2048
-scan     tbb     06 256 kb      22389 ns        22294 ns         2048
-scan     tbb noe 06 256 kb      22235 ns        22149 ns         2048
-scan avx         12 256 kb      82944 ns        83006 ns         2048
-scan avx     noe 12 256 kb      80697 ns        80778 ns         2048
-scan avx tbb     12 256 kb      80447 ns        80535 ns         2048
-scan avx tbb noe 12 256 kb      80486 ns        80554 ns         2048
-scan             12 256 kb      80221 ns        80279 ns         2048
-scan         noe 12 256 kb      81605 ns        81671 ns         2048
-scan     tbb     12 256 kb      21971 ns        21876 ns         2048
-scan     tbb noe 12 256 kb      22412 ns        22324 ns         2048
-scan avx         24 256 kb      82540 ns        82626 ns         2048
-scan avx     noe 24 256 kb      80519 ns        80596 ns         2048
-scan avx tbb     24 256 kb      80436 ns        80498 ns         2048
-scan avx tbb noe 24 256 kb      80380 ns        80457 ns         2048
-scan             24 256 kb      81119 ns        81199 ns         2048
-scan         noe 24 256 kb      80563 ns        80629 ns         2048
-scan     tbb     24 256 kb      21799 ns        21679 ns         2048
-scan     tbb noe 24 256 kb      21919 ns        21812 ns         2048
+scan avx         06 256 kb      84624 ns        84712 ns         2048
+scan avx     noe 06 256 kb     115341 ns       115423 ns         2048
+scan avx tbb     06 256 kb      80824 ns        80910 ns         2048
+scan avx tbb noe 06 256 kb      80105 ns        80183 ns         2048
+scan             06 256 kb      81044 ns        81127 ns         2048
+scan         noe 06 256 kb      80993 ns        81078 ns         2048
+scan     tbb     06 256 kb      26355 ns        26279 ns         2048
+scan     tbb noe 06 256 kb      30584 ns        30519 ns         2048
+scan avx         12 256 kb      81893 ns        81973 ns         2048
+scan avx     noe 12 256 kb     114408 ns       114477 ns         2048
+scan avx tbb     12 256 kb      80435 ns        80518 ns         2048
+scan avx tbb noe 12 256 kb      80154 ns        80207 ns         2048
+scan             12 256 kb      83587 ns        83664 ns         2048
+scan         noe 12 256 kb      80639 ns        80711 ns         2048
+scan     tbb     12 256 kb      26647 ns        26564 ns         2048
+scan     tbb noe 12 256 kb      30950 ns        30878 ns         2048
+scan avx         24 256 kb      82301 ns        82384 ns         2048
+scan avx     noe 24 256 kb     114243 ns       114329 ns         2048
+scan avx tbb     24 256 kb      80589 ns        80660 ns         2048
+scan avx tbb noe 24 256 kb      80021 ns        80085 ns         2048
+scan             24 256 kb      85421 ns        85482 ns         2048
+scan         noe 24 256 kb      81670 ns        81725 ns         2048
+scan     tbb     24 256 kb      26505 ns        26431 ns         2048
+scan     tbb noe 24 256 kb      30651 ns        30578 ns         2048
 ```
 
 </details>
@@ -190,55 +190,55 @@ scan     tbb noe 24 256 kb      21919 ns        21812 ns         2048
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 1 mb        55400 ns        55413 ns         1024
-find avx     noe 06 1 mb        54294 ns        54306 ns         1024
-find avx tbb     06 1 mb        42727 ns        42546 ns         1024
-find avx tbb noe 06 1 mb        40657 ns        40518 ns         1024
-find             06 1 mb       427423 ns       427598 ns         1024
-find         noe 06 1 mb       424268 ns       424452 ns         1024
-find     tbb     06 1 mb        56890 ns        56768 ns         1024
-find     tbb noe 06 1 mb        54067 ns        53970 ns         1024
-find avx         12 1 mb        55049 ns        55069 ns         1024
-find avx     noe 12 1 mb        53844 ns        53882 ns         1024
-find avx tbb     12 1 mb        42994 ns        42865 ns         1024
-find avx tbb noe 12 1 mb        40891 ns        40797 ns         1024
-find             12 1 mb       219081 ns       219185 ns         1024
-find         noe 12 1 mb       215788 ns       215896 ns         1024
-find     tbb     12 1 mb        44659 ns        44541 ns         1024
-find     tbb noe 12 1 mb        45529 ns        45440 ns         1024
-find avx         24 1 mb        66127 ns        66160 ns         1024
-find avx     noe 24 1 mb        64530 ns        64550 ns         1024
-find avx tbb     24 1 mb        42558 ns        42500 ns         1024
-find avx tbb noe 24 1 mb        41266 ns        41108 ns         1024
-find             24 1 mb       117607 ns       117705 ns         1024
-find         noe 24 1 mb       113809 ns       113902 ns         1024
-find     tbb     24 1 mb        45323 ns        45221 ns         1024
-find     tbb noe 24 1 mb        42710 ns        42621 ns         1024
+find avx         06 1 mb        56625 ns        56649 ns         1024
+find avx     noe 06 1 mb        55676 ns        55669 ns         1024
+find avx tbb     06 1 mb        42358 ns        42184 ns         1024
+find avx tbb noe 06 1 mb        41254 ns        41122 ns         1024
+find             06 1 mb       426121 ns       426259 ns         1024
+find         noe 06 1 mb       423493 ns       423591 ns         1024
+find     tbb     06 1 mb        56988 ns        56877 ns         1024
+find     tbb noe 06 1 mb        54407 ns        54300 ns         1024
+find avx         12 1 mb        56190 ns        56192 ns         1024
+find avx     noe 12 1 mb        55658 ns        55683 ns         1024
+find avx tbb     12 1 mb        42225 ns        42089 ns         1024
+find avx tbb noe 12 1 mb        41664 ns        41528 ns         1024
+find             12 1 mb       219557 ns       219633 ns         1024
+find         noe 12 1 mb       221783 ns       221840 ns         1024
+find     tbb     12 1 mb        45573 ns        45413 ns         1024
+find     tbb noe 12 1 mb        46854 ns        45937 ns         1024
+find avx         24 1 mb        68703 ns        68719 ns         1024
+find avx     noe 24 1 mb        66920 ns        66950 ns         1024
+find avx tbb     24 1 mb        42828 ns        42661 ns         1024
+find avx tbb noe 24 1 mb        41969 ns        41779 ns         1024
+find             24 1 mb       116626 ns       116669 ns         1024
+find         noe 24 1 mb       113533 ns       113566 ns         1024
+find     tbb     24 1 mb        45000 ns        44847 ns         1024
+find     tbb noe 24 1 mb        44475 ns        44336 ns         1024
 
-scan avx         06 1 mb       327903 ns       328046 ns         1024
-scan avx     noe 06 1 mb       324964 ns       325094 ns         1024
-scan avx tbb     06 1 mb        83808 ns        83731 ns         1024
-scan avx tbb noe 06 1 mb        67907 ns        67808 ns         1024
-scan             06 1 mb       326550 ns       326694 ns         1024
-scan         noe 06 1 mb       322983 ns       323132 ns         1024
-scan     tbb     06 1 mb        67184 ns        67102 ns         1024
-scan     tbb noe 06 1 mb        66711 ns        66643 ns         1024
-scan avx         12 1 mb       328250 ns       328390 ns         1024
-scan avx     noe 12 1 mb       324042 ns       324182 ns         1024
-scan avx tbb     12 1 mb        85816 ns        85058 ns         1024
-scan avx tbb noe 12 1 mb        66281 ns        66128 ns         1024
-scan             12 1 mb       326997 ns       327140 ns         1024
-scan         noe 12 1 mb       323852 ns       323976 ns         1024
-scan     tbb     12 1 mb        68640 ns        68542 ns         1024
-scan     tbb noe 12 1 mb        66229 ns        66158 ns         1024
-scan avx         24 1 mb       325865 ns       326011 ns         1024
-scan avx     noe 24 1 mb       324149 ns       324278 ns         1024
-scan avx tbb     24 1 mb        85905 ns        85817 ns         1024
-scan avx tbb noe 24 1 mb        67249 ns        67114 ns         1024
-scan             24 1 mb       332101 ns       332250 ns         1024
-scan         noe 24 1 mb       322091 ns       322227 ns         1024
-scan     tbb     24 1 mb        68887 ns        68633 ns         1024
-scan     tbb noe 24 1 mb        68755 ns        68679 ns         1024
+scan avx         06 1 mb       330212 ns       330349 ns         1024
+scan avx     noe 06 1 mb       458738 ns       458933 ns         1024
+scan avx tbb     06 1 mb        67670 ns        67551 ns         1024
+scan avx tbb noe 06 1 mb        69708 ns        68851 ns         1024
+scan             06 1 mb       329804 ns       329944 ns         1024
+scan         noe 06 1 mb       323730 ns       323790 ns         1024
+scan     tbb     06 1 mb        88267 ns        87374 ns         1024
+scan     tbb noe 06 1 mb       101367 ns       101283 ns         1024
+scan avx         12 1 mb       327152 ns       327274 ns         1024
+scan avx     noe 12 1 mb       457474 ns       457625 ns         1024
+scan avx tbb     12 1 mb        68564 ns        68442 ns         1024
+scan avx tbb noe 12 1 mb        66770 ns        66648 ns         1024
+scan             12 1 mb       327578 ns       327719 ns         1024
+scan         noe 12 1 mb       322983 ns       323103 ns         1024
+scan     tbb     12 1 mb        87088 ns        86998 ns         1024
+scan     tbb noe 12 1 mb       102866 ns       102849 ns         1024
+scan avx         24 1 mb       327408 ns       327548 ns         1024
+scan avx     noe 24 1 mb       457097 ns       457282 ns         1024
+scan avx tbb     24 1 mb        69296 ns        69185 ns         1024
+scan avx tbb noe 24 1 mb        67352 ns        67255 ns         1024
+scan             24 1 mb       330010 ns       330147 ns         1024
+scan         noe 24 1 mb       323482 ns       323606 ns         1024
+scan     tbb     24 1 mb        85820 ns        85711 ns         1024
+scan     tbb noe 24 1 mb       102577 ns       102524 ns         1024
 ```
 
 </details>
@@ -250,55 +250,55 @@ scan     tbb noe 24 1 mb        68755 ns        68679 ns         1024
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 4 mb       207530 ns       207354 ns          512
-find avx     noe 06 4 mb       217833 ns       217597 ns          512
-find avx tbb     06 4 mb       220828 ns       220611 ns          512
-find avx tbb noe 06 4 mb       206013 ns       205868 ns          512
-find             06 4 mb      1707514 ns      1707528 ns          512
-find         noe 06 4 mb      1687960 ns      1685843 ns          512
-find     tbb     06 4 mb       332288 ns       330398 ns          512
-find     tbb noe 06 4 mb       302094 ns       301947 ns          512
-find avx         12 4 mb       222134 ns       221935 ns          512
-find avx     noe 12 4 mb       216850 ns       216662 ns          512
-find avx tbb     12 4 mb       217533 ns       217452 ns          512
-find avx tbb noe 12 4 mb       202379 ns       202246 ns          512
-find             12 4 mb       878104 ns       878169 ns          512
-find         noe 12 4 mb       859248 ns       859287 ns          512
-find     tbb     12 4 mb       282760 ns       282621 ns          512
-find     tbb noe 12 4 mb       259759 ns       259630 ns          512
-find avx         24 4 mb       267811 ns       267611 ns          512
-find avx     noe 24 4 mb       263105 ns       262915 ns          512
-find avx tbb     24 4 mb       231906 ns       231745 ns          512
-find avx tbb noe 24 4 mb       214876 ns       214697 ns          512
-find             24 4 mb       469252 ns       469156 ns          512
-find         noe 24 4 mb       452857 ns       452745 ns          512
-find     tbb     24 4 mb       253151 ns       253069 ns          512
-find     tbb noe 24 4 mb       231403 ns       230938 ns          512
+find avx         06 4 mb       218991 ns       218936 ns          512
+find avx     noe 06 4 mb       225991 ns       225823 ns          512
+find avx tbb     06 4 mb       226735 ns       226526 ns          512
+find avx tbb noe 06 4 mb       206966 ns       206676 ns          512
+find             06 4 mb      1712340 ns      1712476 ns          512
+find         noe 06 4 mb      1686735 ns      1684763 ns          512
+find     tbb     06 4 mb       322980 ns       322738 ns          512
+find     tbb noe 06 4 mb       300121 ns       299934 ns          512
+find avx         12 4 mb       228636 ns       228527 ns          512
+find avx     noe 12 4 mb       223359 ns       223231 ns          512
+find avx tbb     12 4 mb       219359 ns       219156 ns          512
+find avx tbb noe 12 4 mb       203221 ns       202992 ns          512
+find             12 4 mb       883594 ns       883747 ns          512
+find         noe 12 4 mb       863763 ns       864003 ns          512
+find     tbb     12 4 mb       276453 ns       276316 ns          512
+find     tbb noe 12 4 mb       244397 ns       244202 ns          512
+find avx         24 4 mb       277058 ns       276986 ns          512
+find avx     noe 24 4 mb       263974 ns       263881 ns          512
+find avx tbb     24 4 mb       231367 ns       231241 ns          512
+find avx tbb noe 24 4 mb       225198 ns       225018 ns          512
+find             24 4 mb       465189 ns       465197 ns          512
+find         noe 24 4 mb       453838 ns       453840 ns          512
+find     tbb     24 4 mb       262648 ns       262448 ns          512
+find     tbb noe 24 4 mb       241589 ns       239953 ns          512
 
-scan avx         06 4 mb      1309035 ns      1309118 ns          512
-scan avx     noe 06 4 mb      1303129 ns      1303173 ns          512
-scan avx tbb     06 4 mb       408192 ns       408026 ns          512
-scan avx tbb noe 06 4 mb       308774 ns       308643 ns          512
-scan             06 4 mb      1296455 ns      1296508 ns          512
-scan         noe 06 4 mb      1303081 ns      1303132 ns          512
-scan     tbb     06 4 mb       368412 ns       368238 ns          512
-scan     tbb noe 06 4 mb       337175 ns       337006 ns          512
-scan avx         12 4 mb      1308730 ns      1308770 ns          512
-scan avx     noe 12 4 mb      1292522 ns      1292636 ns          512
-scan avx tbb     12 4 mb       399982 ns       399831 ns          512
-scan avx tbb noe 12 4 mb       310038 ns       309895 ns          512
-scan             12 4 mb      1294232 ns      1294301 ns          512
-scan         noe 12 4 mb      1292329 ns      1292387 ns          512
-scan     tbb     12 4 mb       369517 ns       369428 ns          512
-scan     tbb noe 12 4 mb       347985 ns       347783 ns          512
-scan avx         24 4 mb      1308147 ns      1308202 ns          512
-scan avx     noe 24 4 mb      1295094 ns      1295186 ns          512
-scan avx tbb     24 4 mb       411995 ns       411949 ns          512
-scan avx tbb noe 24 4 mb       309072 ns       308867 ns          512
-scan             24 4 mb      1297078 ns      1297146 ns          512
-scan         noe 24 4 mb      1289326 ns      1289310 ns          512
-scan     tbb     24 4 mb       366985 ns       366852 ns          512
-scan     tbb noe 24 4 mb       349004 ns       348847 ns          512
+scan avx         06 4 mb      1307715 ns      1307872 ns          512
+scan avx     noe 06 4 mb      1839355 ns      1839528 ns          512
+scan avx tbb     06 4 mb       362361 ns       362159 ns          512
+scan avx tbb noe 06 4 mb       326843 ns       326593 ns          512
+scan             06 4 mb      1303869 ns      1304065 ns          512
+scan         noe 06 4 mb      1307954 ns      1308089 ns          512
+scan     tbb     06 4 mb       405499 ns       405213 ns          512
+scan     tbb noe 06 4 mb       448354 ns       448161 ns          512
+scan avx         12 4 mb      1327848 ns      1327847 ns          512
+scan avx     noe 12 4 mb      1828694 ns      1828952 ns          512
+scan avx tbb     12 4 mb       371661 ns       371547 ns          512
+scan avx tbb noe 12 4 mb       350713 ns       350452 ns          512
+scan             12 4 mb      1318759 ns      1318942 ns          512
+scan         noe 12 4 mb      1291664 ns      1291884 ns          512
+scan     tbb     12 4 mb       406965 ns       406720 ns          512
+scan     tbb noe 12 4 mb       448635 ns       448492 ns          512
+scan avx         24 4 mb      1306264 ns      1306443 ns          512
+scan avx     noe 24 4 mb      1829132 ns      1829294 ns          512
+scan avx tbb     24 4 mb       371997 ns       370143 ns          512
+scan avx tbb noe 24 4 mb       336047 ns       335835 ns          512
+scan             24 4 mb      1325046 ns      1325397 ns          512
+scan         noe 24 4 mb      1296976 ns      1297163 ns          512
+scan     tbb     24 4 mb       429898 ns       429717 ns          512
+scan     tbb noe 24 4 mb       455794 ns       455576 ns          512
 ```
 
 </details>
@@ -310,55 +310,55 @@ scan     tbb noe 24 4 mb       349004 ns       348847 ns          512
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 16 mb      845856 ns       845880 ns           64
-find avx     noe 06 16 mb      836592 ns       836612 ns           64
-find avx tbb     06 16 mb      688808 ns       688758 ns           64
-find avx tbb noe 06 16 mb      679816 ns       679727 ns           64
-find             06 16 mb     6830859 ns      6830802 ns           64
-find         noe 06 16 mb     6721709 ns      6721594 ns           64
-find     tbb     06 16 mb      920802 ns       921197 ns           64
-find     tbb noe 06 16 mb      907986 ns       907748 ns           64
-find avx         12 16 mb      863656 ns       863622 ns           64
-find avx     noe 12 16 mb      849023 ns       848844 ns           64
-find avx tbb     12 16 mb      690009 ns       687212 ns           64
-find avx tbb noe 12 16 mb      678228 ns       678116 ns           64
-find             12 16 mb     3528900 ns      3528394 ns           64
-find         noe 12 16 mb     3432950 ns      3432898 ns           64
-find     tbb     12 16 mb      768159 ns       768450 ns           64
-find     tbb noe 12 16 mb      767959 ns       768036 ns           64
-find avx         24 16 mb     1079261 ns      1079409 ns           64
-find avx     noe 24 16 mb     1052248 ns      1052297 ns           64
-find avx tbb     24 16 mb      693537 ns       693470 ns           64
-find avx tbb noe 24 16 mb      694197 ns       694094 ns           64
-find             24 16 mb     1848856 ns      1848845 ns           64
-find         noe 24 16 mb     1806405 ns      1806384 ns           64
-find     tbb     24 16 mb      738856 ns       738763 ns           64
-find     tbb noe 24 16 mb      731523 ns       731178 ns           64
+find avx         06 16 mb      810834 ns       810806 ns           64
+find avx     noe 06 16 mb      848616 ns       848723 ns           64
+find avx tbb     06 16 mb      680658 ns       680517 ns           64
+find avx tbb noe 06 16 mb      684553 ns       684381 ns           64
+find             06 16 mb     6789620 ns      6789567 ns           64
+find         noe 06 16 mb     6726637 ns      6726298 ns           64
+find     tbb     06 16 mb      917141 ns       917642 ns           64
+find     tbb noe 06 16 mb      915531 ns       915394 ns           64
+find avx         12 16 mb      864727 ns       864684 ns           64
+find avx     noe 12 16 mb      847273 ns       847300 ns           64
+find avx tbb     12 16 mb      700988 ns       694912 ns           64
+find avx tbb noe 12 16 mb      683622 ns       683272 ns           64
+find             12 16 mb     3468098 ns      3468016 ns           64
+find         noe 12 16 mb     3431891 ns      3431788 ns           64
+find     tbb     12 16 mb      775659 ns       775664 ns           64
+find     tbb noe 12 16 mb      769569 ns       769541 ns           64
+find avx         24 16 mb     1097914 ns      1097906 ns           64
+find avx     noe 24 16 mb     1065358 ns      1065411 ns           64
+find avx tbb     24 16 mb      701809 ns       701644 ns           64
+find avx tbb noe 24 16 mb      692997 ns       692856 ns           64
+find             24 16 mb     1850977 ns      1850758 ns           64
+find         noe 24 16 mb     1799795 ns      1799745 ns           64
+find     tbb     24 16 mb      738058 ns       737900 ns           64
+find     tbb noe 24 16 mb      726834 ns       726656 ns           64
 
-scan avx         06 16 mb     5237870 ns      5237847 ns           64
-scan avx     noe 06 16 mb     5155995 ns      5155989 ns           64
-scan avx tbb     06 16 mb     1295714 ns      1295592 ns           64
-scan avx tbb noe 06 16 mb     1084702 ns      1084895 ns           64
-scan             06 16 mb     5226966 ns      5226948 ns           64
-scan         noe 06 16 mb     5138442 ns      5138444 ns           64
-scan     tbb     06 16 mb     1095677 ns      1095484 ns           64
-scan     tbb noe 06 16 mb     1080156 ns      1080520 ns           64
-scan avx         12 16 mb     5223381 ns      5223358 ns           64
-scan avx     noe 12 16 mb     5253380 ns      5253430 ns           64
-scan avx tbb     12 16 mb     1349192 ns      1348758 ns           64
-scan avx tbb noe 12 16 mb     1073516 ns      1073453 ns           64
-scan             12 16 mb     5265716 ns      5265658 ns           64
-scan         noe 12 16 mb     5171280 ns      5171269 ns           64
-scan     tbb     12 16 mb     1083391 ns      1083200 ns           64
-scan     tbb noe 12 16 mb     1087378 ns      1087567 ns           64
-scan avx         24 16 mb     5235591 ns      5235572 ns           64
-scan avx     noe 24 16 mb     5147063 ns      5147086 ns           64
-scan avx tbb     24 16 mb     1297155 ns      1297037 ns           64
-scan avx tbb noe 24 16 mb     1066945 ns      1066708 ns           64
-scan             24 16 mb     5256469 ns      5256447 ns           64
-scan         noe 24 16 mb     5141744 ns      5141716 ns           64
-scan     tbb     24 16 mb     1093166 ns      1093559 ns           64
-scan     tbb noe 24 16 mb     1078781 ns      1078800 ns           64
+scan avx         06 16 mb     5282369 ns      5282173 ns           64
+scan avx     noe 06 16 mb     7339927 ns      7339842 ns           64
+scan avx tbb     06 16 mb     1098820 ns      1098983 ns           64
+scan avx tbb noe 06 16 mb     1086908 ns      1086631 ns           64
+scan             06 16 mb     5190506 ns      5190420 ns           64
+scan         noe 06 16 mb     5143955 ns      5143894 ns           64
+scan     tbb     06 16 mb     1313639 ns      1313617 ns           64
+scan     tbb noe 06 16 mb     1608823 ns      1608455 ns           64
+scan avx         12 16 mb     5230558 ns      5230527 ns           64
+scan avx     noe 12 16 mb     7385125 ns      7385030 ns           64
+scan avx tbb     12 16 mb     1088128 ns      1088309 ns           64
+scan avx tbb noe 12 16 mb     1086764 ns      1086462 ns           64
+scan             12 16 mb     5234156 ns      5234087 ns           64
+scan         noe 12 16 mb     5157023 ns      5156997 ns           64
+scan     tbb     12 16 mb     1293966 ns      1293706 ns           64
+scan     tbb noe 12 16 mb     1607397 ns      1607022 ns           64
+scan avx         24 16 mb     5271008 ns      5270936 ns           64
+scan avx     noe 24 16 mb     7291094 ns      7291052 ns           64
+scan avx tbb     24 16 mb     1096391 ns      1096059 ns           64
+scan avx tbb noe 24 16 mb     1081677 ns      1081775 ns           64
+scan             24 16 mb     5247577 ns      5247534 ns           64
+scan         noe 24 16 mb     5150102 ns      5150055 ns           64
+scan     tbb     24 16 mb     1292747 ns      1292916 ns           64
+scan     tbb noe 24 16 mb     1595875 ns      1595488 ns           64
 ```
 
 </details>
@@ -370,55 +370,55 @@ scan     tbb noe 24 16 mb     1078781 ns      1078800 ns           64
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 64 mb     3207344 ns      3207384 ns           32
-find avx     noe 06 64 mb     3154525 ns      3154512 ns           32
-find avx tbb     06 64 mb     2441322 ns      2440966 ns           32
-find avx tbb noe 06 64 mb     2432800 ns      2432322 ns           32
-find             06 64 mb    26944219 ns     26944116 ns           32
-find         noe 06 64 mb    26859369 ns     26840972 ns           32
-find     tbb     06 64 mb     3064622 ns      3064525 ns           32
-find     tbb noe 06 64 mb     3074988 ns      3074813 ns           32
-find avx         12 64 mb     3166981 ns      3166994 ns           32
-find avx     noe 12 64 mb     3169294 ns      3169322 ns           32
-find avx tbb     12 64 mb     2453697 ns      2453966 ns           32
-find avx tbb noe 12 64 mb     2451500 ns      2451384 ns           32
-find             12 64 mb    13847684 ns     13827606 ns           32
-find         noe 12 64 mb    13699359 ns     13699263 ns           32
-find     tbb     12 64 mb     2605866 ns      2605522 ns           32
-find     tbb noe 12 64 mb     2625116 ns      2624950 ns           32
-find avx         24 64 mb     4133241 ns      4133263 ns           32
-find avx     noe 24 64 mb     4103613 ns      4103694 ns           32
-find avx tbb     24 64 mb     2478941 ns      2409000 ns           32
-find avx tbb noe 24 64 mb     2456284 ns      2456159 ns           32
-find             24 64 mb     7258378 ns      7258391 ns           32
-find         noe 24 64 mb     7139950 ns      7139894 ns           32
-find     tbb     24 64 mb     2539941 ns      2539578 ns           32
-find     tbb noe 24 64 mb     2536091 ns      2535928 ns           32
+find avx         06 64 mb     3424172 ns      3424066 ns           32
+find avx     noe 06 64 mb     3389269 ns      3388975 ns           32
+find avx tbb     06 64 mb     2445384 ns      2445169 ns           32
+find avx tbb noe 06 64 mb     2436366 ns      2436106 ns           32
+find             06 64 mb    26863853 ns     26863634 ns           32
+find         noe 06 64 mb    26837466 ns     26816816 ns           32
+find     tbb     06 64 mb     3068181 ns      3067966 ns           32
+find     tbb noe 06 64 mb     3071516 ns      3071287 ns           32
+find avx         12 64 mb     3395397 ns      3395363 ns           32
+find avx     noe 12 64 mb     3413284 ns      3413209 ns           32
+find avx tbb     12 64 mb     2458366 ns      2458309 ns           32
+find avx tbb noe 12 64 mb     2442809 ns      2442513 ns           32
+find             12 64 mb    13763825 ns     13763556 ns           32
+find         noe 12 64 mb    13669778 ns     13669703 ns           32
+find     tbb     12 64 mb     2614775 ns      2614491 ns           32
+find     tbb noe 12 64 mb     2616441 ns      2616222 ns           32
+find avx         24 64 mb     4188375 ns      4188384 ns           32
+find avx     noe 24 64 mb     4141775 ns      4141731 ns           32
+find avx tbb     24 64 mb     2475822 ns      2475641 ns           32
+find avx tbb noe 24 64 mb     2476606 ns      2476431 ns           32
+find             24 64 mb     7141587 ns      7141562 ns           32
+find         noe 24 64 mb     7114291 ns      7114250 ns           32
+find     tbb     24 64 mb     2536050 ns      2535597 ns           32
+find     tbb noe 24 64 mb     2531153 ns      2487647 ns           32
 
-scan avx         06 64 mb    20572775 ns     20554522 ns           32
-scan avx     noe 06 64 mb    20555219 ns     20554778 ns           32
-scan avx tbb     06 64 mb     4653272 ns      4653138 ns           32
-scan avx tbb noe 06 64 mb     3739725 ns      3739603 ns           32
-scan             06 64 mb    20591325 ns     20571963 ns           32
-scan         noe 06 64 mb    20846978 ns     20846684 ns           32
-scan     tbb     06 64 mb     3751741 ns      3751394 ns           32
-scan     tbb noe 06 64 mb     3778278 ns      3778172 ns           32
-scan avx         12 64 mb    20735425 ns     20717200 ns           32
-scan avx     noe 12 64 mb    20539072 ns     20538662 ns           32
-scan avx tbb     12 64 mb     4650025 ns      4649991 ns           32
-scan avx tbb noe 12 64 mb     3742875 ns      3742713 ns           32
-scan             12 64 mb    20582950 ns     20563791 ns           32
-scan         noe 12 64 mb    20528312 ns     20526531 ns           32
-scan     tbb     12 64 mb     3720675 ns      3720522 ns           32
-scan     tbb noe 12 64 mb     3809959 ns      3809691 ns           32
-scan avx         24 64 mb    20730519 ns     20712487 ns           32
-scan avx     noe 24 64 mb    20579028 ns     20579047 ns           32
-scan avx tbb     24 64 mb     4641700 ns      4641566 ns           32
-scan avx tbb noe 24 64 mb     3728656 ns      3728544 ns           32
-scan             24 64 mb    20557400 ns     20538984 ns           32
-scan         noe 24 64 mb    20565884 ns     20565809 ns           32
-scan     tbb     24 64 mb     3760078 ns      3759916 ns           32
-scan     tbb noe 24 64 mb     3770906 ns      3770756 ns           32
+scan avx         06 64 mb    20623569 ns     20623362 ns           32
+scan avx     noe 06 64 mb    29414316 ns     29413822 ns           32
+scan avx tbb     06 64 mb     3775922 ns      3753000 ns           32
+scan avx tbb noe 06 64 mb     3758816 ns      3758603 ns           32
+scan             06 64 mb    20605416 ns     20605141 ns           32
+scan         noe 06 64 mb    20540316 ns     20539462 ns           32
+scan     tbb     06 64 mb     4704356 ns      4703637 ns           32
+scan     tbb noe 06 64 mb     5870369 ns      5853878 ns           32
+scan avx         12 64 mb    20829234 ns     20829256 ns           32
+scan avx     noe 12 64 mb    29195825 ns     29176319 ns           32
+scan avx tbb     12 64 mb     3748784 ns      3748856 ns           32
+scan avx tbb noe 12 64 mb     3759466 ns      3759238 ns           32
+scan             12 64 mb    20667925 ns     20667859 ns           32
+scan         noe 12 64 mb    20596263 ns     20574669 ns           32
+scan     tbb     12 64 mb     4661987 ns      4660697 ns           32
+scan     tbb noe 12 64 mb     5840894 ns      5831459 ns           32
+scan avx         24 64 mb    20622284 ns     20622231 ns           32
+scan avx     noe 24 64 mb    29197719 ns     29176522 ns           32
+scan avx tbb     24 64 mb     3760787 ns      3761462 ns           32
+scan avx tbb noe 24 64 mb     3753578 ns      3753328 ns           32
+scan             24 64 mb    20650359 ns     20650066 ns           32
+scan         noe 24 64 mb    20585878 ns     20584972 ns           32
+scan     tbb     24 64 mb     4645256 ns      4645028 ns           32
+scan     tbb noe 24 64 mb     5841637 ns      5842269 ns           32
 ```
 
 </details>
@@ -430,55 +430,55 @@ scan     tbb noe 24 64 mb     3770906 ns      3770756 ns           32
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 256 mb   13289950 ns     13289987 ns           16
-find avx     noe 06 256 mb   13372325 ns     13372187 ns           16
-find avx tbb     06 256 mb    9431319 ns      9431219 ns           16
-find avx tbb noe 06 256 mb    9466894 ns      9466725 ns           16
-find             06 256 mb  107416569 ns    107378906 ns           16
-find         noe 06 256 mb  107454825 ns    107418531 ns           16
-find     tbb     06 256 mb   11653869 ns     11347394 ns           16
-find     tbb noe 06 256 mb   11624037 ns     11518988 ns           16
-find avx         12 256 mb   13431475 ns     13431450 ns           16
-find avx     noe 12 256 mb   13416900 ns     13380575 ns           16
-find avx tbb     12 256 mb    9427938 ns      9427813 ns           16
-find avx tbb noe 12 256 mb    9458625 ns      9459394 ns           16
-find             12 256 mb   54643481 ns     54607344 ns           16
-find         noe 12 256 mb   54645125 ns     54645081 ns           16
-find     tbb     12 256 mb    9932137 ns      9932025 ns           16
-find     tbb noe 12 256 mb    9962544 ns      9933944 ns           16
-find avx         24 256 mb   16333619 ns     16333537 ns           16
-find avx     noe 24 256 mb   16436894 ns     16436937 ns           16
-find avx tbb     24 256 mb    9497375 ns      9497269 ns           16
-find avx tbb noe 24 256 mb    9511188 ns      9511044 ns           16
-find             24 256 mb   28468475 ns     28468250 ns           16
-find         noe 24 256 mb   28445625 ns     28445625 ns           16
-find     tbb     24 256 mb    9653806 ns      9571825 ns           16
-find     tbb noe 24 256 mb    9639769 ns      9639687 ns           16
+find avx         06 256 mb   13908275 ns     13908450 ns           16
+find avx     noe 06 256 mb   13900256 ns     13900113 ns           16
+find avx tbb     06 256 mb    9445506 ns      9295181 ns           16
+find avx tbb noe 06 256 mb    9434662 ns      9434475 ns           16
+find             06 256 mb  107479081 ns    107409694 ns           16
+find         noe 06 256 mb  107400250 ns    107400144 ns           16
+find     tbb     06 256 mb   11588131 ns     11537050 ns           16
+find     tbb noe 06 256 mb   11663769 ns     11593969 ns           16
+find avx         12 256 mb   13887150 ns     13887094 ns           16
+find avx     noe 12 256 mb   14265069 ns     14264806 ns           16
+find avx tbb     12 256 mb    9466394 ns      9466194 ns           16
+find avx tbb noe 12 256 mb    9448681 ns      9446931 ns           16
+find             12 256 mb   54597662 ns     54597263 ns           16
+find         noe 12 256 mb   54529606 ns     54529094 ns           16
+find     tbb     12 256 mb    9859156 ns      9859000 ns           16
+find     tbb noe 12 256 mb    9897988 ns      9683831 ns           16
+find avx         24 256 mb   16519225 ns     16518656 ns           16
+find avx     noe 24 256 mb   16602875 ns     16602888 ns           16
+find avx tbb     24 256 mb    9487300 ns      9487137 ns           16
+find avx tbb noe 24 256 mb    9517419 ns      9517275 ns           16
+find             24 256 mb   28388450 ns     28388313 ns           16
+find         noe 24 256 mb   28402188 ns     28401825 ns           16
+find     tbb     24 256 mb    9629156 ns      9628863 ns           16
+find     tbb noe 24 256 mb    9630663 ns      9629906 ns           16
 
-scan avx         06 256 mb   82186600 ns     82150131 ns           16
-scan avx     noe 06 256 mb   82335213 ns     82335275 ns           16
-scan avx tbb     06 256 mb   17909462 ns     17588719 ns           16
-scan avx tbb noe 06 256 mb   14692025 ns     14464550 ns           16
-scan             06 256 mb   82251819 ns     82251181 ns           16
-scan         noe 06 256 mb   82292194 ns     82292156 ns           16
-scan     tbb     06 256 mb   14606456 ns     14498819 ns           16
-scan     tbb noe 06 256 mb   14720538 ns     14604119 ns           16
-scan avx         12 256 mb   82186594 ns     82150069 ns           16
-scan avx     noe 12 256 mb   82237375 ns     82237363 ns           16
-scan avx tbb     12 256 mb   17869806 ns     17680856 ns           16
-scan avx tbb noe 12 256 mb   14421012 ns     14273837 ns           16
-scan             12 256 mb   82332106 ns     82293625 ns           16
-scan         noe 12 256 mb   82241413 ns     82241287 ns           16
-scan     tbb     12 256 mb   14564413 ns     14324075 ns           16
-scan     tbb noe 12 256 mb   14586281 ns     14424587 ns           16
-scan avx         24 256 mb   82204106 ns     82167700 ns           16
-scan avx     noe 24 256 mb   82607256 ns     82606494 ns           16
-scan avx tbb     24 256 mb   17992275 ns     17814300 ns           16
-scan avx tbb noe 24 256 mb   14477800 ns     14277713 ns           16
-scan             24 256 mb   82288550 ns     82251375 ns           16
-scan         noe 24 256 mb   82195006 ns     82195019 ns           16
-scan     tbb     24 256 mb   14577925 ns     14339912 ns           16
-scan     tbb noe 24 256 mb   14326256 ns     14251594 ns           16
+scan avx         06 256 mb   82353831 ns     82284456 ns           16
+scan avx     noe 06 256 mb  116604281 ns    116535319 ns           16
+scan avx tbb     06 256 mb   14395006 ns     14224288 ns           16
+scan avx tbb noe 06 256 mb   14514369 ns     14321106 ns           16
+scan             06 256 mb   82353962 ns     82284213 ns           16
+scan         noe 06 256 mb   82223706 ns     82222819 ns           16
+scan     tbb     06 256 mb   17873531 ns     17687306 ns           16
+scan     tbb noe 06 256 mb   22816331 ns     22390550 ns           16
+scan avx         12 256 mb   82259513 ns     82258900 ns           16
+scan avx     noe 12 256 mb  117201356 ns    117131887 ns           16
+scan avx tbb     12 256 mb   14427875 ns     14301481 ns           16
+scan avx tbb noe 12 256 mb   14262750 ns     14141700 ns           16
+scan             12 256 mb   82585212 ns     82585200 ns           16
+scan         noe 12 256 mb   82334537 ns     82334487 ns           16
+scan     tbb     12 256 mb   18063256 ns     17778131 ns           16
+scan     tbb noe 12 256 mb   22513188 ns     22339275 ns           16
+scan avx         24 256 mb   82427950 ns     82357769 ns           16
+scan avx     noe 24 256 mb  116594044 ns    116518125 ns           16
+scan avx tbb     24 256 mb   14585194 ns     14451869 ns           16
+scan avx tbb noe 24 256 mb   14670450 ns     14403944 ns           16
+scan             24 256 mb   82385012 ns     82384894 ns           16
+scan         noe 24 256 mb   82112200 ns     82112194 ns           16
+scan     tbb     24 256 mb   17956269 ns     17832800 ns           16
+scan     tbb noe 24 256 mb   23226419 ns     22531144 ns           16
 ```
 
 </details>
@@ -490,55 +490,55 @@ scan     tbb noe 24 256 mb   14326256 ns     14251594 ns           16
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 512 mb   27391412 ns     27391338 ns            8
-find avx     noe 06 512 mb   27323650 ns     27321150 ns            8
-find avx tbb     06 512 mb   18758288 ns     18757225 ns            8
-find avx tbb noe 06 512 mb   18788100 ns     18788012 ns            8
-find             06 512 mb  214916588 ns    214846225 ns            8
-find         noe 06 512 mb  214697575 ns    214623900 ns            8
-find     tbb     06 512 mb   23087463 ns     22011300 ns            8
-find     tbb noe 06 512 mb   23026975 ns     22659962 ns            8
-find avx         12 512 mb   27448450 ns     27448275 ns            8
-find avx     noe 12 512 mb   27463837 ns     27391888 ns            8
-find avx tbb     12 512 mb   18798500 ns     18798387 ns            8
-find avx tbb noe 12 512 mb   18741813 ns     18741550 ns            8
-find             12 512 mb  109299813 ns    109228600 ns            8
-find         noe 12 512 mb  109267975 ns    109267862 ns            8
-find     tbb     12 512 mb   19534788 ns     19387075 ns            8
-find     tbb noe 12 512 mb   19577500 ns     19427100 ns            8
-find avx         24 512 mb   32714900 ns     32714725 ns            8
-find avx     noe 24 512 mb   32810187 ns     32811225 ns            8
-find avx tbb     24 512 mb   19014775 ns     19014812 ns            8
-find avx tbb noe 24 512 mb   18880075 ns     18745413 ns            8
-find             24 512 mb   56982325 ns     56982012 ns            8
-find         noe 24 512 mb   57016787 ns     57016650 ns            8
-find     tbb     24 512 mb   19150575 ns     19150575 ns            8
-find     tbb noe 24 512 mb   19135687 ns     19135725 ns            8
+find avx         06 512 mb   27921800 ns     27920800 ns            8
+find avx     noe 06 512 mb   28002163 ns     27859625 ns            8
+find avx tbb     06 512 mb   18781737 ns     18781575 ns            8
+find avx tbb noe 06 512 mb   18824362 ns     18823200 ns            8
+find             06 512 mb  215318163 ns    215182287 ns            8
+find         noe 06 512 mb  215218312 ns    215078963 ns            8
+find     tbb     06 512 mb   23023300 ns     22725113 ns            8
+find     tbb noe 06 512 mb   23230425 ns     22410562 ns            8
+find avx         12 512 mb   27952700 ns     27952537 ns            8
+find avx     noe 12 512 mb   28024200 ns     28023887 ns            8
+find avx tbb     12 512 mb   18746388 ns     18745037 ns            8
+find avx tbb noe 12 512 mb   18782213 ns     18782188 ns            8
+find             12 512 mb  109259075 ns    109107725 ns            8
+find         noe 12 512 mb  109238850 ns    109238137 ns            8
+find     tbb     12 512 mb   19631663 ns     19471400 ns            8
+find     tbb noe 12 512 mb   19542587 ns     19395550 ns            8
+find avx         24 512 mb   33346762 ns     33346675 ns            8
+find avx     noe 24 512 mb   33199275 ns     33198850 ns            8
+find avx tbb     24 512 mb   18922437 ns     18922250 ns            8
+find avx tbb noe 24 512 mb   18875463 ns     18873825 ns            8
+find             24 512 mb   56663650 ns     56663162 ns            8
+find         noe 24 512 mb   56632400 ns     56632000 ns            8
+find     tbb     24 512 mb   19124875 ns     18726362 ns            8
+find     tbb noe 24 512 mb   19184313 ns     19066075 ns            8
 
-scan avx         06 512 mb  164394238 ns    164323900 ns            8
-scan avx     noe 06 512 mb  164620213 ns    164620163 ns            8
-scan avx tbb     06 512 mb   35712575 ns     35160938 ns            8
-scan avx tbb noe 06 512 mb   28598688 ns     28359075 ns            8
-scan             06 512 mb  164734887 ns    164661500 ns            8
-scan         noe 06 512 mb  164497788 ns    164497025 ns            8
-scan     tbb     06 512 mb   27991625 ns     27420800 ns            8
-scan     tbb noe 06 512 mb   28940475 ns     26843562 ns            8
-scan avx         12 512 mb  164458275 ns    164386012 ns            8
-scan avx     noe 12 512 mb  165111850 ns    165111900 ns            8
-scan avx tbb     12 512 mb   35828813 ns     35037187 ns            8
-scan avx tbb noe 12 512 mb   28970250 ns     27482550 ns            8
-scan             12 512 mb  164356738 ns    164281762 ns            8
-scan         noe 12 512 mb  164239725 ns    164239313 ns            8
-scan     tbb     12 512 mb   29081613 ns     27408250 ns            8
-scan     tbb noe 12 512 mb   28450737 ns     26662487 ns            8
-scan avx         24 512 mb  164372475 ns    164302362 ns            8
-scan avx     noe 24 512 mb  164926562 ns    164926538 ns            8
-scan avx tbb     24 512 mb   35849912 ns     35008575 ns            8
-scan avx tbb noe 24 512 mb   29398075 ns     27704137 ns            8
-scan             24 512 mb  164741938 ns    164667575 ns            8
-scan         noe 24 512 mb  164997462 ns    164994963 ns            8
-scan     tbb     24 512 mb   28426363 ns     27938400 ns            8
-scan     tbb noe 24 512 mb   28270900 ns     27812212 ns            8
+scan avx         06 512 mb  164749575 ns    164742575 ns            8
+scan avx     noe 06 512 mb  233283162 ns    233133937 ns            8
+scan avx tbb     06 512 mb   28914662 ns     28590263 ns            8
+scan avx tbb noe 06 512 mb   28659563 ns     27561825 ns            8
+scan             06 512 mb  164636388 ns    164491750 ns            8
+scan         noe 06 512 mb  164645262 ns    164644613 ns            8
+scan     tbb     06 512 mb   36069137 ns     35206575 ns            8
+scan     tbb noe 06 512 mb   46502912 ns     45262163 ns            8
+scan avx         12 512 mb  165481500 ns    165345913 ns            8
+scan avx     noe 12 512 mb  233292188 ns    233142212 ns            8
+scan avx tbb     12 512 mb   28939350 ns     28109475 ns            8
+scan avx tbb noe 12 512 mb   29046875 ns     28377088 ns            8
+scan             12 512 mb  165251862 ns    165108812 ns            8
+scan         noe 12 512 mb  164462600 ns    164460950 ns            8
+scan     tbb     12 512 mb   35679763 ns     34864988 ns            8
+scan     tbb noe 12 512 mb   45131950 ns     42004750 ns            8
+scan avx         24 512 mb  164645563 ns    164644913 ns            8
+scan avx     noe 24 512 mb  233481400 ns    233335250 ns            8
+scan avx tbb     24 512 mb   28313500 ns     28162937 ns            8
+scan avx tbb noe 24 512 mb   28926763 ns     28086088 ns            8
+scan             24 512 mb  164815987 ns    164678462 ns            8
+scan         noe 24 512 mb  164537163 ns    164535900 ns            8
+scan     tbb     24 512 mb   35791062 ns     35102337 ns            8
+scan     tbb noe 24 512 mb   46345550 ns     44302100 ns            8
 ```
 
 </details>
@@ -550,55 +550,55 @@ scan     tbb noe 24 512 mb   28270900 ns     27812212 ns            8
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 1 gb     55232900 ns     55232650 ns            8
-find avx     noe 06 1 gb     55332312 ns     55331250 ns            8
-find avx tbb     06 1 gb     37397738 ns     37397850 ns            8
-find avx tbb noe 06 1 gb     37460813 ns     37459525 ns            8
-find             06 1 gb    429781075 ns    429703538 ns            8
-find         noe 06 1 gb    438187662 ns    438076738 ns            8
-find     tbb     06 1 gb     46072200 ns     41400925 ns            8
-find     tbb noe 06 1 gb     46103450 ns     41553413 ns            8
-find avx         12 1 gb     56300600 ns     56300050 ns            8
-find avx     noe 12 1 gb     55550288 ns     55480912 ns            8
-find avx tbb     12 1 gb     37420150 ns     36728225 ns            8
-find avx tbb noe 12 1 gb     37505225 ns     37505487 ns            8
-find             12 1 gb    221457888 ns    221388488 ns            8
-find         noe 12 1 gb    219278188 ns    219207088 ns            8
-find     tbb     12 1 gb     39059825 ns     38671475 ns            8
-find     tbb noe 12 1 gb     39014738 ns     37915538 ns            8
-find avx         24 1 gb     65778050 ns     65777787 ns            8
-find avx     noe 24 1 gb     65673500 ns     65672363 ns            8
-find avx tbb     24 1 gb     37696100 ns     37693850 ns            8
-find avx tbb noe 24 1 gb     37612300 ns     37327775 ns            8
-find             24 1 gb    113465725 ns    113464850 ns            8
-find         noe 24 1 gb    113372813 ns    113372100 ns            8
-find     tbb     24 1 gb     38136675 ns     38136863 ns            8
-find     tbb noe 24 1 gb     38187438 ns     36936262 ns            8
+find avx         06 1 gb     55767100 ns     55691875 ns            8
+find avx     noe 06 1 gb     58038125 ns     58037525 ns            8
+find avx tbb     06 1 gb     37627787 ns     37336825 ns            8
+find avx tbb noe 06 1 gb     37490950 ns     37245488 ns            8
+find             06 1 gb    430433612 ns    430297263 ns            8
+find         noe 06 1 gb    429592662 ns    429590400 ns            8
+find     tbb     06 1 gb     46140562 ns     44453400 ns            8
+find     tbb noe 06 1 gb     46041700 ns     42861213 ns            8
+find avx         12 1 gb     55900087 ns     55899850 ns            8
+find avx     noe 12 1 gb     56513000 ns     56377838 ns            8
+find avx tbb     12 1 gb     37441237 ns     36676500 ns            8
+find avx tbb noe 12 1 gb     37463863 ns     36926762 ns            8
+find             12 1 gb    218618100 ns    218481012 ns            8
+find         noe 12 1 gb    218543475 ns    218402350 ns            8
+find     tbb     12 1 gb     39005363 ns     38248763 ns            8
+find     tbb noe 12 1 gb     38834825 ns     37774437 ns            8
+find avx         24 1 gb     66540750 ns     66539913 ns            8
+find avx     noe 24 1 gb     66376387 ns     66241925 ns            8
+find avx tbb     24 1 gb     37647288 ns     37646450 ns            8
+find avx tbb noe 24 1 gb     37759675 ns     36977937 ns            8
+find             24 1 gb    113576600 ns    113575475 ns            8
+find         noe 24 1 gb    113443750 ns    113442638 ns            8
+find     tbb     24 1 gb     38175887 ns     37896163 ns            8
+find     tbb noe 24 1 gb     38051887 ns     37608088 ns            8
 
-scan avx         06 1 gb    329492062 ns    329489825 ns            8
-scan avx     noe 06 1 gb    329427475 ns    329356975 ns            8
-scan avx tbb     06 1 gb     70943638 ns     70245250 ns            8
-scan avx tbb noe 06 1 gb     58078100 ns     52441137 ns            8
-scan             06 1 gb    329263287 ns    329190987 ns            8
-scan         noe 06 1 gb    328992588 ns    328915337 ns            8
-scan     tbb     06 1 gb     58032512 ns     54454400 ns            8
-scan     tbb noe 06 1 gb     57006387 ns     55236512 ns            8
-scan avx         12 1 gb    329255225 ns    329183150 ns            8
-scan avx     noe 12 1 gb    329638800 ns    329567713 ns            8
-scan avx tbb     12 1 gb     70728150 ns     70248100 ns            8
-scan avx tbb noe 12 1 gb     57737050 ns     52881875 ns            8
-scan             12 1 gb    329279700 ns    329138825 ns            8
-scan         noe 12 1 gb    328984588 ns    328845975 ns            8
-scan     tbb     12 1 gb     57100550 ns     53183025 ns            8
-scan     tbb noe 12 1 gb     58003613 ns     55437075 ns            8
-scan avx         24 1 gb    329091838 ns    328949337 ns            8
-scan avx     noe 24 1 gb    329661612 ns    329522425 ns            8
-scan avx tbb     24 1 gb     71533475 ns     69469825 ns            8
-scan avx tbb noe 24 1 gb     57481875 ns     53109650 ns            8
-scan             24 1 gb    329476337 ns    329344137 ns            8
-scan         noe 24 1 gb    329379750 ns    329239550 ns            8
-scan     tbb     24 1 gb     59050012 ns     52763200 ns            8
-scan     tbb noe 24 1 gb     57878325 ns     52388437 ns            8
+scan avx         06 1 gb    329577413 ns    329433387 ns            8
+scan avx     noe 06 1 gb    466545800 ns    466399863 ns            8
+scan avx tbb     06 1 gb     58478388 ns     54943075 ns            8
+scan avx tbb noe 06 1 gb     58696938 ns     54751575 ns            8
+scan             06 1 gb    329604088 ns    329464100 ns            8
+scan         noe 06 1 gb    329202050 ns    329060900 ns            8
+scan     tbb     06 1 gb     70986587 ns     69299838 ns            8
+scan     tbb noe 06 1 gb     93524913 ns     84580475 ns            8
+scan avx         12 1 gb    330235863 ns    330095488 ns            8
+scan avx     noe 12 1 gb    466184200 ns    466039262 ns            8
+scan avx tbb     12 1 gb     57046125 ns     54320700 ns            8
+scan avx tbb noe 12 1 gb     57852925 ns     55002175 ns            8
+scan             12 1 gb    329475437 ns    329338513 ns            8
+scan         noe 12 1 gb    329151750 ns    329008650 ns            8
+scan     tbb     12 1 gb     71237125 ns     69173775 ns            8
+scan     tbb noe 12 1 gb     91731788 ns     83369363 ns            8
+scan avx         24 1 gb    330381737 ns    330381850 ns            8
+scan avx     noe 24 1 gb    466419937 ns    466273987 ns            8
+scan avx tbb     24 1 gb     57386263 ns     55666325 ns            8
+scan avx tbb noe 24 1 gb     58715000 ns     55434288 ns            8
+scan             24 1 gb    329539263 ns    329397725 ns            8
+scan         noe 24 1 gb    329938612 ns    329802425 ns            8
+scan     tbb     24 1 gb     71242475 ns     69053350 ns            8
+scan     tbb noe 24 1 gb     92564338 ns     85222612 ns            8
 ```
 
 </details>
@@ -610,55 +610,56 @@ scan     tbb noe 24 1 gb     57878325 ns     52388437 ns            8
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-find avx         06 2 gb    111424813 ns    111423637 ns            8
-find avx     noe 06 2 gb    111645712 ns    111644613 ns            8
-find avx tbb     06 2 gb     74883500 ns     73126713 ns            8
-find avx tbb noe 06 2 gb     74776075 ns     74774862 ns            8
-find             06 2 gb    859477237 ns    859336075 ns            8
-find         noe 06 2 gb    859378263 ns    859243800 ns            8
-find     tbb     06 2 gb     91735963 ns     83351512 ns            8
-find     tbb noe 06 2 gb     91821337 ns     79900650 ns            8
-find avx         12 2 gb    111945487 ns    111701200 ns            8
-find avx     noe 12 2 gb    111759100 ns    111638500 ns            8
-find avx tbb     12 2 gb     74801775 ns     74764062 ns            8
-find avx tbb noe 12 2 gb     74809100 ns     72963600 ns            8
-find             12 2 gb    437078913 ns    437078912 ns            8
-find         noe 12 2 gb    436451488 ns    436451475 ns            8
-find     tbb     12 2 gb     77934950 ns     73567438 ns            8
-find     tbb noe 12 2 gb     77927188 ns     72644000 ns            8
-find avx         24 2 gb    131620125 ns    131481438 ns            8
-find avx     noe 24 2 gb    131436600 ns    131436213 ns            8
-find avx tbb     24 2 gb     75256138 ns     75256250 ns            8
-find avx tbb noe 24 2 gb     75325600 ns     74152062 ns            8
-find             24 2 gb    227148225 ns    227018688 ns            8
-find         noe 24 2 gb    227172637 ns    227040500 ns            8
-find     tbb     24 2 gb     76081350 ns     75282150 ns            8
-find     tbb noe 24 2 gb     76195050 ns     74531400 ns            8
+find avx         06 2 gb    112132913 ns    112131425 ns            8
+find avx     noe 06 2 gb    113008275 ns    113006825 ns            8
+find avx tbb     06 2 gb     74857450 ns     73463537 ns            8
+find avx tbb noe 06 2 gb     74844050 ns     73089237 ns            8
+find             06 2 gb    859165975 ns    859030138 ns            8
+find         noe 06 2 gb    859899287 ns    859772550 ns            8
+find     tbb     06 2 gb     91771850 ns     83221325 ns            8
+find     tbb noe 06 2 gb     92004938 ns     84829650 ns            8
+find avx         12 2 gb    112705038 ns    112704150 ns            8
+find avx     noe 12 2 gb    112590012 ns    112458338 ns            8
+find avx tbb     12 2 gb     74850462 ns     73714613 ns            8
+find avx tbb noe 12 2 gb     74877100 ns     72799688 ns            8
+find             12 2 gb    436466475 ns    436464113 ns            8
+find         noe 12 2 gb    436875925 ns    436873587 ns            8
+find     tbb     12 2 gb     77842163 ns     75947013 ns            8
+find     tbb noe 12 2 gb     77705400 ns     75158625 ns            8
+find avx         24 2 gb    133521137 ns    133520862 ns            8
+find avx     noe 24 2 gb    132771425 ns    132635937 ns            8
+find avx tbb     24 2 gb     75337500 ns     74434625 ns            8
+find avx tbb noe 24 2 gb     75333013 ns     74439062 ns            8
+find             24 2 gb    227054550 ns    226921213 ns            8
+find         noe 24 2 gb    227164625 ns    227028075 ns            8
+find     tbb     24 2 gb     76141987 ns     76142000 ns            8
+find     tbb noe 24 2 gb     76073137 ns     73025913 ns            8
 
-scan avx         06 2 gb    658850350 ns    658718413 ns            8
-scan avx     noe 06 2 gb    658483313 ns    658475813 ns            8
-scan avx tbb     06 2 gb    141715263 ns    138360613 ns            8
-scan avx tbb noe 06 2 gb    114907425 ns    105157462 ns            8
-scan             06 2 gb    658674025 ns    658546362 ns            8
-scan         noe 06 2 gb    658338888 ns    658338737 ns            8
-scan     tbb     06 2 gb    116790550 ns    110739150 ns            8
-scan     tbb noe 06 2 gb    117618675 ns    105168250 ns            8
-scan avx         12 2 gb    659328337 ns    659194800 ns            8
-scan avx     noe 12 2 gb    659104225 ns    659104400 ns            8
-scan avx tbb     12 2 gb    142438475 ns    137819825 ns            8
-scan avx tbb noe 12 2 gb    114884575 ns    108974212 ns            8
-scan             12 2 gb    659607938 ns    659473725 ns            8
-scan         noe 12 2 gb    658581837 ns    658582012 ns            8
-scan     tbb     12 2 gb    116840300 ns    107755263 ns            8
-scan     tbb noe 12 2 gb    118025788 ns    107703800 ns            8
-scan avx         24 2 gb    658560837 ns    658427350 ns            8
-scan avx     noe 24 2 gb    658872838 ns    658872987 ns            8
-scan avx tbb     24 2 gb    141650412 ns    138036437 ns            8
-scan avx tbb noe 24 2 gb    115986500 ns    110226137 ns            8
-scan             24 2 gb    658112463 ns    657982213 ns            8
-scan         noe 24 2 gb    657479775 ns    657479975 ns            8
-scan     tbb     24 2 gb    118672887 ns    109168687 ns            8
-scan     tbb noe 24 2 gb    117029050 ns    107483062 ns            8
+scan avx         06 2 gb    658537387 ns    658404525 ns            8
+scan avx     noe 06 2 gb    932404312 ns    932276275 ns            8
+scan avx tbb     06 2 gb    118235875 ns    105152987 ns            8
+scan avx tbb noe 06 2 gb    119571975 ns    103483687 ns            8
+scan             06 2 gb    659195375 ns    659064500 ns            8
+scan         noe 06 2 gb    658445812 ns    658313838 ns            8
+scan     tbb     06 2 gb    140906913 ns    138338888 ns            8
+scan     tbb noe 06 2 gb    181033213 ns    167863975 ns            8
+scan avx         12 2 gb    659869125 ns    659725825 ns            8
+scan avx     noe 12 2 gb    933353213 ns    933217887 ns            8
+scan avx tbb     12 2 gb    115811437 ns    105005463 ns            8
+scan avx tbb noe 12 2 gb    118313800 ns    106526675 ns            8
+scan             12 2 gb    659399563 ns    659399538 ns            8
+scan         noe 12 2 gb    658346475 ns    658216400 ns            8
+scan     tbb     12 2 gb    142084750 ns    139062837 ns            8
+scan     tbb noe 12 2 gb    185780962 ns    164038588 ns            8
+scan avx         24 2 gb    659094962 ns    659095125 ns            8
+scan avx     noe 24 2 gb    932471025 ns    932343463 ns            8
+scan avx tbb     24 2 gb    117339675 ns    105437925 ns            8
+scan avx tbb noe 24 2 gb    118122025 ns    107886437 ns            8
+scan             24 2 gb    660215350 ns    660084600 ns            8
+scan         noe 24 2 gb    658281013 ns    658281037 ns            8
+scan     tbb     24 2 gb    142346725 ns    138086925 ns            8
+scan     tbb noe 24 2 gb    184595662 ns    169585387 ns            8
 ```
 
 </details>
+
