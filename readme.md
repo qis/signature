@@ -112,7 +112,7 @@ This is a header-only. Building and installing is optional.
 <details>
 <summary>Build</summary>
 
-1. Install [Python 3][py3].
+1. Install [Python 3][py].
 2. Install [Conan][conan].
 
 ```sh
@@ -155,7 +155,6 @@ sudo ldconfig
 ```
 
 4. Install [Visual Studio][vs] with C++ and CMake support on **Windows**.
-
 5. Clone project. Use `x64 Native Tools Command Prompt for VS 2022` on Windows.
 
 ```sh
@@ -249,8 +248,8 @@ git add res/linux.md res/windows.md
 git update-index --skip-worktree res/linux.md res/windows.md
 -->
 
-[py3]: https://www.python.org/downloads/windows/
-[conan]: https://conan.io/center/
-[cmake]: https://cmake.org/download/
-[llvm]: https://llvm.org/
+[py]: https://www.python.org/downloads/windows/
 [vs]: https://visualstudio.microsoft.com/vs/
+[cmake]: https://cmake.org/download/
+[conan]: https://conan.io/center/
+[llvm]: https://llvm.org/
