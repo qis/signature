@@ -66,12 +66,12 @@ Benchmark                           Time             CPU   Iterations
 find avx     noe 05 16 kb         150 ns          120 ns      1000000
 scan     tbb     06 32 kb         300 ns          280 ns      1000000
  ^    ^   ^   ^   ^  ^
- |    |   |   |   |  +- Size of the searched memory block.
- |    |   |   |   +---- Size of the "find" or "scan" signature.
- |    |   |   +-------- Benchmark compiled with exceptions disabled.
+ |    |   |   |   |  +- Searched memory block size.
+ |    |   |   |   +---- Signature size used for the search.
+ |    |   |   +-------- Benchmark compiled without exceptions and RTTI.
  |    |   +------------ Benchmark compiled with TBB support.
- |    +---------------- Benchmark compiled with /arch:AVX2.
- +--------------------- Signature used for the search.
+ |    +---------------- Benchmark compiled with AVX support.
+ +--------------------- Signature type used for the search.
 ```
 
 There are two types of signatures used by the benchmarks and tests:
@@ -98,13 +98,13 @@ In the example above:
 All benchmark results were recorded on the same system.
 
 ```
-Intel(R) Core(TM) i7-8700K 3.70 GHz (12 Threads)
+Intel(R) Core(TM) i7-8700K @ 3.70 GHz (12 Threads)
 * L1 Data 32 KiB (x6)
 * L1 Instruction 32 KiB (x6)
 * L2 Unified 256 KiB (x6)
 * L3 Unified 12288 KiB (x1)
 
-32 GB DDR4
+32 GB DDR4 RAM @ 2133 MHz (Dual Channel)
 ```
 
 * See [windows.md](res/windows.md) for Windows results.
