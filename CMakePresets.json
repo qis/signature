@@ -80,8 +80,7 @@
       "inherits": [ "default", "code-analysis-llvm" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_COMPILER": "clang",
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+        "CMAKE_CXX_COMPILER": "clang"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {

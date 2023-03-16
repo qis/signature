@@ -7,17 +7,18 @@ This warning will be removed and the repo force pushed with the final version.
 ### Compiler Support
 This project was tested using the following compilers.
 
-* Visual Studio 2022 (cl, clang, clang-cl) on Windows
-* LLVM 15 on Linux
+* VS 2022 (cl, clang, clang-cl) on Windows
+* LLVM 15 (clang and libc++) on Linux
 
 ## Usage
-Copy the [include/qis/signature.hpp](include/qis/signature.hpp) header file
-**or** install this project as an `INTERFACE` library using CMake.
+Copy the [signature.hpp](include/qis/signature.hpp) header file **or**
+install this project as an interface CMake library (see below).
 
 ```cpp
 #include <qis/signature.hpp>
 #include <vector>
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 
 // Optional: Check that the binary was compiled with /arch:AVX2.
@@ -31,7 +32,7 @@ int main() {
   std::vector<std::uint8_t> memory;
   memory.resize(1024 * 1024 * 1024, 0);
 
-  // Write data at the end of the memory block.
+  // Write data to the memory block.
   std::memcpy(memory.data() + memory.size() - 5, "\x01\xCD\xE3\x04\x05", 5);
 
   // Create signature.
@@ -51,9 +52,12 @@ int main() {
 Use [qis/xorstr](https://github.com/qis/xorstr) to hide the signature
 string from analysis tools.
 
+## Tests
+The container and search algorithms were extensively tested. See
+[tests.hpp](src/tests.hpp) for more details.
+
 ## Benchmarks
-The benchmarks report syntax reflects the `QIS_BENCHMARK` macro usage in
-[src/benchmarks.hpp](src/benchmarks.hpp).
+All benchmark results use the following report syntax.
 
 ```
 ---------------------------------------------------------------------
@@ -61,16 +65,16 @@ Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
 find avx     noe 05 16 kb         150 ns          120 ns      1000000
 scan     tbb     06 32 kb         300 ns          280 ns      1000000
- ▲    ▲   ▲   ▲   ▲  ▲
- │    │   │   │   │  └─ Size of the searched memory block.
- │    │   │   │   └──── Size of the "find" or "scan" signature.
- │    │   │   └──────── Benchmark compiled with exceptions disabled.
- │    │   └──────────── Benchmark compiled with TBB support.
- │    └──────────────── Benchmark compiled with /arch:AVX2.
- └───────────────────── Signature used for the search.
+ ʌ    ʌ   ʌ   ʌ   ʌ  ʌ
+ |    |   |   |   |  +- Size of the searched memory block.
+ |    |   |   |   +---- Size of the "find" or "scan" signature.
+ |    |   |   +-------- Benchmark compiled with exceptions disabled.
+ |    |   +------------ Benchmark compiled with TBB support.
+ |    +---------------- Benchmark compiled with /arch:AVX2.
+ +--------------------- Signature used for the search.
 ```
 
-There are two types of signatures:
+There are two types of signatures used by the benchmarks and tests:
 
 * `find` has all bytes defined and the search algorithm can be optimized for it.
 
@@ -78,7 +82,7 @@ There are two types of signatures:
 DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 ```
 
-* `scan` contains unmasked 4-bit entries (`?`) and is generally slower to search for.
+* `scan` contains unmasked 4-bit entries (`?`) and uses a slower algorithm.
 
 ```sh
 DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
@@ -91,16 +95,16 @@ In the example above:
 * Searched 16 KiB for `DB 27 5B FA FB` using AVX2 and exceptions disabled.
 * Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
 
-### Results
-All benchmarks were executed on the same system.
+All benchmark results were recorded on the same system.
 
 ```
-Run on (12 X 3713.02 MHz CPU s)
-CPU Caches:
-  L1 Data 32 KiB (x6)
-  L1 Instruction 32 KiB (x6)
-  L2 Unified 256 KiB (x6)
-  L3 Unified 12288 KiB (x1)
+Intel(R) Core(TM) i7-8700K 3.70 GHz (12 Threads)
+* L1 Data 32 KiB (x6)
+* L1 Instruction 32 KiB (x6)
+* L2 Unified 256 KiB (x6)
+* L3 Unified 12288 KiB (x1)
+
+32 GB DDR4
 ```
 
 * See [windows.md](res/windows.md) for Windows results.
@@ -212,20 +216,20 @@ cmake --build build/release-clang-cl
 # Windows
 build\debug\tests.exe
 build\release\tests.exe
-build\release\benchmarks.exe --benchmark_min_time=3
+build\release\benchmarks.exe
 
 build\debug-clang\tests.exe
 build\release-clang\tests.exe
-build\release-clang\benchmarks.exe --benchmark_min_time=3
+build\release-clang\benchmarks.exe
 
 build\debug-clang-cl\tests.exe
 build\release-clang-cl\tests.exe
-build\release-clang-cl\benchmarks.exe --benchmark_min_time=3
+build\release-clang-cl\benchmarks.exe
 
 # Linux
 build/debug-clang/tests
 build/release-clang/tests
-build/release-clang/benchmarks --benchmark_min_time=3
+build/release-clang/benchmarks
 ```
 
 </details>

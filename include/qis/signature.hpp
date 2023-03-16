@@ -77,9 +77,11 @@
 
 #if QIS_SIGNATURE_USE_EXCEPTIONS
 #include <exception>
+#else
+#include <cstdlib>
 #endif
 
-#if !QIS_SIGNATURE_USE_EXCEPTIONS || defined(QIS_SIGNATURE_EXTRA_ASSERTS)
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
 #include <cassert>
 #endif
 
@@ -87,7 +89,7 @@
 #if QIS_SIGNATURE_USE_EXCEPTIONS
 #define QIS_THROW_INVALID_SIGNATURE throw qis::invalid_signature()
 #else
-#define QIS_THROW_INVALID_SIGNATURE assert(!"invalid signature")
+#define QIS_THROW_INVALID_SIGNATURE std::abort()
 #endif
 #endif
 
@@ -103,9 +105,9 @@ namespace qis {
 QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
 namespace detail::signature {
 
-constexpr char cast(char signature) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
+constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
 
-template <bool mask>
+template <bool Mask>
 std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
 
 }  // namespace detail::signature
@@ -173,7 +175,7 @@ public:
       }
       const auto upper = *src++;
       const auto lower = *src++;
-      *dst++ = cast(upper) << 4 | cast(lower);
+      *dst++ = static_cast<char>(cast(upper) << 4 | cast(lower));
     }
 
     // Write mask.
@@ -184,7 +186,7 @@ public:
     for (std::size_t i = 0; i < size_; i++, src++) {
       const auto upper = *src++;
       const auto lower = *src++;
-      *dst++ = (upper == '?' ? 0x00 : 0xF0) | (lower == '?' ? 0x00 : 0x0F);
+      *dst++ = static_cast<char>((upper == '?' ? 0x00 : 0xF0) | char(lower == '?' ? 0x00 : 0x0F));
     }
 
     // Replace mask.
@@ -203,7 +205,7 @@ public:
       if (upper == '?' || lower == '?') {
         QIS_THROW_INVALID_SIGNATURE;
       }
-      *dst++ = cast(upper) << 4 | cast(lower);
+      *dst++ = static_cast<char>(cast(upper) << 4 | cast(lower));
     }
   }
 
@@ -335,13 +337,13 @@ namespace detail::signature {
 constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
 {
   if (xdigit >= '0' && xdigit <= '9') {
-    return xdigit - '0';
+    return static_cast<char>(xdigit - '0');
   }
   if (xdigit >= 'A' && xdigit <= 'F') {
-    return xdigit - 'A' + 0xA;
+    return static_cast<char>(xdigit - 'A' + 0xA);
   }
   if (xdigit >= 'a' && xdigit <= 'f') {
-    return xdigit - 'a' + 0xA;
+    return static_cast<char>(xdigit - 'a' + 0xA);
   }
   if (xdigit != '?') {
     QIS_THROW_INVALID_SIGNATURE;
@@ -349,7 +351,7 @@ constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
   return 0;
 }
 
-template <bool mask>
+template <bool Mask>
 std::size_t find_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
 
 template <>
@@ -568,7 +570,7 @@ inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) 
     const auto substring = _mm256_alignr_epi8(next1, curr, 1);
     eq = _mm256_and_si256(eq, _mm256_cmpeq_epi8(substring, broadcasted[1]));
     if (const auto mask = _mm256_movemask_epi8(eq)) {
-      return i + _tzcnt_u32(mask);
+      return i + _tzcnt_u32(static_cast<unsigned>(mask));
     }
 
     curr = next;
@@ -576,26 +578,26 @@ inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) 
   return qis::signature::npos;
 }
 
-template <std::size_t k>
+template <std::size_t K>
 std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto memcmp) noexcept
 {
+  static_assert(K);
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
   assert(s);
   assert(n);
   assert(p);
-  assert(k);
   assert(memcmp);
 #endif
   const auto s0 = _mm256_set1_epi8(p[0]);
-  const auto s1 = _mm256_set1_epi8(p[k - 1]);
+  const auto s1 = _mm256_set1_epi8(p[K - 1]);
   for (std::size_t i = 0; i < n; i += 32) {
     const auto b0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i));
-    const auto b1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i + k - 1));
+    const auto b1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i + K - 1));
     const auto e0 = _mm256_cmpeq_epi8(s0, b0);
     const auto e1 = _mm256_cmpeq_epi8(s1, b1);
     auto mask = _mm256_movemask_epi8(_mm256_and_si256(e0, e1));
     while (mask) {
-      const auto bitpos = _tzcnt_u32(mask);
+      const auto bitpos = _tzcnt_u32(static_cast<unsigned>(mask));
       if (memcmp(s + i + bitpos + 1, p + 1)) {
         return i + bitpos;
       }
@@ -623,7 +625,7 @@ inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char*
     const auto e1 = _mm256_cmpeq_epi8(s1, b1);
     auto mask = _mm256_movemask_epi8(_mm256_and_si256(e0, e1));
     while (mask) {
-      const auto bitpos = _tzcnt_u32(mask);
+      const auto bitpos = _tzcnt_u32(static_cast<unsigned>(mask));
       if (std::memcmp(s + i + bitpos + 1, p + 1, k - 2) == 0) {
         return i + bitpos;
       }
@@ -633,7 +635,7 @@ inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char*
   return qis::signature::npos;
 }
 
-template <bool mask>
+template <bool Mask>
 std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
 
 template <>
@@ -702,15 +704,15 @@ inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::
 
 #else
 
-template <bool mask>
+template <bool Mask>
 std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
-  return find_safe<mask>(s, n, p, k);
+  return find_safe<Mask>(s, n, p, k);
 }
 
 #endif
 
-template <bool mask>
+template <bool Mask>
 std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
@@ -721,8 +723,8 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
   assert(n >= k);
 #endif
 #if QIS_SIGNATURE_USE_TBB
-  constexpr std::size_t ranges = QIS_SIGNATURE_CONCURRENCY_RANGES;
-  constexpr std::size_t threshold = QIS_SIGNATURE_CONCURRENCY_THRESHOLD;
+  constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
+  constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
   if (n > threshold && n > k * 2) {
     // Determine block size.
     const auto block_size = std::max({ threshold / ranges, n / ranges, k * 2 });
@@ -744,7 +746,7 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
       }
 
       // Find signature in range.
-      if (const auto i = find<mask>(rs, rn, p, k); i != qis::signature::npos) {
+      if (const auto i = find<Mask>(rs, rn, p, k); i != qis::signature::npos) {
         std::size_t expected = qis::signature::npos;
         while (!pos.compare_exchange_weak(expected, ro + i, std::memory_order_release)) {
           if (expected <= i) {
@@ -756,10 +758,10 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
     return pos.load(std::memory_order_acquire);
   }
 #endif
-  return find<mask>(s, n, p, k);
+  return find<Mask>(s, n, p, k);
 }
 
-template <bool mask>
+template <bool Mask>
 std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
 #ifdef QIS_SIGNATURE_EXTRA_ASSERTS
@@ -771,13 +773,13 @@ std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k
 #endif
   const auto rest = std::max(std::size_t(64), k * 2);
   if (n < rest * 2) {
-    return find_safe<mask>(s, n, p, k);
+    return find_safe<Mask>(s, n, p, k);
   }
-  if (const auto pos = scan<mask>(s, n - rest, p, k); pos != qis::signature::npos) {
+  if (const auto pos = scan<Mask>(s, n - rest, p, k); pos != qis::signature::npos) {
     return pos;
   }
   const auto size = rest + k;
-  if (const auto pos = find_safe<mask>(s + n - size, size, p, k); pos != qis::signature::npos) {
+  if (const auto pos = find_safe<Mask>(s + n - size, size, p, k); pos != qis::signature::npos) {
     return n - size + pos;
   }
   return qis::signature::npos;

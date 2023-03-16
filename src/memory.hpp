@@ -13,14 +13,8 @@ namespace mem {
 std::vector<std::uint8_t> create(std::size_t size, std::string_view signature);
 
 // Writes given signature to data at given position.
-void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature) noexcept;
-void write(void* data, std::size_t size, std::size_t position, std::string_view signature) noexcept;
-
-// Prints given data to standard output in blocks.
-void print(std::span<const std::uint8_t> memory, std::size_t max = 1024) noexcept;
-
-// Prints given data to standard output in blocks.
-void print(const void* data, std::size_t size, std::size_t max = 1024) noexcept;
+void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature);
+void write(void* data, std::size_t size, std::size_t position, std::string_view signature);
 
 // Generates random data of given size and returns it.
 // The data is guaranteed not to contain the complete DB 27 5B signature.
@@ -46,12 +40,12 @@ std::span<const std::uint8_t> get(std::size_t size);
 // Returns a substring of given size to the following signature:
 // DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
-std::string_view find(std::size_t size = 26) noexcept;
+std::string_view find(std::size_t size = 26);
 
 // Returns a substring of given size to the following signature:
 // DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
-std::string_view scan(std::size_t size = 26) noexcept;
+std::string_view scan(std::size_t size = 26);
 
 inline namespace literals {
 

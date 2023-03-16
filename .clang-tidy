@@ -6,6 +6,7 @@ clang-analyzer-*,\
 -clang-analyzer-deadcode.DeadStores,\
 bugprone-*,\
 -bugprone-dynamic-static-initializers,\
+-bugprone-easily-swappable-parameters,\
 -bugprone-forward-declaration-namespace,\
 -bugprone-macro-parentheses,\
 cppcoreguidelines-*,\
@@ -37,16 +38,15 @@ modernize-*,\
 performance-*,\
 readability-*,\
 -readability-else-after-return,\
+-readability-function-cognitive-complexity,\
 -readability-function-size,\
 -readability-identifier-length,\
 -readability-implicit-bool-conversion,\
 -readability-magic-numbers,\
 -readability-named-parameter,\
 -readability-qualified-auto,\
--readability-uppercase-literal-suffix
-HeaderFilterRegex: '\.hpp$'
-AnalyzeTemporaryDtors: false
-FormatStyle: file
+-readability-uppercase-literal-suffix"
+
 CheckOptions:
   - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
     value: 1
@@ -54,26 +54,33 @@ CheckOptions:
     value: lower_case
   - key: modernize-use-default-member-init.UseAssignment
     value: 1
+  - key: readability-identifier-naming.ClassCase
+    value: lower_case
   - key: readability-identifier-naming.EnumCase
     value: lower_case
   - key: readability-identifier-naming.EnumConstantCase
     value: lower_case
-  - key: readability-identifier-naming.ClassCase
-    value: lower_case
-  - key: readability-identifier-naming.UnionCase
-    value: lower_case
-  - key: readability-identifier-naming.StructCase
-    value: lower_case
   - key: readability-identifier-naming.FunctionCase
-    value: lower_case
-  - key: readability-identifier-naming.ParameterCase
-    value: lower_case
-  - key: readability-identifier-naming.TemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.VariableCase
     value: lower_case
   - key: readability-identifier-naming.MemberCase
     value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
   - key: readability-identifier-naming.PrivateMemberSuffix
     value: _
+  - key: readability-identifier-naming.StructCase
+    value: lower_case
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
+    value: expr-type
+  - key: readability-identifier-naming.UnionCase
+    value: lower_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+
+HeaderFilterRegex: '(include/qis|src)/.*\.(h|hpp)$'
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+UseColor: true
 ...

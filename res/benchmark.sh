@@ -12,8 +12,12 @@ fi
 cmake --preset debug-clang
 cmake --preset release-clang
 
+date
+
 cmake --build build/debug-clang
 cmake --build build/release-clang
+
+date
 
 build/debug-clang/tests
 build/release-clang/tests

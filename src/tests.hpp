@@ -67,7 +67,7 @@ QIS_TEST("signature(string_view)")
   SUBCASE("signature data size: 1")
   {
     for (auto c : bytes) {
-      sv data(&c, 1);
+      const sv data(&c, 1);
       REQUIRE_THROWS_AS(qis::signature{ data }, qis::invalid_signature);
     }
   }
@@ -79,7 +79,7 @@ QIS_TEST("signature(string_view)")
       data[0] = c0;
       for (auto c1 : bytes | valid) {
         data[1] = c1;
-        qis::signature s{ data };
+        const qis::signature s{ data };
         REQUIRE(s.size() == 1);
         REQUIRE(s.data() != nullptr);
         if (c0 == '?' || c1 == '?') {
@@ -101,35 +101,35 @@ QIS_TEST("signature(string_view)")
 
   SUBCASE("data size: 1")
   {
-    qis::signature s0{ "00" };
+    const qis::signature s0{ "00" };
     REQUIRE(s0.data()[0] == '\x00');
 
-    qis::signature s1{ "0F" };
+    const qis::signature s1{ "0F" };
     REQUIRE(s1.data()[0] == '\x0F');
 
-    qis::signature s2{ "F0" };
+    const qis::signature s2{ "F0" };
     REQUIRE(s2.data()[0] == '\xF0');
 
-    qis::signature s3{ "FF" };
+    const qis::signature s3{ "FF" };
     REQUIRE(s3.data()[0] == '\xFF');
 
-    qis::signature s4{ "?0" };
+    const qis::signature s4{ "?0" };
     REQUIRE(s4.data()[0] == '\x00');
     REQUIRE(s4.mask()[0] == '\x0F');
 
-    qis::signature s5{ "?F" };
+    const qis::signature s5{ "?F" };
     REQUIRE(s5.data()[0] == '\x0F');
     REQUIRE(s5.mask()[0] == '\x0F');
 
-    qis::signature s6{ "0?" };
+    const qis::signature s6{ "0?" };
     REQUIRE(s6.data()[0] == '\x00');
     REQUIRE(s6.mask()[0] == '\xF0');
 
-    qis::signature s7{ "F?" };
+    const qis::signature s7{ "F?" };
     REQUIRE(s7.data()[0] == '\xF0');
     REQUIRE(s7.mask()[0] == '\xF0');
 
-    qis::signature s8{ "??" };
+    const qis::signature s8{ "??" };
     REQUIRE(s8.data()[0] == '\x00');
     REQUIRE(s8.mask()[0] == '\x00');
   }
@@ -157,7 +157,7 @@ QIS_TEST("signature(string_view)")
     std::string data{ "FF F " };
     for (auto c : bytes | valid) {
       data[4] = c;
-      qis::signature s{ data };
+      const qis::signature s{ data };
       REQUIRE(s.size() == 2);
       REQUIRE(s.data() != nullptr);
       if (c == '?') {
@@ -178,35 +178,35 @@ QIS_TEST("signature(string_view)")
 
   SUBCASE("data size: 2")
   {
-    qis::signature s0{ "FF 00" };
+    const qis::signature s0{ "FF 00" };
     REQUIRE(sv(s0.data(), 2) == sv("\xFF\x00", 2));
 
-    qis::signature s1{ "FF 0F" };
+    const qis::signature s1{ "FF 0F" };
     REQUIRE(sv(s1.data(), 2) == sv("\xFF\x0F", 2));
 
-    qis::signature s2{ "FF F0" };
+    const qis::signature s2{ "FF F0" };
     REQUIRE(sv(s2.data(), 2) == sv("\xFF\xF0", 2));
 
-    qis::signature s3{ "FF FF" };
+    const qis::signature s3{ "FF FF" };
     REQUIRE(sv(s3.data(), 2) == sv("\xFF\xFF", 2));
 
-    qis::signature s4{ "FF ?0" };
+    const qis::signature s4{ "FF ?0" };
     REQUIRE(sv(s4.data(), 2) == sv("\xFF\x00", 2));
     REQUIRE(sv(s4.mask(), 2) == sv("\xFF\x0F", 2));
 
-    qis::signature s5{ "FF ?F" };
+    const qis::signature s5{ "FF ?F" };
     REQUIRE(sv(s5.data(), 2) == sv("\xFF\x0F", 2));
     REQUIRE(sv(s5.mask(), 2) == sv("\xFF\x0F", 2));
 
-    qis::signature s6{ "FF 0?" };
+    const qis::signature s6{ "FF 0?" };
     REQUIRE(sv(s6.data(), 2) == sv("\xFF\x00", 2));
     REQUIRE(sv(s6.mask(), 2) == sv("\xFF\xF0", 2));
 
-    qis::signature s7{ "FF F?" };
+    const qis::signature s7{ "FF F?" };
     REQUIRE(sv(s7.data(), 2) == sv("\xFF\xF0", 2));
     REQUIRE(sv(s7.mask(), 2) == sv("\xFF\xF0", 2));
 
-    qis::signature s8{ "FF ??" };
+    const qis::signature s8{ "FF ??" };
     REQUIRE(sv(s8.data(), 2) == sv("\xFF\x00", 2));
     REQUIRE(sv(s8.mask(), 2) == sv("\xFF\x00", 2));
   }
@@ -225,7 +225,7 @@ QIS_TEST("signature(string_view, string_view mask)")
 {
   SUBCASE("empty signature mask")
   {
-    qis::signature s("00", "");
+    const qis::signature s("00", "");
     REQUIRE(s.size() == 1);
     REQUIRE(s.data() != nullptr);
     REQUIRE(s.mask() == nullptr);
@@ -239,7 +239,7 @@ QIS_TEST("signature(string_view, string_view mask)")
   SUBCASE("signature mask size: 1")
   {
     for (auto c : bytes) {
-      sv mask(&c, 1);
+      const sv mask(&c, 1);
       REQUIRE_THROWS_AS(qis::signature("00", mask), qis::invalid_signature);
     }
   }
@@ -251,7 +251,7 @@ QIS_TEST("signature(string_view, string_view mask)")
       mask[0] = c0;
       for (auto c1 : bytes | digit) {
         mask[1] = c1;
-        qis::signature s("00", mask);
+        const qis::signature s("00", mask);
         REQUIRE(s.size() == 1);
         REQUIRE(s.data() != nullptr);
         REQUIRE(s.mask() != nullptr);
@@ -261,19 +261,19 @@ QIS_TEST("signature(string_view, string_view mask)")
 
   SUBCASE("mask size: 1")
   {
-    qis::signature s0("FF", "00");
+    const qis::signature s0("FF", "00");
     REQUIRE(s0.data()[0] == '\xFF');
     REQUIRE(s0.mask()[0] == '\x00');
 
-    qis::signature s1("FF", "0F");
+    const qis::signature s1("FF", "0F");
     REQUIRE(s1.data()[0] == '\xFF');
     REQUIRE(s1.mask()[0] == '\x0F');
 
-    qis::signature s2("FF", "F0");
+    const qis::signature s2("FF", "F0");
     REQUIRE(s2.data()[0] == '\xFF');
     REQUIRE(s2.mask()[0] == '\xF0');
 
-    qis::signature s3("FF", "FF");
+    const qis::signature s3("FF", "FF");
     REQUIRE(s3.data()[0] == '\xFF');
     REQUIRE(s3.mask()[0] == '\xFF');
   }
@@ -310,7 +310,7 @@ QIS_TEST("signature(string_view, string_view mask)")
     std::string mask{ "FF F " };
     for (auto c : bytes | digit) {
       mask[4] = c;
-      qis::signature s("00 00", mask);
+      const qis::signature s("00 00", mask);
       REQUIRE(s.size() == 2);
       REQUIRE(s.data() != nullptr);
       REQUIRE(s.mask() != nullptr);
@@ -328,44 +328,44 @@ QIS_TEST("signature(string_view, string_view mask)")
 
   SUBCASE("data size: 2 (same size)")
   {
-    qis::signature s0("FF FF", "FF 00");
+    const qis::signature s0("FF FF", "FF 00");
     REQUIRE(sv(s0.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s0.mask(), 2) == sv("\xFF\x00", 2));
 
-    qis::signature s1("FF FF", "FF 0F");
+    const qis::signature s1("FF FF", "FF 0F");
     REQUIRE(sv(s1.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s1.mask(), 2) == sv("\xFF\x0F", 2));
 
-    qis::signature s2("FF FF", "FF F0");
+    const qis::signature s2("FF FF", "FF F0");
     REQUIRE(sv(s2.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s2.mask(), 2) == sv("\xFF\xF0", 2));
 
-    qis::signature s3("FF FF", "FF FF");
+    const qis::signature s3("FF FF", "FF FF");
     REQUIRE(sv(s3.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s3.mask(), 2) == sv("\xFF\xFF", 2));
   }
 
   SUBCASE("data size: 2 (mask smaller)")
   {
-    qis::signature s0("FF FF", "00");
+    const qis::signature s0("FF FF", "00");
     REQUIRE(s0.size() == 2);
     REQUIRE(s0.mask() != nullptr);
     REQUIRE(sv(s0.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s0.mask(), 2) == sv("\x00\xFF", 2));
 
-    qis::signature s1("FF FF", "0F");
+    const qis::signature s1("FF FF", "0F");
     REQUIRE(s1.size() == 2);
     REQUIRE(s1.mask() != nullptr);
     REQUIRE(sv(s1.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s1.mask(), 2) == sv("\x0F\xFF", 2));
 
-    qis::signature s2("FF FF", "F0");
+    const qis::signature s2("FF FF", "F0");
     REQUIRE(s2.size() == 2);
     REQUIRE(s2.mask() != nullptr);
     REQUIRE(sv(s2.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s2.mask(), 2) == sv("\xF0\xFF", 2));
 
-    qis::signature s3("FF FF", "FF");
+    const qis::signature s3("FF FF", "FF");
     REQUIRE(s3.size() == 2);
     REQUIRE(s3.mask() != nullptr);
     REQUIRE(sv(s3.data(), 2) == sv("\xFF\xFF", 2));
@@ -374,25 +374,25 @@ QIS_TEST("signature(string_view, string_view mask)")
 
   SUBCASE("data size: 2 (mask larger)")
   {
-    qis::signature s0("FF FF", "FF 00 FF");
+    const qis::signature s0("FF FF", "FF 00 FF");
     REQUIRE(s0.size() == 2);
     REQUIRE(s0.mask() != nullptr);
     REQUIRE(sv(s0.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s0.mask(), 2) == sv("\xFF\x00", 2));
 
-    qis::signature s1("FF FF", "FF 0F FF");
+    const qis::signature s1("FF FF", "FF 0F FF");
     REQUIRE(s1.size() == 2);
     REQUIRE(s1.mask() != nullptr);
     REQUIRE(sv(s1.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s1.mask(), 2) == sv("\xFF\x0F", 2));
 
-    qis::signature s2("FF FF", "FF F0 FF");
+    const qis::signature s2("FF FF", "FF F0 FF");
     REQUIRE(s2.size() == 2);
     REQUIRE(s2.mask() != nullptr);
     REQUIRE(sv(s2.data(), 2) == sv("\xFF\xFF", 2));
     REQUIRE(sv(s2.mask(), 2) == sv("\xFF\xF0", 2));
 
-    qis::signature s3("FF FF", "FF FF FF");
+    const qis::signature s3("FF FF", "FF FF FF");
     REQUIRE(s3.size() == 2);
     REQUIRE(s3.mask() != nullptr);
     REQUIRE(sv(s3.data(), 2) == sv("\xFF\xFF", 2));
@@ -415,19 +415,19 @@ QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
 
   SUBCASE("data: nullptr, dsize: 0")
   {
-    qis::signature s0(nullptr, 0, nullptr, 0);
+    const qis::signature s0(nullptr, 0, nullptr, 0);
     REQUIRE(s0.size() == 0);
     REQUIRE(s0.data() == nullptr);
     REQUIRE(s0.mask() == nullptr);
 
     REQUIRE_THROWS_AS(qis::signature(nullptr, 0, nullptr, 1), qis::invalid_signature);
 
-    qis::signature s2(nullptr, 0, bin, 0);
+    const qis::signature s2(nullptr, 0, bin, 0);
     REQUIRE(s2.size() == 0);
     REQUIRE(s2.data() == nullptr);
     REQUIRE(s2.mask() == nullptr);
 
-    qis::signature s3(nullptr, 0, bin, 1);
+    const qis::signature s3(nullptr, 0, bin, 1);
     REQUIRE(s3.size() == 0);
     REQUIRE(s3.data() == nullptr);
     REQUIRE(s3.mask() == nullptr);
@@ -443,19 +443,19 @@ QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
 
   SUBCASE("data: (valid), dsize: 0")
   {
-    qis::signature s0(bin, 0, nullptr, 0);
+    const qis::signature s0(bin, 0, nullptr, 0);
     REQUIRE(s0.size() == 0);
     REQUIRE(s0.data() == nullptr);
     REQUIRE(s0.mask() == nullptr);
 
     REQUIRE_THROWS_AS(qis::signature(bin, 0, nullptr, 1), qis::invalid_signature);
 
-    qis::signature s2(bin, 0, bin, 0);
+    const qis::signature s2(bin, 0, bin, 0);
     REQUIRE(s2.size() == 0);
     REQUIRE(s2.data() == nullptr);
     REQUIRE(s2.mask() == nullptr);
 
-    qis::signature s3(bin, 0, bin, 1);
+    const qis::signature s3(bin, 0, bin, 1);
     REQUIRE(s3.size() == 0);
     REQUIRE(s3.data() == nullptr);
     REQUIRE(s3.mask() == nullptr);
@@ -463,7 +463,7 @@ QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
 
   SUBCASE("data: (valid), dsize: 1")
   {
-    qis::signature s0(bin, 1, nullptr, 0);
+    const qis::signature s0(bin, 1, nullptr, 0);
     REQUIRE(s0.size() == 1);
     REQUIRE(s0.data() != nullptr);
     REQUIRE(s0.data() != bin);
@@ -471,13 +471,13 @@ QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
 
     REQUIRE_THROWS_AS(qis::signature(bin, 1, nullptr, 1), qis::invalid_signature);
 
-    qis::signature s2(bin, 1, bin, 0);
+    const qis::signature s2(bin, 1, bin, 0);
     REQUIRE(s2.size() == 1);
     REQUIRE(s2.data() != nullptr);
     REQUIRE(s2.data() != bin);
     REQUIRE(s2.mask() == nullptr);
 
-    qis::signature s3(bin, 1, bin, 1);
+    const qis::signature s3(bin, 1, bin, 1);
     REQUIRE(s3.size() == 1);
     REQUIRE(s3.data() != nullptr);
     REQUIRE(s3.data() != bin);
@@ -498,11 +498,11 @@ QIS_TEST("signature(signature&&)")
   REQUIRE(data != nullptr);
   REQUIRE(mask != nullptr);
 
-  qis::signature dst(std::move(src));
+  const qis::signature dst(std::move(src));
 
-  REQUIRE(src.size() == 0);
-  REQUIRE(src.data() == nullptr);
-  REQUIRE(src.mask() == nullptr);
+  REQUIRE(src.size() == 0);        // NOLINT
+  REQUIRE(src.data() == nullptr);  // NOLINT
+  REQUIRE(src.mask() == nullptr);  // NOLINT
 
   REQUIRE(dst.size() == 3);
   REQUIRE(dst.data() == data);
@@ -512,7 +512,7 @@ QIS_TEST("signature(signature&&)")
 QIS_TEST("signature(const signature&)")
 {
   const qis::signature src{ "00 FF ??" };
-  qis::signature dst(src);
+  const qis::signature dst(src);  // NOLINT
 
   REQUIRE(src.size() == 3);
   REQUIRE(src.data() != nullptr);
@@ -541,9 +541,9 @@ QIS_TEST("signature& operator=(signature&&)")
   qis::signature dst;
   dst = std::move(src);
 
-  REQUIRE(src.size() == 0);
-  REQUIRE(src.data() == nullptr);
-  REQUIRE(src.mask() == nullptr);
+  REQUIRE(src.size() == 0);        // NOLINT
+  REQUIRE(src.data() == nullptr);  // NOLINT
+  REQUIRE(src.mask() == nullptr);  // NOLINT
 
   REQUIRE(dst.size() == 3);
   REQUIRE(dst.data() == data);
@@ -578,8 +578,8 @@ QIS_TEST("scan")
   const auto find = mem::find();
   const auto scan = mem::scan();
 
-  qis::signature s0{ find.substr(0, 2) };
-  qis::signature s1{ "??" };
+  const qis::signature s0{ find.substr(0, 2) };
+  const qis::signature s1{ "??" };
 
   REQUIRE(std::memcmp(s0.data(), m15b.data(), 1) == 0);
 
@@ -600,7 +600,7 @@ QIS_TEST("scan")
 
   REQUIRE(qis::scan(m15b.data(), 1, qis::signature()) == 0);
 
-  qis::signature s2(find);
+  const qis::signature s2(find);
   REQUIRE(s2.size() == 26);
   REQUIRE(s2.mask() == nullptr);
 
@@ -616,7 +616,7 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s2.data(), m1mb.data() + 1_mb - 26, 26) == 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s2) == 1_mb - 26);
 
-  qis::signature s3(scan);
+  const qis::signature s3(scan);
   REQUIRE(s3.size() == 26);
   REQUIRE(s3.mask() != nullptr);
 
@@ -640,7 +640,7 @@ QIS_TEST("scan")
   std::string find_miss(find);
   find_miss[1] = 'F';
 
-  qis::signature s4(find_miss);
+  const qis::signature s4(find_miss);
   REQUIRE(s4.size() == 26);
   REQUIRE(s4.mask() == nullptr);
   REQUIRE(std::memcmp(s4.data(), m1mb.data() + 1_mb - 26, 26) != 0);
@@ -651,7 +651,7 @@ QIS_TEST("scan")
   std::string scan_miss(scan);
   scan_miss[1] = 'F';
 
-  qis::signature s5(scan_miss);
+  const qis::signature s5(scan_miss);
   REQUIRE(s5.size() == 26);
   REQUIRE(s5.mask() != nullptr);
   REQUIRE(std::memcmp(s5.data(), m1mb.data() + 1_mb - 26, 26) != 0);
@@ -672,7 +672,7 @@ QIS_TEST("memory access")
 
   const auto find = mem::find();
   const auto scan = mem::scan();
-  qis::signature data(find);
+  const qis::signature data(find);
 
   std::shared_ptr<char> memory(
     reinterpret_cast<char*>(VirtualAlloc(nullptr, si.dwPageSize * 2, MEM_COMMIT, PAGE_READWRITE)),
@@ -685,7 +685,7 @@ QIS_TEST("memory access")
 
   const auto check = [&](std::string_view str) {
     for (std::size_t i = 1; i < str.size() / 3 + 1; i++) {
-      qis::signature sig(str.substr(0, i * 3 - 1));
+      const qis::signature sig(str.substr(0, i * 3 - 1));
       for (std::size_t size = 1; size < 256; size++) {
         const auto mmax = end - size;
         std::memcpy(mmax, m1mb.data(), size);

@@ -22,13 +22,12 @@
     ->ArgPair(size, static_cast<std::int64_t>(scan))
 
 #define QIS_BENCHMARK_ABORT(message)                   \
-  assert(!message);                                    \
   std::fputs("\nError: " message "\n", stderr);        \
   std::exit(EXIT_FAILURE);
 
 // clang-format on
 
-extern std::vector<std::pair<std::size_t, std::size_t>> benchmarks;
+std::vector<std::pair<std::size_t, std::size_t>>& benchmarks();
 
 namespace QIS_SIGNATURE_ABI {
 
@@ -45,7 +44,7 @@ static std::string benchmark_name(std::size_t type, std::size_t size)
   if (size < 26) {
     QIS_BENCHMARK_ABORT("Invalid size.");
   }
-  benchmarks.emplace_back(type, size);
+  benchmarks().emplace_back(type, size);
   return std::format("{}:{:08X}:{}", type, size, QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI));
 }
 

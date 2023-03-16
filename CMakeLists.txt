@@ -46,9 +46,9 @@ if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " /GS")
   endif()
 
-  # Configures the target and sources.
+  # Configures target and sources.
   function(signature_configure_target target)
-    # Configure the standard library.
+    # Configure standard library.
     if(WIN32)
       target_compile_definitions(${target} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
     else()
@@ -57,30 +57,36 @@ if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
       target_link_libraries(${target} PRIVATE c++ c++experimental)
     endif()
 
-    # Enable AVX2 support.
-    if(MSVC)
-      target_compile_options(${target} PRIVATE /arch:AVX2)
-    else()
-      target_compile_options(${target} PRIVATE -mavx2)
-    endif()
-
     # Configure sources.
     foreach(source IN LISTS ARGN)
+      unset(source_compile_options)
+      if(source MATCHES "avx_" OR source MATCHES "memory.cpp" OR source MATCHES "main.cpp")
+        # Enable AVX and AVX2 support.
+        if(MSVC)
+          list(APPEND source_compile_options "/arch:AVX2")
+        else()
+          list(APPEND source_compile_options "-mavx;-mavx2")
+        endif()
+      endif()
       if(source MATCHES "_noe\.")
         # Disable exceptions and RTTI for source filenames that end with "_noe".
         if(MSVC)
-          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHs-c-;/GR-")
+          list(APPEND source_compile_options "/EHs-c-;/GR-")
         else()
-          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "-fno-exceptions;-fno-rtti")
+          list(APPEND source_compile_options "-fno-exceptions;-fno-rtti")
         endif()
         if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-          set_source_files_properties(${source} PROPERTIES COMPILE_DEFINITIONS "_HAS_EXCEPTIONS=0")
+          list(APPEND source_compile_options "/D_HAS_EXCEPTIONS=0")
         endif()
       else()
         # Enable exceptions and RTTI for source filenames that don't end with "_noe"'.
         if(MSVC)
-          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/EHsc;/GR")
+          list(APPEND source_compile_options "/EHsc;/GR")
         endif()
+      endif()
+      if(source_compile_options)
+        set_source_files_properties(${source} PROPERTIES
+          COMPILE_OPTIONS "${source_compile_options}")
       endif()
     endforeach()
   endfunction()
@@ -110,7 +116,7 @@ add_library(qis::signature ALIAS signature)
 # Main
 if(SIGNATURE_BUILD_MAIN)
   file(GLOB sources src/main.cpp)
-  add_executable(main ${sources})
+  add_executable(main ${sources} src/simulate.hpp)
   target_compile_features(main PRIVATE cxx_std_23)
   target_include_directories(main PRIVATE include src)
   target_link_libraries(main PRIVATE TBB::tbb)

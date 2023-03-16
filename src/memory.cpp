@@ -11,14 +11,15 @@
 #define QIS_SIGNATURE_ABI memory
 #define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN inline namespace QIS_SIGNATURE_ABI {
 #define QIS_SIGNATURE_INLINE_NAMESPACE_END }
+#define QIS_SIGNATURE_USE_AVX 1
 #define QIS_SIGNATURE_USE_TBB 0
 #include <qis/signature.hpp>
 
 namespace mem {
 namespace {
 
-std::mutex g_mutex;
-std::map<std::size_t, std::vector<std::uint8_t>> g_memory;
+std::mutex g_mutex;                                         // NOLINT
+std::map<std::size_t, std::vector<std::uint8_t>> g_memory;  // NOLINT
 
 }  // namespace
 
@@ -67,7 +68,7 @@ std::vector<std::uint8_t> create(std::size_t size, std::string_view signature)
   return memory;
 }
 
-void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature) noexcept
+void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature)
 {
   // Check size.
   if (position >= memory.size()) {
@@ -109,47 +110,10 @@ void write(std::span<std::uint8_t> memory, std::size_t position, std::string_vie
   }
 }
 
-void write(void* data, std::size_t size, std::size_t position, std::string_view signature) noexcept
+void write(void* data, std::size_t size, std::size_t position, std::string_view signature)
 {
   const auto memory = reinterpret_cast<std::uint8_t*>(data);
   write({ memory, size }, position, signature);
-}
-
-void print(std::span<const std::uint8_t> memory, std::size_t max) noexcept
-{
-  const auto size = std::min(memory.size(), max);
-  if (!size) {
-    return;
-  }
-  std::string text;
-  text.reserve(size * 3 + size / 4 + size / 8 + 2);
-  std::size_t counter = 0;
-  for (auto byte : memory) {
-    if (counter % 16 == 0) {
-      text.append("\r\n", 2);
-    } else if (counter % 4 == 0) {
-      text.append("  ", 2);
-    } else if (counter) {
-      text.push_back(' ');
-    }
-    if (counter++ >= max) {
-      text.append("..", 2);
-      break;
-    }
-    const auto upper = static_cast<char>(byte >> 4);
-    const auto lower = static_cast<char>(byte & 0xF);
-    text.push_back(upper + (upper < 10 ? '0' : 'A' - 10));
-    text.push_back(lower + (lower < 10 ? '0' : 'A' - 10));
-  }
-  std::fputs(text.data(), stdout);
-}
-
-void print(const void* data, std::size_t size, std::size_t max) noexcept
-{
-  if (!data || !size) {
-    return;
-  }
-  print({ reinterpret_cast<const std::uint8_t*>(data), size }, max);
 }
 
 std::vector<std::uint8_t> random(std::size_t size)
@@ -200,13 +164,13 @@ std::vector<std::uint8_t> random(std::size_t size)
   return memory;
 }
 
-void initialize(std::span<const std::size_t> blocks)
+void initialize(std::span<const std::size_t> sizes)
 {
   // Check sizes.
-  if (blocks.empty()) {
+  if (sizes.empty()) {
     return;
   }
-  const auto data_size = std::min(128_mb, *std::max_element(blocks.begin(), blocks.end()));
+  const auto data_size = std::min(128_mb, *std::max_element(sizes.begin(), sizes.end()));
   if (!data_size) {
     return;
   }
@@ -220,8 +184,8 @@ void initialize(std::span<const std::size_t> blocks)
   assert(search.data());
 
   // Allocate memory.
-  std::lock_guard lock(g_mutex);
-  for (auto size : blocks) {
+  const std::lock_guard lock(g_mutex);
+  for (auto size : sizes) {
     // Check size.
     if (!size) {
       continue;
@@ -248,7 +212,7 @@ void initialize(std::span<const std::size_t> blocks)
 void shutdown()
 {
   // Free memory.
-  std::lock_guard lock(g_mutex);
+  const std::lock_guard lock(g_mutex);
   g_memory.clear();
 }
 
@@ -268,7 +232,7 @@ std::span<const std::uint8_t> get(std::size_t size)
   throw std::invalid_argument(std::format("memory size not initialized: {}", size));
 }
 
-std::string_view find(std::size_t size) noexcept
+std::string_view find(std::size_t size)
 {
   assert(size <= 26);
   // clang-format off
@@ -278,7 +242,7 @@ std::string_view find(std::size_t size) noexcept
   // clang-format on
 }
 
-std::string_view scan(std::size_t size) noexcept
+std::string_view scan(std::size_t size)
 {
   assert(size <= 26);
   // clang-format off
