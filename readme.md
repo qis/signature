@@ -12,7 +12,7 @@ This project was tested using the following compilers.
 
 ## Usage
 Copy [signature.hpp](include/qis/signature.hpp) to your project **or**
-install this project as an interface CMake library (see below).
+install this project as an interface CMake library.
 
 ```cpp
 #include <qis/signature.hpp>
