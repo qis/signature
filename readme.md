@@ -109,20 +109,11 @@ Intel(R) Core(TM) i7-8700K @ 3.70 GHz (12 Threads)
 * See [windows.md](res/windows.md) for Windows results.
 * See [linux.md](res/linux.md) for Linux results.
 
-## Build & Install
-This is a header-only. Building and installing is optional.
+## Tools
+Install tools required for building benchmarks and tests.
 
 <details>
-<summary>Build</summary>
-
-1. Install [Python 3][py].
-2. Install [Conan][conan].
-
-```sh
-pip install "conan<2.0.0"
-```
-
-3. Install [CMake][cmake] and [LLVM][llvm] on **Linux**.
+<summary>Linux</summary>
 
 ```sh
 # CMake
@@ -155,27 +146,52 @@ sudo tee /etc/ld.so.conf.d/llvm.conf >/dev/null <<'EOF'
 EOF
 
 sudo ldconfig
+
+# Python
+sudo apt install -y python3 python3-pip
+
+# Conan
+pip install "conan<2.0.0"
+conan profile new default --detect
+conan profile update settings.compiler.libcxx=libstdc++11 default
 ```
 
-4. Install [Visual Studio][vs] with C++ and CMake support on **Windows**.
-5. Clone project. Use `x64 Native Tools Command Prompt for VS 2022` on Windows.
+</details>
+
+<details>
+<summary>Windows</summary>
+
+1. Download and install [Python][py] and [Visual Studio][vs] with C++ and CMake support.
+3. Install [Conan][conan] in `x64 Native Tools Command Prompt for VS 2022`.
+
+```cmd
+pip install "conan<2.0.0"
+conan profile new default --detect
+```
+
+</details>
+
+## Build & Install
+This is a header-only. Building and installing is optional.
+
+<details>
+<summary>Build</summary>
+
+Use `x64 Native Tools Command Prompt for VS 2022` on Windows.
+
+1. Install dependencies on Windows.
+
+```cmd
+conan install third_party -if third_party/msvc -pr third_party/msvc.profile
+```
+
+2. Build dependencies on Linux.
 
 ```sh
-git clone https://github.com/qis/signature signature
-cd signature
+conan install third_party -if third_party/llvm -pr third_party/llvm.profile
 ```
 
-6. Install dependencies.
-
-```sh
-# Windows
-conan install . -if third_party/msvc -pr conan.msvc
-
-# Linux
-conan install . -if third_party/llvm -pr conan.llvm
-```
-
-7. Configure project.
+3. Configure project.
 
 ```sh
 cmake --list-presets
@@ -193,7 +209,7 @@ cmake --preset debug-clang-cl
 cmake --preset release-clang-cl
 ```
 
-8. Build configurations.
+4. Build configurations.
 
 ```sh
 # Windows
@@ -209,7 +225,7 @@ cmake --build build/debug-clang-cl --target tests
 cmake --build build/release-clang-cl
 ```
 
-9. Run tests and benchmarks.
+5. Run tests and benchmarks.
 
 ```sh
 # Windows

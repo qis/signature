@@ -70,7 +70,7 @@ int main()
 {
   try {
     std::vector<char> memory(128, 0);
-    qis::signature search{ "DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF" };
+    const qis::signature search{ "DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF" };
     std::memcpy(memory.data() + 2, search.data(), search.size());
 
     constexpr std::size_t k = 2;

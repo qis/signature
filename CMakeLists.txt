@@ -21,7 +21,7 @@ endif()
 # Build Configuration
 if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
   # Set conan install directory.
-  if(WIN32)
+  if(MSVC)
     set(third_party third_party/msvc)
   else()
     set(third_party third_party/llvm)

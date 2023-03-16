@@ -21,13 +21,13 @@ enum class color {
   white = 97,
 };
 
-void print(const char* s) noexcept
+inline void print(const char* s) noexcept
 {
   std::fputs(s, stdout);
   std::fflush(stdout);
 }
 
-void print(color c, const char* s) noexcept
+inline void print(color c, const char* s) noexcept
 {
   std::fputs(std::format("\033[0;{:02d}m", static_cast<int>(c)).data(), stdout);
   std::fputs(s, stdout);

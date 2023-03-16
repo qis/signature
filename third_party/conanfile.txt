@@ -3,6 +3,9 @@ benchmark/[*]
 doctest/[*]
 onetbb/[*]
 
+[options]
+onetbb:shared=True
+
 [generators]
 cmake_find_package
 

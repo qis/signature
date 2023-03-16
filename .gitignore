@@ -3,6 +3,7 @@
 !/include/
 !/res/
 !/src/
+!/third_party/
 !/.clangd
 !/.clang-format
 !/.clang-tidy
@@ -10,8 +11,5 @@
 !/.gitignore
 !/CMakeLists.txt
 !/CMakePresets.json
-!/conan.msvc
-!/conan.llvm
-!/conanfile.txt
 !/license.txt
 !/readme.md
