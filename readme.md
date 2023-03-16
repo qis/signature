@@ -11,7 +11,7 @@ This project was tested using the following compilers.
 * LLVM 15 (clang and libc++) on Linux
 
 ## Usage
-Copy the [signature.hpp](include/qis/signature.hpp) header file **or**
+Copy [signature.hpp](include/qis/signature.hpp) to your project **or**
 install this project as an interface CMake library (see below).
 
 ```cpp
