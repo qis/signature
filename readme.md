@@ -60,17 +60,17 @@ The container and search algorithms were extensively tested. See
 All benchmark results use the following report syntax.
 
 ```
--------------------------------------------------------------
-Benchmark                   Time             CPU   Iterations
--------------------------------------------------------------
-find avx     05 16 kb     150 ns          120 ns      1000000
-scan     tbb 06 32 kb     300 ns          280 ns      1000000
+-----------------------------------------------------------
+Benchmark                 Time             CPU   Iterations
+-----------------------------------------------------------
+find avx     05 16 kb   150 ns          120 ns      1000000
+scan     tbb 06 32 kb   300 ns          280 ns      1000000
  ^    ^   ^   ^  ^
- |    |   |   |  +- Searched memory block size.
- |    |   |   +---- Signature size used for the search.
- |    |   +------------ Benchmark compiled with TBB support.
- |    +---------------- Benchmark compiled with AVX2 support.
- +--------------------- Signature type used for the search.
+ |    |   |   |  +--- Searched memory block size.
+ |    |   |   +------ Signature size used for the search.
+ |    |   +---------- Benchmark compiled with TBB support.
+ |    +-------------- Benchmark compiled with AVX2 support.
+ +------------------- Signature type used for the search.
 ```
 
 There are two types of signatures used by the benchmarks and tests:
