@@ -39,16 +39,14 @@ if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
   # Find common dependencies.
   find_package(TBB REQUIRED COMPONENTS tbb)
 
-  # Remove exceptions and RTTI options from MSVC compiler flags.
+  # Enable buffer security checks for debug builds.
   if(MSVC)
-    string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    string(REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " /GS")
   endif()
 
   # Configures target and sources.
   function(signature_configure_target target)
-    # Configure standard library.
+    # Configure standard library and system headers.
     if(WIN32)
       target_compile_definitions(${target} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
     else()
@@ -57,36 +55,14 @@ if(SIGNATURE_BUILD_BENCHMARKS OR SIGNATURE_BUILD_TESTS OR SIGNATURE_BUILD_MAIN)
       target_link_libraries(${target} PRIVATE c++ c++experimental)
     endif()
 
-    # Configure sources.
+    # Enable AVX2 support.
     foreach(source IN LISTS ARGN)
-      unset(source_compile_options)
       if(source MATCHES "avx_" OR source MATCHES "memory.cpp" OR source MATCHES "main.cpp")
-        # Enable AVX and AVX2 support.
         if(MSVC)
-          list(APPEND source_compile_options "/arch:AVX2")
+          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
         else()
-          list(APPEND source_compile_options "-mavx;-mavx2")
+          set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "-mavx2")
         endif()
-      endif()
-      if(source MATCHES "_noe\.")
-        # Disable exceptions and RTTI for source filenames that end with "_noe".
-        if(MSVC)
-          list(APPEND source_compile_options "/EHs-c-;/GR-")
-        else()
-          list(APPEND source_compile_options "-fno-exceptions;-fno-rtti")
-        endif()
-        if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-          list(APPEND source_compile_options "/D_HAS_EXCEPTIONS=0")
-        endif()
-      else()
-        # Enable exceptions and RTTI for source filenames that don't end with "_noe"'.
-        if(MSVC)
-          list(APPEND source_compile_options "/EHsc;/GR")
-        endif()
-      endif()
-      if(source_compile_options)
-        set_source_files_properties(${source} PROPERTIES
-          COMPILE_OPTIONS "${source_compile_options}")
       endif()
     endforeach()
   endfunction()

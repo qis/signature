@@ -32,11 +32,11 @@
 #include <memory>
 #include <string_view>
 
-#ifndef QIS_SIGNATURE_USE_AVX
+#ifndef QIS_SIGNATURE_USE_AVX2
 #ifdef __AVX2__
-#define QIS_SIGNATURE_USE_AVX 1
+#define QIS_SIGNATURE_USE_AVX2 1
 #else
-#define QIS_SIGNATURE_USE_AVX 0
+#define QIS_SIGNATURE_USE_AVX2 0
 #endif
 #endif
 
@@ -56,7 +56,7 @@
 #endif
 #endif
 
-#if QIS_SIGNATURE_USE_AVX
+#if QIS_SIGNATURE_USE_AVX2
 #include <immintrin.h>
 #endif
 
@@ -67,7 +67,7 @@
 #define QIS_SIGNATURE_CONCURRENCY_RANGES 64
 #endif
 #ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
-#if QIS_SIGNATURE_USE_AVX
+#if QIS_SIGNATURE_USE_AVX2
 #define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
 #else
 #define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
@@ -397,7 +397,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   return qis::signature::npos;
 }
 
-#if QIS_SIGNATURE_USE_AVX
+#if QIS_SIGNATURE_USE_AVX2
 
 constexpr bool memcmp1(const char* a, const char* b) noexcept
 {

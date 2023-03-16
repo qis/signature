@@ -3,9 +3,6 @@
 #define QIS_SIGNATURE_INLINE_NAMESPACE_END }
 #define QIS_SIGNATURE_EXTRA_ASSERTS
 #include <qis/signature.hpp>
-#if !QIS_SIGNATURE_USE_EXCEPTIONS
-#define DOCTEST_CONFIG_NO_EXCEPTIONS_BUT_WITH_ALL_ASSERTS 1
-#endif
 #include <doctest/doctest.h>
 #include <memory.hpp>
 #include <array>

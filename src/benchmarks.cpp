@@ -21,7 +21,7 @@ public:
 
   bool ReportContext(const Context& context) override
   {
-    name_field_width_ = 26;
+    name_field_width_ = 22;
     return true;
   }
 
@@ -85,8 +85,6 @@ private:
       test_text.append(abi.substr(0, 3) != "std" ? abi.substr(0, 3) : "   ");
       test_text.push_back(' ');
       test_text.append(abi.substr(4, 3) != "seq" ? abi.substr(4, 3) : "   ");
-      test_text.push_back(' ');
-      test_text.append(abi.size() > 8 ? abi.substr(8) : "   ");
       test_text.push_back(' ');
     } else {
       test_text = abi;

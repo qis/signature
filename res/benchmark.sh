@@ -9,6 +9,8 @@ if ! [ -x "`command -v ansi2txt`" ]; then
   exit 1
 fi
 
+date
+
 cmake --preset debug-clang
 cmake --preset release-clang
 

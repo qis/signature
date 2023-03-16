@@ -11,7 +11,7 @@
 #define QIS_SIGNATURE_ABI memory
 #define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN inline namespace QIS_SIGNATURE_ABI {
 #define QIS_SIGNATURE_INLINE_NAMESPACE_END }
-#define QIS_SIGNATURE_USE_AVX 1
+#define QIS_SIGNATURE_USE_AVX2 1
 #define QIS_SIGNATURE_USE_TBB 0
 #include <qis/signature.hpp>
 

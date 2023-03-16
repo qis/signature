@@ -1,5 +1,5 @@
 # Signature
-C++23 binary signature search algorithm implemented using AVX2 and TBB.
+C++23 binary signature search algorithm optimized with AVX2 and TBB (optional).
 
 **WARNING**: This project is not ready for production yet!<br/>
 This warning will be removed and the repo force pushed with the final version.
@@ -12,7 +12,7 @@ This project was tested using the following compilers.
 
 ## Usage
 Copy [signature.hpp](include/qis/signature.hpp) to your project **or**
-install this project as an interface CMake library.
+install this project as an interface library.
 
 ```cpp
 #include <qis/signature.hpp>
@@ -21,10 +21,10 @@ install this project as an interface CMake library.
 #include <cstdint>
 #include <cstring>
 
-// Optional: Check that the binary was compiled with /arch:AVX2.
-// static_assert(QIS_SIGNATURE_USE_AVX);
+// Optional: Make sure that AVX2 support was detected.
+// static_assert(QIS_SIGNATURE_USE_AVX2);
 
-// Optional: Check that the header <tbb/parallel_for.h> was found.
+// Optional: Make sure that TBB headers were found.
 // static_assert(QIS_SIGNATURE_USE_TBB);
 
 int main() {
@@ -60,17 +60,16 @@ The container and search algorithms were extensively tested. See
 All benchmark results use the following report syntax.
 
 ```
----------------------------------------------------------------------
-Benchmark                           Time             CPU   Iterations
----------------------------------------------------------------------
-find avx     noe 05 16 kb         150 ns          120 ns      1000000
-scan     tbb     06 32 kb         300 ns          280 ns      1000000
- ^    ^   ^   ^   ^  ^
- |    |   |   |   |  +- Searched memory block size.
- |    |   |   |   +---- Signature size used for the search.
- |    |   |   +-------- Benchmark compiled without exceptions and RTTI.
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+find avx     05 16 kb     150 ns          120 ns      1000000
+scan     tbb 06 32 kb     300 ns          280 ns      1000000
+ ^    ^   ^   ^  ^
+ |    |   |   |  +- Searched memory block size.
+ |    |   |   +---- Signature size used for the search.
  |    |   +------------ Benchmark compiled with TBB support.
- |    +---------------- Benchmark compiled with AVX support.
+ |    +---------------- Benchmark compiled with AVX2 support.
  +--------------------- Signature type used for the search.
 ```
 
@@ -92,7 +91,7 @@ The searched memory block ends with the `find` signature and is guaranteed to
 never contain the `DB 27 5B` byte sequence anywhere else.
 
 In the example above:
-* Searched 16 KiB for `DB 27 5B FA FB` using AVX2 and exceptions disabled.
+* Searched 16 KiB for `DB 27 5B FA FB` using the AVX2 algorithm.
 * Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
 
 All benchmark results were recorded on the same system.

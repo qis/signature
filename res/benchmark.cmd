@@ -1,6 +1,8 @@
 @echo off
 pushd %~dp0..
 
+time /t
+
 cmake --preset debug
 cmake --preset release
 cmake --preset debug-clang
