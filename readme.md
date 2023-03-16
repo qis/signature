@@ -65,7 +65,7 @@ Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
 find avx     noe 05 16 kb         150 ns          120 ns      1000000
 scan     tbb     06 32 kb         300 ns          280 ns      1000000
- ʌ    ʌ   ʌ   ʌ   ʌ  ʌ
+ ^    ^   ^   ^   ^  ^
  |    |   |   |   |  +- Size of the searched memory block.
  |    |   |   |   +---- Size of the "find" or "scan" signature.
  |    |   |   +-------- Benchmark compiled with exceptions disabled.
