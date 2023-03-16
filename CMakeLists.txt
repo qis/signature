@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
-project(signature VERSION 0.1.0 LANGUAGES CXX)
+project(signature VERSION 0.2.0 LANGUAGES CXX)
 
 # Options
 option(SIGNATURE_BUILD_MAIN "Build main" OFF)
