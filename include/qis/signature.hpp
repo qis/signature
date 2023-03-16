@@ -126,8 +126,6 @@ public:
 
 class signature {
 public:
-  static constexpr std::size_t npos = std::string_view::npos;
-
   signature() noexcept = default;
 
   template <std::size_t N>
@@ -312,10 +310,12 @@ private:
   bool mask_{ false };
 };
 
+static constexpr std::size_t npos = std::string_view::npos;
+
 inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
 {
   if (!size || !data) {
-    return signature::npos;
+    return npos;
   }
   const auto s = static_cast<const char*>(data);
   const auto p = search.data();
@@ -324,7 +324,7 @@ inline std::size_t scan(const void* data, std::size_t size, const signature& sea
     return 0;
   }
   if (!p || size < k) {
-    return signature::npos;
+    return npos;
   }
   if (search.mask()) {
     return detail::signature::scan_safe<true>(s, size, p, k);
@@ -368,7 +368,7 @@ inline std::size_t find_safe<false>(const char* s, std::size_t n, const char* p,
   if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
     return i - s;
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 template <>
@@ -394,7 +394,7 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
   if (const auto i = std::search(s, e, std::default_searcher(p, p + k, compare)); i != e) {
     return i - s;
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 #if QIS_SIGNATURE_USE_AVX2
@@ -575,7 +575,7 @@ inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) 
 
     curr = next;
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 template <std::size_t K>
@@ -604,7 +604,7 @@ std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto
       mask &= mask - 1;
     }
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
@@ -632,7 +632,7 @@ inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char*
       mask &= mask - 1;
     }
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 template <bool Mask>
@@ -648,7 +648,7 @@ inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std:
   assert(k);
   assert(n >= k);
 #endif
-  auto r = qis::signature::npos;
+  auto r = npos;
   switch (k) {
   case 1:
     if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
@@ -693,7 +693,7 @@ inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std:
     r = avx2_strstr_anysize(s, n, p, k);
     break;
   }
-  return r <= n - k ? r : qis::signature::npos;
+  return r <= n - k ? r : npos;
 }
 
 template <>
@@ -733,7 +733,7 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
     const tbb::blocked_range range(s, s + n - k, block_size);
 
     // Find signature.
-    std::atomic_size_t pos = qis::signature::npos;
+    std::atomic_size_t pos = npos;
     tbb::parallel_for(range, [s, p, k, &pos](const tbb::blocked_range<const char*>& range) noexcept {
       // Get current range data, size, and offset.
       const auto rs = range.begin();
@@ -746,8 +746,8 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
       }
 
       // Find signature in range.
-      if (const auto i = find<Mask>(rs, rn, p, k); i != qis::signature::npos) {
-        std::size_t expected = qis::signature::npos;
+      if (const auto i = find<Mask>(rs, rn, p, k); i != npos) {
+        std::size_t expected = npos;
         while (!pos.compare_exchange_weak(expected, ro + i, std::memory_order_release)) {
           if (expected <= i) {
             return;
@@ -775,14 +775,14 @@ std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k
   if (n < rest * 2) {
     return find_safe<Mask>(s, n, p, k);
   }
-  if (const auto pos = scan<Mask>(s, n - rest, p, k); pos != qis::signature::npos) {
+  if (const auto pos = scan<Mask>(s, n - rest, p, k); pos != npos) {
     return pos;
   }
   const auto size = rest + k;
-  if (const auto pos = find_safe<Mask>(s + n - size, size, p, k); pos != qis::signature::npos) {
+  if (const auto pos = find_safe<Mask>(s + n - size, size, p, k); pos != npos) {
     return n - size + pos;
   }
-  return qis::signature::npos;
+  return npos;
 }
 
 }  // namespace detail::signature

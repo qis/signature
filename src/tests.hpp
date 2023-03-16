@@ -583,17 +583,17 @@ QIS_TEST("scan")
   REQUIRE(qis::scan(m15b.data(), 1, s0) == 0);
   REQUIRE(qis::scan(m15b.data(), 1, s1) == 0);
 
-  REQUIRE(qis::scan(nullptr, 0, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 0, s0) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 0, s1) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 0, qis::signature()) == qis::npos);
+  REQUIRE(qis::scan(nullptr, 0, s0) == qis::npos);
+  REQUIRE(qis::scan(nullptr, 0, s1) == qis::npos);
 
-  REQUIRE(qis::scan(m15b.data(), 0, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(m15b.data(), 0, s0) == qis::signature::npos);
-  REQUIRE(qis::scan(m15b.data(), 0, s1) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, qis::signature()) == qis::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, s0) == qis::npos);
+  REQUIRE(qis::scan(m15b.data(), 0, s1) == qis::npos);
 
-  REQUIRE(qis::scan(nullptr, 1, qis::signature()) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 1, s0) == qis::signature::npos);
-  REQUIRE(qis::scan(nullptr, 1, s1) == qis::signature::npos);
+  REQUIRE(qis::scan(nullptr, 1, qis::signature()) == qis::npos);
+  REQUIRE(qis::scan(nullptr, 1, s0) == qis::npos);
+  REQUIRE(qis::scan(nullptr, 1, s1) == qis::npos);
 
   REQUIRE(qis::scan(m15b.data(), 1, qis::signature()) == 0);
 
@@ -602,7 +602,7 @@ QIS_TEST("scan")
   REQUIRE(s2.mask() == nullptr);
 
   REQUIRE(std::memcmp(s2.data(), m15b.data(), 15) == 0);
-  REQUIRE(qis::scan(m15b.data(), 15, s2) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 15, s2) == qis::npos);
 
   REQUIRE(std::memcmp(s2.data(), m26b.data(), 26) == 0);
   REQUIRE(qis::scan(m26b.data(), 26, s2) == 0);
@@ -619,7 +619,7 @@ QIS_TEST("scan")
 
   REQUIRE(std::memcmp(s3.data(), m15b.data(), 15) != 0);
   REQUIRE(std::memcmp(s3.mask(), m15b.data(), 15) != 0);
-  REQUIRE(qis::scan(m15b.data(), 15, s3) == qis::signature::npos);
+  REQUIRE(qis::scan(m15b.data(), 15, s3) == qis::npos);
 
   REQUIRE(std::memcmp(s3.data(), m26b.data(), 26) != 0);
   REQUIRE(std::memcmp(s3.mask(), m26b.data(), 26) != 0);
@@ -641,7 +641,7 @@ QIS_TEST("scan")
   REQUIRE(s4.size() == 26);
   REQUIRE(s4.mask() == nullptr);
   REQUIRE(std::memcmp(s4.data(), m1mb.data() + 1_mb - 26, 26) != 0);
-  REQUIRE(qis::scan(m1mb.data(), 1_mb, s4) == qis::signature::npos);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s4) == qis::npos);
 
   REQUIRE(scan[1] != 'F');
   REQUIRE(scan[1] != '?');
@@ -653,7 +653,7 @@ QIS_TEST("scan")
   REQUIRE(s5.mask() != nullptr);
   REQUIRE(std::memcmp(s5.data(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(std::memcmp(s5.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
-  REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::signature::npos);
+  REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::npos);
 }
 
 #ifdef _WIN32
@@ -686,7 +686,7 @@ QIS_TEST("memory access")
       for (std::size_t size = 1; size < 256; size++) {
         const auto mmax = end - size;
         std::memcpy(mmax, m1mb.data(), size);
-        REQUIRE(qis::scan(mmax, size, sig) == qis::signature::npos);
+        REQUIRE(qis::scan(mmax, size, sig) == qis::npos);
       }
     }
   };
