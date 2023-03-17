@@ -619,6 +619,7 @@ std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k
     if (const auto i = si.load(std::memory_order_acquire); i != e) {
       return static_cast<std::size_t>(i - s);
     }
+    return npos;
   }
 #endif
   if (const auto i = fast_search<Mask>(s, e, p, k); i != e) {
