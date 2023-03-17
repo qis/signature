@@ -399,119 +399,82 @@ inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, 
 
 #if QIS_SIGNATURE_USE_AVX2
 
-constexpr bool memcmp1(const char* a, const char* b) noexcept
+template <std::size_t Size>
+bool memcmp(const char* a, const char* b) noexcept;
+
+template <>
+constexpr bool memcmp<1>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   return a[0] == b[0];
 }
 
-inline bool memcmp2(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<2>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
   const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
   return a16 == b16;
 }
 
-inline bool memcmp3(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<3>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return (a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF);
 }
 
-inline bool memcmp4(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<4>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
   return a32 == b32;
 }
 
-inline bool memcmp5(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<5>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x000000FFFFFFFFFF) == 0;
 }
 
-inline bool memcmp6(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<6>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x0000FFFFFFFFFFFF) == 0;
 }
 
-inline bool memcmp7(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<7>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return ((a64 ^ b64) & 0x00FFFFFFFFFFFFFF) == 0;
 }
 
-inline bool memcmp8(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<8>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return a64 == b64;
 }
 
-inline bool memcmp9(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<9>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   return (a64 == b64) && (a[8] == b[8]);
 }
 
-inline bool memcmp10(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<10>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a + 8);
@@ -519,13 +482,9 @@ inline bool memcmp10(const char* a, const char* b) noexcept
   return (a64 == b64) && (a16 == b16);
 }
 
-inline bool memcmp11(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<11>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
@@ -533,13 +492,9 @@ inline bool memcmp11(const char* a, const char* b) noexcept
   return (a64 == b64) && ((a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF));
 }
 
-inline bool memcmp12(const char* a, const char* b) noexcept
+template <>
+inline bool memcmp<12>(const char* a, const char* b) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(a);
-  assert(b);
-  assert(a != b);
-#endif
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
@@ -547,90 +502,103 @@ inline bool memcmp12(const char* a, const char* b) noexcept
   return (a64 == b64) && (a32 == b32);
 }
 
-inline std::size_t avx2_strstr_eq2(const char* s, std::size_t n, const char* p) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-#endif
-  const __m256i broadcasted[2]{
-    _mm256_set1_epi8(p[0]),
-    _mm256_set1_epi8(p[1]),
-  };
-  auto curr = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
-  for (std::size_t i = 0; i < n; i += 32) {
-    const auto next = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i + 32));
-    auto eq = _mm256_cmpeq_epi8(curr, broadcasted[0]);
-
-    __m256i next1{};
-    next1 = _mm256_inserti128_si256(next1, _mm256_extracti128_si256(curr, 1), 0);
-    next1 = _mm256_inserti128_si256(next1, _mm256_extracti128_si256(next, 0), 1);
-
-    const auto substring = _mm256_alignr_epi8(next1, curr, 1);
-    eq = _mm256_and_si256(eq, _mm256_cmpeq_epi8(substring, broadcasted[1]));
-    if (const auto mask = _mm256_movemask_epi8(eq)) {
-      return i + _tzcnt_u32(static_cast<unsigned>(mask));
-    }
-
-    curr = next;
-  }
-  return npos;
-}
-
 template <std::size_t K>
-std::size_t avx2_strstr_memcmp(const char* s, std::size_t n, const char* p, auto memcmp) noexcept
+inline std::size_t strstr(const char* s, std::size_t n, const char* p, std::size_t k = K) noexcept
 {
-  static_assert(K);
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(memcmp);
-#endif
-  const auto s0 = _mm256_set1_epi8(p[0]);
-  const auto s1 = _mm256_set1_epi8(p[K - 1]);
-  for (std::size_t i = 0; i < n; i += 32) {
-    const auto b0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i));
-    const auto b1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i + K - 1));
-    const auto e0 = _mm256_cmpeq_epi8(s0, b0);
-    const auto e1 = _mm256_cmpeq_epi8(s1, b1);
-    auto mask = _mm256_movemask_epi8(_mm256_and_si256(e0, e1));
-    while (mask) {
-      const auto bitpos = _tzcnt_u32(static_cast<unsigned>(mask));
-      if (memcmp(s + i + bitpos + 1, p + 1)) {
-        return i + bitpos;
+  // Fill 32 bytes of 'pf' with the first data (p) byte.
+  const auto pf = _mm256_set1_epi8(p[0]);
+
+  // Fill 32 bytes of 'pl' with the last data (p) byte.
+  const auto pl = _mm256_set1_epi8(p[k - 1]);
+
+  // Iterate over scan (s) 32 bytes at a time.
+  for (auto si = s, se = s + n; si < se; si += 32) {
+    // Load 32 scan (s) bytes into 's0'.
+    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si));
+
+    // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
+    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si + k - 1));
+
+    // Compare each byte in 's0' with the first data (p) byte.
+    const auto e0 = _mm256_cmpeq_epi8(s0, pf);
+
+    // Compare each byte in 's1' with the last data (p) byte.
+    const auto e1 = _mm256_cmpeq_epi8(s1, pl);
+
+    // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
+    // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
+    // at positions that represent 'si' offsets where the first and last byte match 'k'.
+    auto em = static_cast<unsigned>(_mm256_movemask_epi8(_mm256_and_si256(e0, e1)));
+
+    // Iterate over set bites in the equality mask.
+    while (em) {
+      // Get position of least significant set bit.
+      const auto bp = _tzcnt_u32(em);
+
+      // Compare memory ignoring the first and last data (p) bytes since they already match.
+      if constexpr (K == 0) {
+        if (std::memcmp(si + bp + 1, p + 1, k - 2) == 0) {
+          return si + bp - s;
+        }
+      } else {
+        if (memcmp<K - 2>(si + bp + 1, p + 1) == 0) {
+          return si + bp - s;
+        }
       }
-      mask &= mask - 1;
+
+      // Unset least significant set bit.
+      em &= em - 1;
     }
   }
   return npos;
 }
 
-inline std::size_t avx2_strstr_anysize(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+template <>
+inline std::size_t strstr<1>(const char* s, std::size_t n, const char* p, std::size_t) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  const auto s0 = _mm256_set1_epi8(p[0]);
-  const auto s1 = _mm256_set1_epi8(p[k - 1]);
-  for (std::size_t i = 0; i < n; i += 32) {
-    const auto b0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i));
-    const auto b1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s + i + k - 1));
-    const auto e0 = _mm256_cmpeq_epi8(s0, b0);
-    const auto e1 = _mm256_cmpeq_epi8(s1, b1);
-    auto mask = _mm256_movemask_epi8(_mm256_and_si256(e0, e1));
-    while (mask) {
-      const auto bitpos = _tzcnt_u32(static_cast<unsigned>(mask));
-      if (std::memcmp(s + i + bitpos + 1, p + 1, k - 2) == 0) {
-        return i + bitpos;
-      }
-      mask &= mask - 1;
+  if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
+    return it - s;
+  }
+  return npos;
+}
+
+template <>
+inline std::size_t strstr<2>(const char* s, std::size_t n, const char* p, std::size_t) noexcept
+{
+  // Fill 32 bytes of 'p0' with the first data (p) byte.
+  const auto p0 = _mm256_set1_epi8(p[0]);
+
+  // Fill 32 bytes of 'p1' with the second data (p) byte.
+  const auto p1 = _mm256_set1_epi8(p[1]);
+
+  // Load 32 scan (s) bytes into 's0'.
+  auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
+
+  // Iterate over scan (s) 32 bytes at a time.
+  for (auto si = s + 32, se = s + n; si < se; si += 32) {
+    // Load the next 32 scan (s) bytes into 's1'.
+    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si));
+
+    // Compare each byte in 's0' with the first data (p) byte.
+    const auto e0 = _mm256_cmpeq_epi8(s0, p0);
+
+    // Create substring 'ss' by shifting 's0' 1 byte to the left
+    // and filling the last byte with the first byte from 's1'.
+    auto ss = _mm256_castsi128_si256(_mm256_extracti128_si256(s0, 1));
+    ss = _mm256_inserti128_si256(ss, _mm256_castsi256_si128(s1), 1);
+    ss = _mm256_alignr_epi8(ss, s0, 1);
+
+    // Compare each byte in 'ss' with the second data (p) byte.
+    const auto e1 = _mm256_cmpeq_epi8(ss, p1);
+
+    // Create and check an equality mask with bits set where 'e0' and 'e1' match.
+    if (const auto em = _mm256_movemask_epi8(_mm256_and_si256(e0, e1))) {
+      // Use position of least significant set bit as 'si' offset.
+      return si + _tzcnt_u32(static_cast<unsigned>(em)) - s;
     }
+
+    // Use 's1' as 's0' for the next iteration.
+    s0 = s1;
   }
   return npos;
 }
@@ -641,58 +609,24 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 template <>
 inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
   auto r = npos;
+  // clang-format off
   switch (k) {
-  case 1:
-    if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
-      return it - s;
-    } else {
-      return r;
-    }
-  case 2:
-    r = avx2_strstr_eq2(s, n, p);
-    break;
-  case 3:
-    r = avx2_strstr_memcmp<3>(s, n, p, memcmp1);
-    break;
-  case 4:
-    r = avx2_strstr_memcmp<4>(s, n, p, memcmp2);
-    break;
-  case 5:
-    r = avx2_strstr_memcmp<5>(s, n, p, memcmp4);
-    break;
-  case 6:
-    r = avx2_strstr_memcmp<6>(s, n, p, memcmp4);
-    break;
-  case 7:
-    r = avx2_strstr_memcmp<7>(s, n, p, memcmp5);
-    break;
-  case 8:
-    r = avx2_strstr_memcmp<8>(s, n, p, memcmp6);
-    break;
-  case 9:
-    r = avx2_strstr_memcmp<9>(s, n, p, memcmp8);
-    break;
-  case 10:
-    r = avx2_strstr_memcmp<10>(s, n, p, memcmp8);
-    break;
-  case 11:
-    r = avx2_strstr_memcmp<11>(s, n, p, memcmp9);
-    break;
-  case 12:
-    r = avx2_strstr_memcmp<12>(s, n, p, memcmp10);
-    break;
-  default:
-    r = avx2_strstr_anysize(s, n, p, k);
-    break;
+  case  1: r = strstr<1>(s, n, p); break;
+  case  2: r = strstr<2>(s, n, p); break;
+  case  3: r = strstr<3>(s, n, p); break;
+  case  4: r = strstr<4>(s, n, p); break;
+  case  5: r = strstr<5>(s, n, p); break;
+  case  6: r = strstr<6>(s, n, p); break;
+  case  7: r = strstr<7>(s, n, p); break;
+  case  8: r = strstr<8>(s, n, p); break;
+  case  9: r = strstr<9>(s, n, p); break;
+  case 10: r = strstr<10>(s, n, p); break;
+  case 11: r = strstr<11>(s, n, p); break;
+  case 12: r = strstr<12>(s, n, p); break;
+  default: r = strstr<0>(s, n, p, k); break;
   }
+  // clang-format on
   return r <= n - k ? r : npos;
 }
 
@@ -715,13 +649,6 @@ std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noe
 template <bool Mask>
 std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
 #if QIS_SIGNATURE_USE_TBB
   constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
   constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);

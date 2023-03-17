@@ -147,7 +147,7 @@ constexpr __m256i _mm256_alignr_epi8(const __m256i& a, const __m256i& b, int i) 
 // Creates mask from the most significant bit of each 8-bit element in 'a', and stores the result in 'r'.
 //
 // a: 00 0F F0 FF 03 0C 30 C0 00 0F F0 FF 03 0C 30 C0 | 00 0F F0 FF 03 0C 30 C0 00 0F F0 FF 03 0C 30 C0
-// r: 0b10001100100011001000110010001100
+// r: 1000110010001100|1000110010001100
 //
 constexpr int _mm256_movemask_epi8(const __m256i& a) noexcept
 {
@@ -162,7 +162,7 @@ constexpr int _mm256_movemask_epi8(const __m256i& a) noexcept
 
 // Counts the number of trailing zero bits in unsigned 32-bit integer 'a', and stores the result in 'r'.
 //
-// a: 0b00000000000000000000000000001000
+// a: 0000000000000000|0000000000001000
 // r: 3
 //
 constexpr unsigned int _tzcnt_u32(unsigned int a) noexcept

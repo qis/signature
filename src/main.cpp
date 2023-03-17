@@ -7,61 +7,38 @@ namespace qis {
 using std::format;
 using std::span;
 
-void test(char* s, std::size_t n, const char* p, std::size_t k)
-{
-  print("p: {:>6}{} ", "", span(p, k));
-  print(color::gray, "({})\n", k);
-  print("s: {} ", span(s, n));
-  print(color::red, "{} ..\n", span(s + n, 2));
+constexpr auto data_s256i0 =
+  "\x11\x12\x13\x14\x15\x16\x17\x18"
+  "\x21\x22\x23\x24\x25\x26\x27\x28"
+  "\x31\x32\x33\x34\x35\x36\x37\x38"
+  "\x41\x42\x43\x44\x45\x46\x47\x48";
 
-  /*
-  auto r = npos;
-  switch (k) {
-  case 1:
-    if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
-      return it - s;
-    } else {
-      return r;
-    }
-  case 2:
-    r = avx2_strstr_eq2(s, n, p);
-    break;
-  case 3:
-    r = avx2_strstr_memcmp<3>(s, n, p, memcmp1);
-    break;
-  case 4:
-    r = avx2_strstr_memcmp<4>(s, n, p, memcmp2);
-    break;
-  case 5:
-    r = avx2_strstr_memcmp<5>(s, n, p, memcmp4);
-    break;
-  case 6:
-    r = avx2_strstr_memcmp<6>(s, n, p, memcmp4);
-    break;
-  case 7:
-    r = avx2_strstr_memcmp<7>(s, n, p, memcmp5);
-    break;
-  case 8:
-    r = avx2_strstr_memcmp<8>(s, n, p, memcmp6);
-    break;
-  case 9:
-    r = avx2_strstr_memcmp<9>(s, n, p, memcmp8);
-    break;
-  case 10:
-    r = avx2_strstr_memcmp<10>(s, n, p, memcmp8);
-    break;
-  case 11:
-    r = avx2_strstr_memcmp<11>(s, n, p, memcmp9);
-    break;
-  case 12:
-    r = avx2_strstr_memcmp<12>(s, n, p, memcmp10);
-    break;
-  default:
-    r = avx2_strstr_anysize(s, n, p, k);
-    break;
-  }
-  return r <= n - k ? r : npos;
-  */
+constexpr auto data_s256i1 =
+  "\x51\x52\x53\x54\x55\x56\x57\x58"
+  "\x61\x62\x63\x64\x65\x66\x67\x68"
+  "\x71\x72\x73\x74\x75\x76\x77\x78"
+  "\x81\x82\x83\x84\x85\x86\x87\x88";
+
+const auto data_m256i0 = reinterpret_cast<const __m256i*>(qis::data_s256i0);
+const auto data_m256i1 = reinterpret_cast<const __m256i*>(qis::data_s256i1);
+
+void test()
+{
+  const auto s0 = _mm256_loadu_si256(data_m256i0);
+  const auto s1 = _mm256_loadu_si256(data_m256i1);
+  print("s0: {}\n", s0);
+  print("s1: {}\n", s1);
+
+  //__m256i sn = _mm256_set1_epi8('\xFF');
+  //sn = _mm256_inserti128_si256(sn, _mm256_extracti128_si256(s0, 1), 0);
+  //sn = _mm256_inserti128_si256(sn, _mm256_extracti128_si256(s1, 0), 1);
+  __m256i sn = _mm256_inserti128_si256(
+    _mm256_castsi128_si256(_mm256_extracti128_si256(s0, 1)),
+    _mm256_castsi256_si128(s1),
+    1);
+  print("sn: {}\n", sn);
+  const __m256i ss = _mm256_alignr_epi8(sn, s0, 1);
+  print("ss: {}\n", ss);
 }
 
 }  // namespace qis
@@ -69,12 +46,7 @@ void test(char* s, std::size_t n, const char* p, std::size_t k)
 int main()
 {
   try {
-    std::vector<char> memory(128, 0);
-    const qis::signature search{ "DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF" };
-    std::memcpy(memory.data() + 2, search.data(), search.size());
-
-    constexpr std::size_t k = 2;
-    qis::test(memory.data(), 2 + k, search.data(), k);
+    qis::test();
   }
   catch (const std::exception& e) {
     std::fputs(e.what(), stderr);

@@ -75,7 +75,7 @@ struct std::formatter<__m128i> : std::formatter<std::span<const char>> {
     _mm256_storeu_si256(reinterpret_cast<__m256i*>(a256.data()), _mm256_castsi128_si256(v));
     std::array<char, 16> a128{};
     std::copy(a256.data(), a256.data() + 16, a128.data());
-    std::span s(a128.data(), a128.size());
+    const std::span s(a128.data(), a128.size());
     return std::formatter<std::span<const char>>::format(s, context);
   }
 };
@@ -87,7 +87,7 @@ struct std::formatter<__m256i> : std::formatter<std::span<const char>> {
   {
     std::array<char, 32> a256{};
     _mm256_storeu_si256(reinterpret_cast<__m256i*>(a256.data()), v);
-    std::span s(a256.data(), a256.size());
+    const std::span s(a256.data(), a256.size());
     return std::formatter<std::span<const char>>::format(s, context);
   }
 };
