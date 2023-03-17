@@ -93,24 +93,10 @@
 #endif
 #endif
 
-#ifndef QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
-#define QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
-#endif
-
-#ifndef QIS_SIGNATURE_INLINE_NAMESPACE_END
-#define QIS_SIGNATURE_INLINE_NAMESPACE_END
-#endif
-
 namespace qis {
-QIS_SIGNATURE_INLINE_NAMESPACE_BEGIN
-namespace detail::signature {
-
-constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS);
-
-template <bool Mask>
-std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
-
-}  // namespace detail::signature
+#ifdef QIS_SIGNATURE_ABI
+inline namespace QIS_SIGNATURE_ABI {
+#endif
 
 #if QIS_SIGNATURE_USE_EXCEPTIONS
 
@@ -148,8 +134,6 @@ public:
   explicit signature(std::string_view data, std::string_view mask = {}) :
     size_((data.size() + 1) / 3), mask_(!mask.empty() || data.find('?') != std::string_view::npos)
   {
-    using detail::signature::cast;
-
     // Verify data and mask sizes.
     if (!size_ || (data.size() + 1) % 3 != 0) {
       QIS_THROW_INVALID_SIGNATURE;
@@ -173,7 +157,7 @@ public:
       }
       const auto upper = *src++;
       const auto lower = *src++;
-      *dst++ = static_cast<char>(cast(upper) << 4 | cast(lower));
+      *dst++ = static_cast<char>(parse(upper) << 4 | parse(lower));
     }
 
     // Write mask.
@@ -184,7 +168,7 @@ public:
     for (std::size_t i = 0; i < size_; i++, src++) {
       const auto upper = *src++;
       const auto lower = *src++;
-      *dst++ = static_cast<char>((upper == '?' ? 0x00 : 0xF0) | char(lower == '?' ? 0x00 : 0x0F));
+      *dst++ = static_cast<char>((upper == '?' ? '\x00' : '\xF0') | (lower == '?' ? '\x00' : '\x0F'));
     }
 
     // Replace mask.
@@ -203,7 +187,7 @@ public:
       if (upper == '?' || lower == '?') {
         QIS_THROW_INVALID_SIGNATURE;
       }
-      *dst++ = static_cast<char>(cast(upper) << 4 | cast(lower));
+      *dst++ = static_cast<char>(parse(upper) << 4 | parse(lower));
     }
   }
 
@@ -305,6 +289,23 @@ public:
   }
 
 private:
+  static constexpr char parse(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
+  {
+    if (xdigit >= '0' && xdigit <= '9') {
+      return static_cast<char>(xdigit - '0');
+    }
+    if (xdigit >= 'A' && xdigit <= 'F') {
+      return static_cast<char>(xdigit - 'A' + 0xA);
+    }
+    if (xdigit >= 'a' && xdigit <= 'f') {
+      return static_cast<char>(xdigit - 'a' + 0xA);
+    }
+    if (xdigit != '?') {
+      QIS_THROW_INVALID_SIGNATURE;
+    }
+    return 0;
+  }
+
   std::unique_ptr<char[]> data_;
   std::size_t size_{ 0 };
   bool mask_{ false };
@@ -312,95 +313,16 @@ private:
 
 static constexpr std::size_t npos = std::string_view::npos;
 
-inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
-{
-  if (!size || !data) {
-    return npos;
-  }
-  const auto s = static_cast<const char*>(data);
-  const auto p = search.data();
-  const auto k = search.size();
-  if (!k) {
-    return 0;
-  }
-  if (!p || size < k) {
-    return npos;
-  }
-  if (search.mask()) {
-    return detail::signature::scan_safe<true>(s, size, p, k);
-  }
-  return detail::signature::scan_safe<false>(s, size, p, k);
-}
+std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept;
 
-namespace detail::signature {
-
-constexpr char cast(char xdigit) noexcept(!QIS_SIGNATURE_USE_EXCEPTIONS)
-{
-  if (xdigit >= '0' && xdigit <= '9') {
-    return static_cast<char>(xdigit - '0');
-  }
-  if (xdigit >= 'A' && xdigit <= 'F') {
-    return static_cast<char>(xdigit - 'A' + 0xA);
-  }
-  if (xdigit >= 'a' && xdigit <= 'f') {
-    return static_cast<char>(xdigit - 'a' + 0xA);
-  }
-  if (xdigit != '?') {
-    QIS_THROW_INVALID_SIGNATURE;
-  }
-  return 0;
-}
-
-template <bool Mask>
-std::size_t find_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
-
-template <>
-inline std::size_t find_safe<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  const auto e = s + n;
-  if (const auto i = std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k)); i != e) {
-    return i - s;
-  }
-  return npos;
-}
-
-template <>
-inline std::size_t find_safe<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  std::size_t i = 0;
-  const auto m = p + k;
-  const auto compare = [&](char lhs, char rhs) noexcept {
-    if ((lhs & m[i++]) == rhs) {
-      return true;
-    }
-    i = 0;
-    return false;
-  };
-  const auto e = s + n;
-  if (const auto i = std::search(s, e, std::default_searcher(p, p + k, compare)); i != e) {
-    return i - s;
-  }
-  return npos;
-}
-
-#if QIS_SIGNATURE_USE_AVX2
+namespace detail {
 
 template <std::size_t Size>
-bool memcmp(const char* a, const char* b) noexcept;
+bool memcmp(const char* a, const char* b) noexcept
+{
+  static_assert(Size);
+  return std::memcmp(a, b, Size) == 0;
+}
 
 template <>
 constexpr bool memcmp<1>(const char* a, const char* b) noexcept
@@ -502,8 +424,28 @@ inline bool memcmp<12>(const char* a, const char* b) noexcept
   return (a64 == b64) && (a32 == b32);
 }
 
+template <bool Mask>
+const char* safe_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+{
+  if constexpr (Mask) {
+    auto c = p + k;
+    const auto compare = [m = c, &c](char lhs, char rhs) noexcept {
+      if ((lhs & *c++) == rhs) {
+        return true;
+      }
+      c = m;
+      return false;
+    };
+    return std::search(s, e, std::default_searcher(p, p + k, compare));
+  } else {
+    return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
+  }
+}
+
+#if QIS_SIGNATURE_USE_AVX2
+
 template <std::size_t K>
-inline std::size_t strstr(const char* s, std::size_t n, const char* p, std::size_t k = K) noexcept
+inline const char* search(const char* s, const char* e, const char* p, std::size_t k = K) noexcept
 {
   // Fill 32 bytes of 'pf' with the first data (p) byte.
   const auto pf = _mm256_set1_epi8(p[0]);
@@ -512,12 +454,12 @@ inline std::size_t strstr(const char* s, std::size_t n, const char* p, std::size
   const auto pl = _mm256_set1_epi8(p[k - 1]);
 
   // Iterate over scan (s) 32 bytes at a time.
-  for (auto si = s, se = s + n; si < se; si += 32) {
+  for (auto i = s; i < e; i += 32) {
     // Load 32 scan (s) bytes into 's0'.
-    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si));
+    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
 
     // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
-    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si + k - 1));
+    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
 
     // Compare each byte in 's0' with the first data (p) byte.
     const auto e0 = _mm256_cmpeq_epi8(s0, pf);
@@ -532,17 +474,17 @@ inline std::size_t strstr(const char* s, std::size_t n, const char* p, std::size
 
     // Iterate over set bites in the equality mask.
     while (em) {
-      // Get position of least significant set bit.
-      const auto bp = _tzcnt_u32(em);
+      // Get least significant set bit offset.
+      const auto o = _tzcnt_u32(em);
 
       // Compare memory ignoring the first and last data (p) bytes since they already match.
       if constexpr (K == 0) {
-        if (std::memcmp(si + bp + 1, p + 1, k - 2) == 0) {
-          return si + bp - s;
+        if (std::memcmp(i + o + 1, p + 1, k - 2) == 0) {
+          return i + o;
         }
       } else {
-        if (memcmp<K - 2>(si + bp + 1, p + 1) == 0) {
-          return si + bp - s;
+        if (memcmp<K - 2>(i + o + 1, p + 1) == 0) {
+          return i + o;
         }
       }
 
@@ -550,20 +492,17 @@ inline std::size_t strstr(const char* s, std::size_t n, const char* p, std::size
       em &= em - 1;
     }
   }
-  return npos;
+  return e;
 }
 
 template <>
-inline std::size_t strstr<1>(const char* s, std::size_t n, const char* p, std::size_t) noexcept
+inline const char* search<1>(const char* s, const char* e, const char* p, std::size_t) noexcept
 {
-  if (const auto it = std::find(s, s + n, p[0]); it != s + n) {
-    return it - s;
-  }
-  return npos;
+  return std::find(s, e, p[0]);
 }
 
 template <>
-inline std::size_t strstr<2>(const char* s, std::size_t n, const char* p, std::size_t) noexcept
+inline const char* search<2>(const char* s, const char* e, const char* p, std::size_t) noexcept
 {
   // Fill 32 bytes of 'p0' with the first data (p) byte.
   const auto p0 = _mm256_set1_epi8(p[0]);
@@ -575,9 +514,9 @@ inline std::size_t strstr<2>(const char* s, std::size_t n, const char* p, std::s
   auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
 
   // Iterate over scan (s) 32 bytes at a time.
-  for (auto si = s + 32, se = s + n; si < se; si += 32) {
+  for (auto i = s + 32; i < e; i += 32) {
     // Load the next 32 scan (s) bytes into 's1'.
-    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(si));
+    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
 
     // Compare each byte in 's0' with the first data (p) byte.
     const auto e0 = _mm256_cmpeq_epi8(s0, p0);
@@ -594,61 +533,55 @@ inline std::size_t strstr<2>(const char* s, std::size_t n, const char* p, std::s
     // Create and check an equality mask with bits set where 'e0' and 'e1' match.
     if (const auto em = _mm256_movemask_epi8(_mm256_and_si256(e0, e1))) {
       // Use position of least significant set bit as 'si' offset.
-      return si + _tzcnt_u32(static_cast<unsigned>(em)) - s;
+      return i + _tzcnt_u32(static_cast<unsigned>(em));
     }
 
     // Use 's1' as 's0' for the next iteration.
     s0 = s1;
   }
-  return npos;
+  return e;
 }
 
 template <bool Mask>
-std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept;
-
-template <>
-inline std::size_t find<false>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
-  auto r = npos;
-  // clang-format off
-  switch (k) {
-  case  1: r = strstr<1>(s, n, p); break;
-  case  2: r = strstr<2>(s, n, p); break;
-  case  3: r = strstr<3>(s, n, p); break;
-  case  4: r = strstr<4>(s, n, p); break;
-  case  5: r = strstr<5>(s, n, p); break;
-  case  6: r = strstr<6>(s, n, p); break;
-  case  7: r = strstr<7>(s, n, p); break;
-  case  8: r = strstr<8>(s, n, p); break;
-  case  9: r = strstr<9>(s, n, p); break;
-  case 10: r = strstr<10>(s, n, p); break;
-  case 11: r = strstr<11>(s, n, p); break;
-  case 12: r = strstr<12>(s, n, p); break;
-  default: r = strstr<0>(s, n, p, k); break;
+  if constexpr (Mask) {
+    return safe_search<true>(s, e, p, k);
+  } else {
+    // clang-format off
+    switch (k) {
+    case 1: return search<1>(s, e, p);
+    case 2: return search<2>(s, e, p);
+    case 3: return search<3>(s, e, p);
+    case 4: return search<4>(s, e, p);
+    case 5: return search<5>(s, e, p);
+    case 6: return search<6>(s, e, p);
+    case 7: return search<7>(s, e, p);
+    case 8: return search<8>(s, e, p);
+    case 9: return search<9>(s, e, p);
+    case 10: return search<10>(s, e, p);
+    case 11: return search<11>(s, e, p);
+    case 12: return search<12>(s, e, p);
+    }
+    return search<0>(s, e, p, k);
+    // clang-format on
   }
-  // clang-format on
-  return r <= n - k ? r : npos;
-}
-
-template <>
-inline std::size_t find<true>(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-  return find_safe<true>(s, n, p, k);
 }
 
 #else
 
 template <bool Mask>
-std::size_t find(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
-  return find_safe<Mask>(s, n, p, k);
+  return safe_search<Mask>(s, e, p, k);
 }
 
 #endif
 
 template <bool Mask>
-std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
 {
+  const auto e = s + n;
 #if QIS_SIGNATURE_USE_TBB
   constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
   constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
@@ -657,61 +590,92 @@ std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noe
     const auto block_size = std::max({ threshold / ranges, n / ranges, k * 2 });
 
     // Split data into ranges.
-    const tbb::blocked_range range(s, s + n - k, block_size);
+    const tbb::blocked_range range(s, e, block_size);
 
-    // Find signature.
-    std::atomic_size_t pos = npos;
-    tbb::parallel_for(range, [s, p, k, &pos](const tbb::blocked_range<const char*>& range) noexcept {
-      // Get current range data, size, and offset.
-      const auto rs = range.begin();
-      const auto rn = range.size() + k;
-      const auto ro = static_cast<std::size_t>(rs - s);
+    // Set scan iterator to the end of the total range.
+    std::atomic<const char*> si{ e };
 
-      // Check if range starts at a smaller offset, than an already found position.
-      if (const auto i = pos.load(std::memory_order_relaxed); i <= ro) {
+    // Search for signature in ranges.
+    tbb::parallel_for(range, [p, k, &si](const tbb::blocked_range<const char*>& range) noexcept {
+      // Get current range.
+      const auto s = range.begin();
+      const auto e = s + range.size();
+
+      // Get current scan iterator.
+      auto ci = si.load(std::memory_order_relaxed);
+
+      // Check if a smaller iterator was already found.
+      if (ci < s) {
         return;
       }
 
-      // Find signature in range.
-      if (const auto i = find<Mask>(rs, rn, p, k); i != npos) {
-        std::size_t expected = npos;
-        while (!pos.compare_exchange_weak(expected, ro + i, std::memory_order_release)) {
-          if (expected <= i) {
-            return;
-          }
+      // Search for signature in current range.
+      if (const auto i = fast_search<Mask>(s, e, p, k); i != e) {
+        // Update current scan iterator if 'i' is smaller.
+        while (!si.compare_exchange_weak(ci, i, std::memory_order_release) && i < ci) {
         }
       }
     });
-    return pos.load(std::memory_order_acquire);
+    if (const auto i = si.load(std::memory_order_acquire); i != e) {
+      return static_cast<std::size_t>(i - s);
+    }
   }
 #endif
-  return find<Mask>(s, n, p, k);
-}
-
-template <bool Mask>
-std::size_t scan_safe(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(s);
-  assert(n);
-  assert(p);
-  assert(k);
-  assert(n >= k);
-#endif
-  const auto rest = std::max(std::size_t(64), k * 2);
-  if (n < rest * 2) {
-    return find_safe<Mask>(s, n, p, k);
-  }
-  if (const auto pos = scan<Mask>(s, n - rest, p, k); pos != npos) {
-    return pos;
-  }
-  const auto size = rest + k;
-  if (const auto pos = find_safe<Mask>(s + n - size, size, p, k); pos != npos) {
-    return n - size + pos;
+  if (const auto i = fast_search<Mask>(s, e, p, k); i != e) {
+    return static_cast<std::size_t>(i - s);
   }
   return npos;
 }
 
-}  // namespace detail::signature
-QIS_SIGNATURE_INLINE_NAMESPACE_END
+template <bool Mask>
+std::size_t safe_scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+{
+  const auto e = s + n;
+  if (const auto i = safe_search<Mask>(s, e, p, k); i != e) {
+    return static_cast<std::size_t>(i - s);
+  }
+  return npos;
+}
+
+template <bool Mask>
+std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+{
+  if (const auto r = k + 64; r + k < n) {
+    if (const auto i = fast_scan<Mask>(s, n - r, p, k); i != npos) {
+      return i;
+    }
+    const auto o = n - r - k;
+    if (const auto i = safe_scan<Mask>(s + o, r + k, p, k); i != npos) {
+      return o + i;
+    }
+    return npos;
+  }
+  return safe_scan<Mask>(s, n, p, k);
+}
+
+}  // namespace detail
+
+inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
+{
+  if (!data || !size) {
+    return npos;
+  }
+  const auto s = static_cast<const char*>(data);
+  const auto p = search.data();
+  const auto k = search.size();
+  if (!p || !k) {
+    return 0;
+  }
+  if (size < k) {
+    return npos;
+  }
+  if (search.mask()) {
+    return detail::scan<true>(s, size, p, k);
+  }
+  return detail::scan<false>(s, size, p, k);
+}
+
+#ifdef QIS_SIGNATURE_ABI
+}  // namespace QIS_SIGNATURE_ABI
+#endif
 }  // namespace qis

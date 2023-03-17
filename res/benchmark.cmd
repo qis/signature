@@ -1,6 +1,13 @@
 @echo off
 pushd %~dp0..
 
+rd /q /s build\debug
+rd /q /s build\release
+rd /q /s build\debug-clang
+rd /q /s build\release-clang
+rd /q /s build\debug-clang-cl
+rd /q /s build\release-clang-cl
+
 time /t
 
 cmake --preset debug
@@ -56,3 +63,5 @@ echo ## LLVM (clang-cl) complete.
 time /t
 
 popd
+
+powershell "[console]::beep(500,100)"
