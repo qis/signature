@@ -1,4 +1,6 @@
 #pragma once
+#define QIS_SIGNATURE_CONCURRENCY_RANGES 2     // NOLINT
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 0  // NOLINT
 #define QIS_SIGNATURE_EXTRA_ASSERTS
 #include <qis/signature.hpp>
 #include <doctest/doctest.h>
@@ -12,6 +14,11 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <memory>
+#endif
+
+#if QIS_SIGNATURE_USE_TBB
+#include <tbb/global_control.h>
+#include <mutex>
 #endif
 
 #define QIS_TEST(name) TEST_CASE(QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI) ": " name)
@@ -404,83 +411,6 @@ QIS_TEST("signature(string_view, string_view mask)")
   }
 }
 
-QIS_TEST("signature(const void*, std::size_t, const void*, std::size_t)")
-{
-  const char* bin = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09";
-
-  SUBCASE("data: nullptr, dsize: 0")
-  {
-    const qis::signature s0(nullptr, 0, nullptr, 0);
-    REQUIRE(s0.size() == 0);
-    REQUIRE(s0.data() == nullptr);
-    REQUIRE(s0.mask() == nullptr);
-
-    REQUIRE_THROWS_AS(qis::signature(nullptr, 0, nullptr, 1), qis::invalid_signature);
-
-    const qis::signature s2(nullptr, 0, bin, 0);
-    REQUIRE(s2.size() == 0);
-    REQUIRE(s2.data() == nullptr);
-    REQUIRE(s2.mask() == nullptr);
-
-    const qis::signature s3(nullptr, 0, bin, 1);
-    REQUIRE(s3.size() == 0);
-    REQUIRE(s3.data() == nullptr);
-    REQUIRE(s3.mask() == nullptr);
-  }
-
-  SUBCASE("data: nullptr, dsize: 1")
-  {
-    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, nullptr, 0), qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, nullptr, 1), qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, bin, 0), qis::invalid_signature);
-    REQUIRE_THROWS_AS(qis::signature(nullptr, 1, bin, 1), qis::invalid_signature);
-  }
-
-  SUBCASE("data: (valid), dsize: 0")
-  {
-    const qis::signature s0(bin, 0, nullptr, 0);
-    REQUIRE(s0.size() == 0);
-    REQUIRE(s0.data() == nullptr);
-    REQUIRE(s0.mask() == nullptr);
-
-    REQUIRE_THROWS_AS(qis::signature(bin, 0, nullptr, 1), qis::invalid_signature);
-
-    const qis::signature s2(bin, 0, bin, 0);
-    REQUIRE(s2.size() == 0);
-    REQUIRE(s2.data() == nullptr);
-    REQUIRE(s2.mask() == nullptr);
-
-    const qis::signature s3(bin, 0, bin, 1);
-    REQUIRE(s3.size() == 0);
-    REQUIRE(s3.data() == nullptr);
-    REQUIRE(s3.mask() == nullptr);
-  }
-
-  SUBCASE("data: (valid), dsize: 1")
-  {
-    const qis::signature s0(bin, 1, nullptr, 0);
-    REQUIRE(s0.size() == 1);
-    REQUIRE(s0.data() != nullptr);
-    REQUIRE(s0.data() != bin);
-    REQUIRE(s0.mask() == nullptr);
-
-    REQUIRE_THROWS_AS(qis::signature(bin, 1, nullptr, 1), qis::invalid_signature);
-
-    const qis::signature s2(bin, 1, bin, 0);
-    REQUIRE(s2.size() == 1);
-    REQUIRE(s2.data() != nullptr);
-    REQUIRE(s2.data() != bin);
-    REQUIRE(s2.mask() == nullptr);
-
-    const qis::signature s3(bin, 1, bin, 1);
-    REQUIRE(s3.size() == 1);
-    REQUIRE(s3.data() != nullptr);
-    REQUIRE(s3.data() != bin);
-    REQUIRE(s3.mask() != nullptr);
-    REQUIRE(s3.mask() != bin);
-  }
-}
-
 QIS_TEST("signature(signature&&)")
 {
   qis::signature src{ "00 FF ??" };
@@ -652,7 +582,205 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s5.data(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(std::memcmp(s5.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::npos);
+
+  std::array<char, 1024> m{};
+
+  SUBCASE("qis::detail::equals<1>")
+  {
+    m.fill('0');
+    const qis::signature s("31");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<2>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<3>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<4>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<5>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<6>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<7>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<8>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<9>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38 39");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<10>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<11>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equals<12>")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("std::memcmp")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: padding left")
+  {
+    m.fill('0');
+    const qis::signature s("?? 31 32");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: padding right")
+  {
+    m.fill('0');
+    const qis::signature s("31 32 ??");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: padding")
+  {
+    m.fill('0');
+    const qis::signature s("?? 31 32 ??");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: gap")
+  {
+    m.fill('0');
+    const qis::signature s("31 ?? 32");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: padding and gap")
+  {
+    m.fill('0');
+    const qis::signature s("?? 31 ?? 32 ??");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
 }
+
+#if QIS_SIGNATURE_USE_TBB
+
+QIS_TEST("tbb ranges")
+{
+  const qis::signature s0("?? 1E ?? 2D 3C ??");
+  const auto p = s0.data();
+  const auto k = s0.size();
+
+  const auto n = std::size_t(1024 * 1024);
+  std::vector<char> m1mb(n + k);
+  const auto s = m1mb.data();
+  const auto e = s + n;
+
+  // Macros defined at the top of this file.
+  static_assert(QIS_SIGNATURE_CONCURRENCY_RANGES == 2);
+  static_assert(QIS_SIGNATURE_CONCURRENCY_THRESHOLD == 0);
+
+  // The following code must match the TBB implementation.
+  constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
+  constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
+  const auto block_size = std::max({ threshold / ranges, n / ranges, k });
+  REQUIRE(block_size == n / ranges);
+
+  const tbb::blocked_range<const char*> range(s, e, block_size);
+  REQUIRE(range.grainsize() == block_size);
+  REQUIRE(range.is_divisible());
+
+  std::mutex mutex;
+  std::vector<tbb::blocked_range<const char*>> rv;
+  tbb::parallel_for(range, [&](const auto& range) {
+    const std::lock_guard lock{ mutex };
+    rv.push_back(range);
+  });
+
+  REQUIRE(rv.size() == 2);
+  std::sort(rv.begin(), rv.end(), [](const auto& lhs, const auto& rhs) {
+    return lhs.begin() < rhs.begin();
+  });
+  REQUIRE(rv[0].begin() == s);
+  REQUIRE(rv[1].begin() == s + block_size);
+
+  for (std::size_t i = 0; i < k; i++) {
+    std::fill(m1mb.begin(), m1mb.end(), '\x00');
+    std::memcpy(s + block_size - i, p, k);
+    REQUIRE(qis::scan(s, n, s0) == block_size - i);
+    const tbb::global_control gc(tbb::global_control::max_allowed_parallelism, 1);
+    REQUIRE(qis::scan(s, n, s0) == block_size - i);
+  }
+}
+
+#endif
 
 #ifdef _WIN32
 
@@ -671,9 +799,10 @@ QIS_TEST("memory access")
 
   std::shared_ptr<char> memory(
     reinterpret_cast<char*>(VirtualAlloc(nullptr, si.dwPageSize * 2, MEM_COMMIT, PAGE_READWRITE)),
-    [&](auto address) noexcept {
-      VirtualFree(address, si.dwPageSize * 2, MEM_RELEASE);
+    [](auto address) noexcept {
+      VirtualFree(address, 0, MEM_RELEASE);
     });
+  REQUIRE(memory.get());
 
   auto begin = memory.get();
   auto end = begin + si.dwPageSize;

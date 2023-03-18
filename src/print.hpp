@@ -10,6 +10,9 @@
 
 namespace qis {
 
+using std::format;
+using std::span;
+
 enum class color {
   gray = 90,
   red = 91,
@@ -46,6 +49,21 @@ void print(color c, std::format_string<Arg, Args...> fmt, Arg&& arg, Args&&... a
 {
   print(c, std::format(fmt, std::forward<Arg>(arg), std::forward<Args>(args)...).data());
 }
+
+constexpr auto data_s256i0 =
+  "\x11\x12\x13\x14\x15\x16\x17\x18"
+  "\x21\x22\x23\x24\x25\x26\x27\x28"
+  "\x31\x32\x33\x34\x35\x36\x37\x38"
+  "\x41\x42\x43\x44\x45\x46\x47\x48";
+
+constexpr auto data_s256i1 =
+  "\x51\x52\x53\x54\x55\x56\x57\x58"
+  "\x61\x62\x63\x64\x65\x66\x67\x68"
+  "\x71\x72\x73\x74\x75\x76\x77\x78"
+  "\x81\x82\x83\x84\x85\x86\x87\x88";
+
+const auto data_m256i0 = reinterpret_cast<const __m256i*>(qis::data_s256i0);
+const auto data_m256i1 = reinterpret_cast<const __m256i*>(qis::data_s256i1);
 
 }  // namespace qis
 

@@ -191,40 +191,6 @@ public:
     }
   }
 
-  explicit signature(
-    const void* data,
-    std::size_t dsize,
-    const void* mask = nullptr,
-    std::size_t msize = 0) :
-    size_(dsize), mask_(msize != 0)
-  {
-    // Verify data and mask.
-    if (dsize && !data) {
-      QIS_THROW_INVALID_SIGNATURE;
-    }
-    if (msize && !mask) {
-      QIS_THROW_INVALID_SIGNATURE;
-    }
-
-    // Allocate memory.
-    if (!size_) {
-      return;
-    }
-    data_ = std::make_unique<char[]>(mask_ ? size_ * 2 : size_);
-
-    // Write data.
-    auto src = reinterpret_cast<const char*>(data);
-    const auto dst = data_.get();
-    std::copy(src, src + dsize, dst);
-
-    // Write mask.
-    if (!mask_) {
-      return;
-    }
-    src = reinterpret_cast<const char*>(mask);
-    std::copy(src, src + std::min(size_, msize), dst + size_);
-  }
-
   signature(signature&& other) noexcept :
     data_(std::move(other.data_)), size_(other.size_), mask_(other.mask_)
   {
@@ -313,25 +279,25 @@ private:
 
 static constexpr std::size_t npos = std::string_view::npos;
 
-std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept;
+[[nodiscard]] std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept;
 
 namespace detail {
 
 template <std::size_t Size>
-bool memcmp(const char* a, const char* b) noexcept
+bool equals(const char* a, const char* b) noexcept
 {
   static_assert(Size);
   return std::memcmp(a, b, Size) == 0;
 }
 
 template <>
-constexpr bool memcmp<1>(const char* a, const char* b) noexcept
+constexpr bool equals<1>(const char* a, const char* b) noexcept
 {
   return a[0] == b[0];
 }
 
 template <>
-inline bool memcmp<2>(const char* a, const char* b) noexcept
+inline bool equals<2>(const char* a, const char* b) noexcept
 {
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
   const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
@@ -339,7 +305,7 @@ inline bool memcmp<2>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<3>(const char* a, const char* b) noexcept
+inline bool equals<3>(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
@@ -347,7 +313,7 @@ inline bool memcmp<3>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<4>(const char* a, const char* b) noexcept
+inline bool equals<4>(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
@@ -355,7 +321,7 @@ inline bool memcmp<4>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<5>(const char* a, const char* b) noexcept
+inline bool equals<5>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -363,7 +329,7 @@ inline bool memcmp<5>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<6>(const char* a, const char* b) noexcept
+inline bool equals<6>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -371,7 +337,7 @@ inline bool memcmp<6>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<7>(const char* a, const char* b) noexcept
+inline bool equals<7>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -379,7 +345,7 @@ inline bool memcmp<7>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<8>(const char* a, const char* b) noexcept
+inline bool equals<8>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -387,7 +353,7 @@ inline bool memcmp<8>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<9>(const char* a, const char* b) noexcept
+inline bool equals<9>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -395,7 +361,7 @@ inline bool memcmp<9>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<10>(const char* a, const char* b) noexcept
+inline bool equals<10>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -405,7 +371,7 @@ inline bool memcmp<10>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<11>(const char* a, const char* b) noexcept
+inline bool equals<11>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -415,7 +381,7 @@ inline bool memcmp<11>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool memcmp<12>(const char* a, const char* b) noexcept
+inline bool equals<12>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -424,28 +390,31 @@ inline bool memcmp<12>(const char* a, const char* b) noexcept
   return (a64 == b64) && (a32 == b32);
 }
 
-template <bool Mask>
-const char* safe_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+inline const char* safe_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
-  if constexpr (Mask) {
-    auto c = p + k;
-    const auto compare = [m = c, &c](char lhs, char rhs) noexcept {
-      if ((lhs & *c++) == rhs) {
-        return true;
-      }
-      c = m;
-      return false;
-    };
-    return std::search(s, e, std::default_searcher(p, p + k, compare));
-  } else {
-    return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
+  return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
+}
+
+inline const char* safe_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
+{
+  if (!m) {
+    return safe_search(s, e, p, k);
   }
+  auto c = m;
+  const auto compare = [m, &c](char lhs, char rhs) noexcept {
+    if ((lhs & *c++) == rhs) {
+      return true;
+    }
+    c = m;
+    return false;
+  };
+  return std::search(s, e, std::default_searcher(p, p + k, compare));
 }
 
 #if QIS_SIGNATURE_USE_AVX2
 
 template <std::size_t K>
-inline const char* search(const char* s, const char* e, const char* p, std::size_t k = K) noexcept
+const char* search(const char* s, const char* e, const char* p, std::size_t k = K) noexcept
 {
   // Fill 32 bytes of 'pf' with the first data (p) byte.
   const auto pf = _mm256_set1_epi8(p[0]);
@@ -483,7 +452,7 @@ inline const char* search(const char* s, const char* e, const char* p, std::size
           return i + o;
         }
       } else {
-        if (memcmp<K - 2>(i + o + 1, p + 1) == 0) {
+        if (equals<K - 2>(i + o + 1, p + 1)) {
           return i + o;
         }
       }
@@ -514,7 +483,7 @@ inline const char* search<2>(const char* s, const char* e, const char* p, std::s
   auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
 
   // Iterate over scan (s) 32 bytes at a time.
-  for (auto i = s + 32; i < e; i += 32) {
+  for (auto i = s; i < e; i += 32) {
     // Load the next 32 scan (s) bytes into 's1'.
     const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
 
@@ -542,11 +511,7 @@ inline const char* search<2>(const char* s, const char* e, const char* p, std::s
   return e;
 }
 
-template <bool Mask>
-const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept;
-
-template <>
-inline const char* fast_search<false>(const char* s, const char* e, const char* p, std::size_t k) noexcept
+inline const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
   // clang-format off
   switch (k) {
@@ -567,61 +532,31 @@ inline const char* fast_search<false>(const char* s, const char* e, const char* 
   // clang-format on
 }
 
-template <>
-inline const char* fast_search<true>(const char* s, const char* e, const char* p, std::size_t k) noexcept
+inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  // Get mask.
-  const std::string_view m(p + k, k);
-
-  // Find first mask byte with set bits.
-  const auto mf = m.find_first_not_of('\x00');
-
-  // If all mask bits are unset, assume found.
-  if (mf == std::string_view::npos) {
-    return s;
+  if (!m) {
+    return fast_search(s, e, p, k);
   }
-
-  // Find last mask byte with set bits.
-  const auto ml = m.find_last_not_of('\x00');
-
-  // Determine number of remaining bytes with all bits unset.
-  const auto mr = k - ml - 1;
-
-  // If all mask bits between 'mf' and 'ml' are set, use search without mask algorithm.
-  if (m.find_first_not_of('\xFF', mf) > ml) {
-    const auto ms = s + mf;
-    const auto me = e - mr;
-    const auto mp = p + mf;
-    const auto mk = ml - mf + 1;
-    if (const auto i = fast_search<false>(ms, me, mp, mk); i != me) {
-      return i + mf;
-    }
-    return e;
-  }
-
-  // TODO: Search for the 'mf..ml' mask range using AVX2.
-
-  return safe_search<true>(s, e, p, k);
+  // TODO: Implement this using AVX2 instructions.
+  return safe_search(s, e, p, m, k);
 }
 
 #else
 
-template <bool Mask>
-const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  return safe_search<Mask>(s, e, p, k);
+  return safe_search(s, e, p, m, k);
 }
 
 #endif
 
-template <bool Mask>
-std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline const char* fast_scan(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  const auto e = s + n;
 #if QIS_SIGNATURE_USE_TBB
+  // Changes to 'ranges', 'threshold' and 'block_size' must match the "tbb ranges" test.
   constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
   constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
-  if (n > threshold && n > k * 2) {
+  if (const auto n = static_cast<std::size_t>(e - s); n > threshold && n > k * 2) {
     // Determine block size.
     const auto block_size = std::max({ threshold / ranges, n / ranges, k });
 
@@ -632,10 +567,10 @@ std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k
     std::atomic<const char*> si{ e };
 
     // Search for signature in ranges.
-    tbb::parallel_for(range, [p, k, &si](const tbb::blocked_range<const char*>& range) noexcept {
+    tbb::parallel_for(range, [p, m, k, &si](const tbb::blocked_range<const char*>& range) noexcept {
       // Get current range.
       const auto s = range.begin();
-      const auto e = s + range.size() + k;
+      const auto e = s + range.size() + k - 1;
 
       // Get current scan iterator.
       auto ci = si.load(std::memory_order_relaxed);
@@ -646,70 +581,98 @@ std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k
       }
 
       // Search for signature in current range.
-      if (const auto i = fast_search<Mask>(s, e, p, k); i != e) {
+      if (const auto i = fast_search(s, e, p, m, k); i != e) {
         // Update current scan iterator if 'i' is smaller.
         while (!si.compare_exchange_weak(ci, i, std::memory_order_release) && i < ci) {
         }
       }
     });
-    if (const auto i = si.load(std::memory_order_acquire); i != e) {
-      return static_cast<std::size_t>(i - s);
-    }
-    return npos;
+    return si.load(std::memory_order_acquire);
   }
 #endif
-  if (const auto i = fast_search<Mask>(s, e, p, k); i != e) {
-    return static_cast<std::size_t>(i - s);
-  }
-  return npos;
+  return fast_search(s, e, p, m, k);
 }
 
-template <bool Mask>
-std::size_t safe_scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
+inline const char* scan(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  const auto e = s + n;
-  if (const auto i = safe_search<Mask>(s, e, p, k); i != e) {
-    return static_cast<std::size_t>(i - s);
-  }
-  return npos;
-}
-
-template <bool Mask>
-std::size_t scan(const char* s, std::size_t n, const char* p, std::size_t k) noexcept
-{
-  if (const auto r = k + 64; r + k < n) {
-    if (const auto i = fast_scan<Mask>(s, n - r, p, k); i != npos) {
+  if (const auto r = k + 64; r + k < static_cast<std::size_t>(e - s)) {
+    if (const auto i = fast_scan(s, e - r, p, m, k); i != e - r) {
       return i;
     }
-    const auto o = n - r - k;
-    if (const auto i = safe_scan<Mask>(s + o, r + k, p, k); i != npos) {
-      return o + i;
-    }
-    return npos;
+    s = e - r - k + 1;
   }
-  return safe_scan<Mask>(s, n, p, k);
+  return safe_search(s, e, p, m, k);
 }
 
 }  // namespace detail
 
 inline std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept
 {
+  // If data is empty, return not found.
   if (!data || !size) {
     return npos;
   }
-  const auto s = static_cast<const char*>(data);
   const auto p = search.data();
   const auto k = search.size();
+
+  // If signature is empty, return found.
   if (!p || !k) {
     return 0;
   }
+
+  // If signature does not fit in data, return not found.
   if (size < k) {
     return npos;
   }
-  if (search.mask()) {
-    return detail::scan<true>(s, size, p, k);
+
+  // Scan without mask.
+  const auto s = static_cast<const char*>(data);
+  const auto e = s + size;
+  const auto m = search.mask();
+  if (!m) {
+    if (const auto i = detail::scan(s, e, p, m, k); i != e) {
+      return static_cast<std::size_t>(i - s);
+    }
+    return npos;
   }
-  return detail::scan<false>(s, size, p, k);
+
+  // Get mask.
+  const std::string_view mask(m, k);
+
+  // Find first mask byte with set bits.
+  const auto mf = mask.find_first_not_of('\x00');
+
+  // If all mask bits are unset, return found.
+  if (mf == std::string_view::npos) {
+    return 0;
+  }
+
+  // Find last mask byte with set bits.
+  const auto ml = mask.find_last_not_of('\x00');
+
+  // Determine number of remaining bytes with all bits unset.
+  const auto mr = k - ml - 1;
+
+  // Create modified search parameters.
+  const auto ms = s + mf;
+  const auto me = e - mr;
+  const auto mp = p + mf;
+  const auto mm = p + k + mf;
+  const auto mk = ml - mf + 1;
+
+  // If all mask bits between 'mf' and 'ml' are set, scan without mask.
+  if (mask.find_first_not_of('\xFF', mf) > ml) {
+    if (const auto mi = detail::scan(ms, me, mp, nullptr, mk); mi != me) {
+      return static_cast<std::size_t>(mi - mf - s);
+    }
+    return npos;
+  }
+
+  // Search subrange of 's..s+n' for subrange of 'p..p+k'.
+  const auto mi = detail::scan(ms, me, mp, mm, mk);
+
+  // Return offset.
+  return mi != me ? static_cast<std::size_t>(mi - mf - s) : npos;
 }
 
 #ifdef QIS_SIGNATURE_ABI
