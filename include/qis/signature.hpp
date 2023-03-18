@@ -543,29 +543,65 @@ inline const char* search<2>(const char* s, const char* e, const char* p, std::s
 }
 
 template <bool Mask>
-const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept;
+
+template <>
+inline const char* fast_search<false>(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
-  if constexpr (Mask) {
-    return safe_search<true>(s, e, p, k);
-  } else {
-    // clang-format off
-    switch (k) {
-    case 1: return search<1>(s, e, p);
-    case 2: return search<2>(s, e, p);
-    case 3: return search<3>(s, e, p);
-    case 4: return search<4>(s, e, p);
-    case 5: return search<5>(s, e, p);
-    case 6: return search<6>(s, e, p);
-    case 7: return search<7>(s, e, p);
-    case 8: return search<8>(s, e, p);
-    case 9: return search<9>(s, e, p);
-    case 10: return search<10>(s, e, p);
-    case 11: return search<11>(s, e, p);
-    case 12: return search<12>(s, e, p);
-    }
-    return search<0>(s, e, p, k);
-    // clang-format on
+  // clang-format off
+  switch (k) {
+  case 1: return search<1>(s, e, p);
+  case 2: return search<2>(s, e, p);
+  case 3: return search<3>(s, e, p);
+  case 4: return search<4>(s, e, p);
+  case 5: return search<5>(s, e, p);
+  case 6: return search<6>(s, e, p);
+  case 7: return search<7>(s, e, p);
+  case 8: return search<8>(s, e, p);
+  case 9: return search<9>(s, e, p);
+  case 10: return search<10>(s, e, p);
+  case 11: return search<11>(s, e, p);
+  case 12: return search<12>(s, e, p);
   }
+  return search<0>(s, e, p, k);
+  // clang-format on
+}
+
+template <>
+inline const char* fast_search<true>(const char* s, const char* e, const char* p, std::size_t k) noexcept
+{
+  // Get mask.
+  const std::string_view m(p + k, k);
+
+  // Find first mask byte with set bits.
+  const auto mf = m.find_first_not_of('\x00');
+
+  // If all mask bits are unset, assume found.
+  if (mf == std::string_view::npos) {
+    return s;
+  }
+
+  // Find last mask byte with set bits.
+  const auto ml = m.find_last_not_of('\x00');
+
+  // Determine number of remaining bytes with all bits unset.
+  const auto mr = k - ml - 1;
+
+  // If all mask bits between 'mf' and 'ml' are set, use search without mask algorithm.
+  if (m.find_first_not_of('\xFF', mf) > ml) {
+    const auto ms = s + mf;
+    const auto me = e - mr;
+    const auto mp = p + mf;
+    const auto mk = ml - mf + 1;
+    if (const auto i = fast_search<false>(ms, me, mp, mk); i != me) {
+      return i + mf;
+    }
+    return e;
+  }
+
+  // TODO: Search for the 'mf..ml' mask range using AVX2.
+
+  return safe_search<true>(s, e, p, k);
 }
 
 #else
@@ -587,7 +623,7 @@ std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k
   constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
   if (n > threshold && n > k * 2) {
     // Determine block size.
-    const auto block_size = std::max({ threshold / ranges, n / ranges, k * 2 });
+    const auto block_size = std::max({ threshold / ranges, n / ranges, k });
 
     // Split data into ranges.
     const tbb::blocked_range range(s, e, block_size);
@@ -599,7 +635,7 @@ std::size_t fast_scan(const char* s, std::size_t n, const char* p, std::size_t k
     tbb::parallel_for(range, [p, k, &si](const tbb::blocked_range<const char*>& range) noexcept {
       // Get current range.
       const auto s = range.begin();
-      const auto e = s + range.size();
+      const auto e = s + range.size() + k;
 
       // Get current scan iterator.
       auto ci = si.load(std::memory_order_relaxed);
