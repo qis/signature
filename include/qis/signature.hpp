@@ -284,20 +284,16 @@ static constexpr std::size_t npos = std::string_view::npos;
 namespace detail {
 
 template <std::size_t Size>
-bool equals(const char* a, const char* b) noexcept
-{
-  static_assert(Size);
-  return std::memcmp(a, b, Size) == 0;
-}
+bool equal(const char* a, const char* b) noexcept;
 
 template <>
-constexpr bool equals<1>(const char* a, const char* b) noexcept
+constexpr bool equal<1>(const char* a, const char* b) noexcept
 {
   return a[0] == b[0];
 }
 
 template <>
-inline bool equals<2>(const char* a, const char* b) noexcept
+inline bool equal<2>(const char* a, const char* b) noexcept
 {
   const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
   const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
@@ -305,7 +301,7 @@ inline bool equals<2>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<3>(const char* a, const char* b) noexcept
+inline bool equal<3>(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
@@ -313,7 +309,7 @@ inline bool equals<3>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<4>(const char* a, const char* b) noexcept
+inline bool equal<4>(const char* a, const char* b) noexcept
 {
   const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
   const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
@@ -321,7 +317,7 @@ inline bool equals<4>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<5>(const char* a, const char* b) noexcept
+inline bool equal<5>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -329,7 +325,7 @@ inline bool equals<5>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<6>(const char* a, const char* b) noexcept
+inline bool equal<6>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -337,7 +333,7 @@ inline bool equals<6>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<7>(const char* a, const char* b) noexcept
+inline bool equal<7>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -345,7 +341,7 @@ inline bool equals<7>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<8>(const char* a, const char* b) noexcept
+inline bool equal<8>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -353,7 +349,7 @@ inline bool equals<8>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<9>(const char* a, const char* b) noexcept
+inline bool equal<9>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -361,7 +357,7 @@ inline bool equals<9>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<10>(const char* a, const char* b) noexcept
+inline bool equal<10>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -371,7 +367,7 @@ inline bool equals<10>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<11>(const char* a, const char* b) noexcept
+inline bool equal<11>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -381,7 +377,7 @@ inline bool equals<11>(const char* a, const char* b) noexcept
 }
 
 template <>
-inline bool equals<12>(const char* a, const char* b) noexcept
+inline bool equal<12>(const char* a, const char* b) noexcept
 {
   const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
   const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
@@ -452,7 +448,7 @@ const char* search(const char* s, const char* e, const char* p, std::size_t k = 
           return i + o;
         }
       } else {
-        if (equals<K - 2>(i + o + 1, p + 1)) {
+        if (equal<K - 2>(i + o + 1, p + 1)) {
           return i + o;
         }
       }
@@ -528,8 +524,8 @@ inline const char* fast_search(const char* s, const char* e, const char* p, std:
   case 11: return search<11>(s, e, p);
   case 12: return search<12>(s, e, p);
   }
-  return search<0>(s, e, p, k);
   // clang-format on
+  return search<0>(s, e, p, k);
 }
 
 inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
@@ -537,8 +533,64 @@ inline const char* fast_search(const char* s, const char* e, const char* p, cons
   if (!m) {
     return fast_search(s, e, p, k);
   }
-  // TODO: Implement this using AVX2 instructions.
-  return safe_search(s, e, p, m, k);
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(k > 2);  // guaranteed by qis::scan
+#endif
+  // If the first or last mask byte is not 0xFF, the AVX2
+  // algorithm has to apply them to 's' before comparing.
+  if (m[0] != char(0xFF) || m[k - 1] != char(0xFF)) {
+    return safe_search(s, e, p, m, k);
+  }
+
+  // If the first and last mask byte is 0xFF, the AVX2
+  // algorithm can be implemented as if there was no mask,
+  // except for the equality function.
+  auto c = m + 1;
+  const auto compare = [&c](char lhs, char rhs) noexcept {
+    return (lhs & *c++) == rhs;
+  };
+
+  // Fill 32 bytes of 'pf' with the first data (p) byte.
+  const auto pf = _mm256_set1_epi8(p[0]);
+
+  // Fill 32 bytes of 'pl' with the last data (p) byte.
+  const auto pl = _mm256_set1_epi8(p[k - 1]);
+
+  // Iterate over scan (s) 32 bytes at a time.
+  for (auto i = s; i < e; i += 32) {
+    // Load 32 scan (s) bytes into 's0'.
+    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
+
+    // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
+    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
+
+    // Compare each byte in 's0' with the first data (p) byte.
+    const auto e0 = _mm256_cmpeq_epi8(s0, pf);
+
+    // Compare each byte in 's1' with the last data (p) byte.
+    const auto e1 = _mm256_cmpeq_epi8(s1, pl);
+
+    // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
+    // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
+    // at positions that represent 'si' offsets where the first and last byte match 'k'.
+    auto em = static_cast<unsigned>(_mm256_movemask_epi8(_mm256_and_si256(e0, e1)));
+
+    // Iterate over set bites in the equality mask.
+    while (em) {
+      // Get least significant set bit offset.
+      const auto o = _tzcnt_u32(em);
+
+      // Compare memory ignoring the first and last data (p) bytes since they already match.
+      if (std::equal(i + o + 1, i + o + k - 1, p + 1, p + k - 1, compare)) {
+        return i + o;
+      }
+      c = m + 1;
+
+      // Unset least significant set bit.
+      em &= em - 1;
+    }
+  }
+  return e;
 }
 
 #else

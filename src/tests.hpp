@@ -585,7 +585,7 @@ QIS_TEST("scan")
 
   std::array<char, 1024> m{};
 
-  SUBCASE("qis::detail::equals<1>")
+  SUBCASE("qis::detail::equal<1>")
   {
     m.fill('0');
     const qis::signature s("31");
@@ -593,7 +593,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<2>")
+  SUBCASE("qis::detail::equal<2>")
   {
     m.fill('0');
     const qis::signature s("31 32");
@@ -601,7 +601,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<3>")
+  SUBCASE("qis::detail::equal<3>")
   {
     m.fill('0');
     const qis::signature s("31 32 33");
@@ -609,7 +609,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<4>")
+  SUBCASE("qis::detail::equal<4>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34");
@@ -617,7 +617,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<5>")
+  SUBCASE("qis::detail::equal<5>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35");
@@ -625,7 +625,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<6>")
+  SUBCASE("qis::detail::equal<6>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36");
@@ -633,7 +633,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<7>")
+  SUBCASE("qis::detail::equal<7>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37");
@@ -641,7 +641,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<8>")
+  SUBCASE("qis::detail::equal<8>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37 38");
@@ -649,7 +649,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<9>")
+  SUBCASE("qis::detail::equal<9>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37 38 39");
@@ -657,7 +657,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<10>")
+  SUBCASE("qis::detail::equal<10>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A");
@@ -665,7 +665,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<11>")
+  SUBCASE("qis::detail::equal<11>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B");
@@ -673,7 +673,7 @@ QIS_TEST("scan")
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
-  SUBCASE("qis::detail::equals<12>")
+  SUBCASE("qis::detail::equal<12>")
   {
     m.fill('0');
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C");
