@@ -28,9 +28,11 @@
 
 #pragma once
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #ifndef QIS_SIGNATURE_USE_AVX2
 #ifdef __AVX2__
@@ -284,106 +286,146 @@ static constexpr std::size_t npos = std::string_view::npos;
 namespace detail {
 
 template <std::size_t Size>
-bool equal(const char* a, const char* b) noexcept;
+bool equal(const char* s, const char* p) noexcept;
 
 template <>
-constexpr bool equal<1>(const char* a, const char* b) noexcept
+constexpr bool equal<1>(const char* s, const char* p) noexcept
 {
-  return a[0] == b[0];
+  return s[0] == p[0];
 }
 
 template <>
-inline bool equal<2>(const char* a, const char* b) noexcept
+inline bool equal<2>(const char* s, const char* p) noexcept
 {
-  const auto a16 = *reinterpret_cast<const std::uint16_t*>(a);
-  const auto b16 = *reinterpret_cast<const std::uint16_t*>(b);
-  return a16 == b16;
+  const auto s0 = *reinterpret_cast<const std::uint16_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint16_t*>(p);
+  return s0 == p0;
 }
 
 template <>
-inline bool equal<3>(const char* a, const char* b) noexcept
+inline bool equal<3>(const char* s, const char* p) noexcept
 {
-  const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
-  const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
-  return (a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF);
+  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
+  return (s0 & 0x00FFFFFF) == (p0 & 0x00FFFFFF);
 }
 
 template <>
-inline bool equal<4>(const char* a, const char* b) noexcept
+inline bool equal<4>(const char* s, const char* p) noexcept
 {
-  const auto a32 = *reinterpret_cast<const std::uint32_t*>(a);
-  const auto b32 = *reinterpret_cast<const std::uint32_t*>(b);
-  return a32 == b32;
+  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
+  return s0 == p0;
 }
 
 template <>
-inline bool equal<5>(const char* a, const char* b) noexcept
+inline bool equal<5>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  return ((a64 ^ b64) & 0x000000FFFFFFFFFF) == 0;
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  return ((s0 ^ p0) & 0x000000FFFFFFFFFF) == 0;
 }
 
 template <>
-inline bool equal<6>(const char* a, const char* b) noexcept
+inline bool equal<6>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  return ((a64 ^ b64) & 0x0000FFFFFFFFFFFF) == 0;
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  return ((s0 ^ p0) & 0x0000FFFFFFFFFFFF) == 0;
 }
 
 template <>
-inline bool equal<7>(const char* a, const char* b) noexcept
+inline bool equal<7>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  return ((a64 ^ b64) & 0x00FFFFFFFFFFFFFF) == 0;
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  return ((s0 ^ p0) & 0x00FFFFFFFFFFFFFF) == 0;
 }
 
 template <>
-inline bool equal<8>(const char* a, const char* b) noexcept
+inline bool equal<8>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  return a64 == b64;
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  return s0 == p0;
 }
 
 template <>
-inline bool equal<9>(const char* a, const char* b) noexcept
+inline bool equal<9>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  return (a64 == b64) && (a[8] == b[8]);
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  return (s0 == p0) && (s[8] == p[8]);
 }
 
 template <>
-inline bool equal<10>(const char* a, const char* b) noexcept
+inline bool equal<10>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  const auto a16 = *reinterpret_cast<const std::uint16_t*>(a + 8);
-  const auto b16 = *reinterpret_cast<const std::uint16_t*>(b + 8);
-  return (a64 == b64) && (a16 == b16);
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint16_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint16_t*>(p + 8);
+  return (s0 == p0) && (s1 == p1);
 }
 
 template <>
-inline bool equal<11>(const char* a, const char* b) noexcept
+inline bool equal<11>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
-  const auto b32 = *reinterpret_cast<const std::uint32_t*>(b + 8);
-  return (a64 == b64) && ((a32 & 0x00FFFFFF) == (b32 & 0x00FFFFFF));
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
+  return (s0 == p0) && ((s1 & 0x00FFFFFF) == (p1 & 0x00FFFFFF));
 }
 
 template <>
-inline bool equal<12>(const char* a, const char* b) noexcept
+inline bool equal<12>(const char* s, const char* p) noexcept
 {
-  const auto a64 = *reinterpret_cast<const std::uint64_t*>(a);
-  const auto b64 = *reinterpret_cast<const std::uint64_t*>(b);
-  const auto a32 = *reinterpret_cast<const std::uint32_t*>(a + 8);
-  const auto b32 = *reinterpret_cast<const std::uint32_t*>(b + 8);
-  return (a64 == b64) && (a32 == b32);
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
+  return (s0 == p0) && (s1 == p1);
+}
+
+template <>
+inline bool equal<13>(const char* s, const char* p) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  return (s0 == p0) && ((s1 ^ p1) & 0x000000FFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<14>(const char* s, const char* p) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  return (s0 == p0) && ((s1 ^ p1) & 0x0000FFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<15>(const char* s, const char* p) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  return (s0 == p0) && ((s1 ^ p1) & 0x00FFFFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<16>(const char* s, const char* p) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  return (s0 == p0) && (s1 == p1);
 }
 
 inline const char* safe_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
@@ -507,25 +549,18 @@ inline const char* search<2>(const char* s, const char* e, const char* p, std::s
   return e;
 }
 
+template <std::size_t... I>
+consteval auto make_search_table(std::index_sequence<I...>) noexcept
+{
+  return std::array<const char* (*)(const char*, const char*, const char*, std::size_t), sizeof...(I)>{
+    { &search<I>... }
+  };
+}
+
 inline const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
 {
-  // clang-format off
-  switch (k) {
-  case 1: return search<1>(s, e, p);
-  case 2: return search<2>(s, e, p);
-  case 3: return search<3>(s, e, p);
-  case 4: return search<4>(s, e, p);
-  case 5: return search<5>(s, e, p);
-  case 6: return search<6>(s, e, p);
-  case 7: return search<7>(s, e, p);
-  case 8: return search<8>(s, e, p);
-  case 9: return search<9>(s, e, p);
-  case 10: return search<10>(s, e, p);
-  case 11: return search<11>(s, e, p);
-  case 12: return search<12>(s, e, p);
-  }
-  // clang-format on
-  return search<0>(s, e, p, k);
+  static constexpr auto search_table = make_search_table(std::make_index_sequence<17>());
+  return k < 17 ? search_table[k](s, e, p, k) : search<0>(s, e, p, k);
 }
 
 inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
@@ -606,8 +641,8 @@ inline const char* fast_scan(const char* s, const char* e, const char* p, const 
 {
 #if QIS_SIGNATURE_USE_TBB
   // Changes to 'ranges', 'threshold' and 'block_size' must match the "tbb ranges" test.
-  constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
-  constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
+  static constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
+  static constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
   if (const auto n = static_cast<std::size_t>(e - s); n > threshold && n > k * 2) {
     // Determine block size.
     const auto block_size = std::max({ threshold / ranges, n / ranges, k });
