@@ -428,15 +428,175 @@ inline bool equal<16>(const char* s, const char* p) noexcept
   return (s0 == p0) && (s1 == p1);
 }
 
-inline const char* safe_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+template <std::size_t Size>
+bool equal(const char* s, const char* p, const char* m) noexcept;
+
+template <>
+constexpr bool equal<1>(const char* s, const char* p, const char* m) noexcept
 {
-  return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
+  return (s[0] & m[0]) == p[0];
+}
+
+template <>
+inline bool equal<2>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint16_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint16_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint16_t*>(m);
+  return (s0 & m0) == p0;
+}
+
+template <>
+inline bool equal<3>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint32_t*>(m);
+  return (s0 & m0 & 0x00FFFFFF) == (p0 & 0x00FFFFFF);
+}
+
+template <>
+inline bool equal<4>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint32_t*>(m);
+  return (s0 & m0) == p0;
+}
+
+template <>
+inline bool equal<5>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  return ((s0 & m0 ^ p0) & 0x000000FFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<6>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  return ((s0 & m0 ^ p0) & 0x0000FFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<7>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  return ((s0 & m0 ^ p0) & 0x00FFFFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<8>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  return (s0 & m0) == p0;
+}
+
+template <>
+inline bool equal<9>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  return ((s0 & m0) == p0) && ((s[8] & m[8]) == p[8]);
+}
+
+template <>
+inline bool equal<10>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint16_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint16_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint16_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
+}
+
+template <>
+inline bool equal<11>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint32_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1 & 0x00FFFFFF) == (p1 & 0x00FFFFFF));
+}
+
+template <>
+inline bool equal<12>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint32_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
+}
+
+template <>
+inline bool equal<13>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x000000FFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<14>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x0000FFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<15>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x00FFFFFFFFFFFFFF) == 0;
+}
+
+template <>
+inline bool equal<16>(const char* s, const char* p, const char* m) noexcept
+{
+  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
+  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
+  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
+  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
+  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
+  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
+  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
 }
 
 inline const char* safe_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
   if (!m) {
-    return safe_search(s, e, p, k);
+    return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
   }
   auto c = m;
   const auto compare = [m, &c](char lhs, char rhs) noexcept {
@@ -451,14 +611,76 @@ inline const char* safe_search(const char* s, const char* e, const char* p, cons
 
 #if QIS_SIGNATURE_USE_AVX2
 
-template <std::size_t K>
-const char* search(const char* s, const char* e, const char* p, std::size_t k = K) noexcept
+template <bool First, bool Last, std::size_t K>
+const char* search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
+  if constexpr ((First || Last) && K == 1) {
+    return safe_search(s, e, p, m, k);
+  }
+
   // Fill 32 bytes of 'pf' with the first data (p) byte.
   const auto pf = _mm256_set1_epi8(p[0]);
 
   // Fill 32 bytes of 'pl' with the last data (p) byte.
   const auto pl = _mm256_set1_epi8(p[k - 1]);
+
+  // Fill 32 bytes of 'mf' with the first mask (m) byte.
+  const auto mf = [m]() noexcept {
+    if constexpr (First) {
+      return _mm256_set1_epi8(m[0]);
+    } else {
+      return __m256i{};
+    }
+  }();
+
+  // Fill 32 bytes of 'ml' with the last mask (m) byte.
+  const auto ml = [m, k]() noexcept {
+    if constexpr (Last) {
+      return _mm256_set1_epi8(m[k - 1]);
+    } else {
+      return __m256i{};
+    }
+  }();
+
+  // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
+  const auto compare_first = [pf, mf](__m256i si) noexcept {
+    if constexpr (First) {
+      return _mm256_cmpeq_epi8(_mm256_and_si256(si, mf), pf);
+    } else {
+      return _mm256_cmpeq_epi8(si, pf);
+    }
+  };
+
+  // Compares all bytes in 'si' with the last byte in 'p' (applies mask).
+  const auto compare_last = [pl, ml](__m256i si) noexcept {
+    if constexpr (Last) {
+      return _mm256_cmpeq_epi8(_mm256_and_si256(si, ml), pl);
+    } else {
+      return _mm256_cmpeq_epi8(si, pl);
+    }
+  };
+
+  // Compares [i+1..i+k-2] with [p+1..p+k-2] (applies mask).
+  const auto compare = [p, m, k](const char* i) noexcept {
+    if constexpr (First || Last) {
+      if constexpr (K == 0) {
+        auto c = m + 1;
+        return std::equal(i + 1, i + k - 1, p + 1, p + k - 1, [&c](char lhs, char rhs) noexcept {
+          return (lhs & *c++) == rhs;
+        });
+      } else if constexpr (K > 2) {
+        return equal<K - 2>(i + 1, p + 1, m + 1);
+      } else {
+        return true;
+      }
+    } else {
+      if constexpr (K == 0) {
+        return std::memcmp(i + 1, p + 1, k - 2) == 0;
+      } else {
+        return equal<K - 2>(i + 1, p + 1);
+      }
+    }
+  };
 
   // Iterate over scan (s) 32 bytes at a time.
   for (auto i = s; i < e; i += 32) {
@@ -469,10 +691,10 @@ const char* search(const char* s, const char* e, const char* p, std::size_t k = 
     const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
 
     // Compare each byte in 's0' with the first data (p) byte.
-    const auto e0 = _mm256_cmpeq_epi8(s0, pf);
+    const auto e0 = compare_first(s0);
 
     // Compare each byte in 's1' with the last data (p) byte.
-    const auto e1 = _mm256_cmpeq_epi8(s1, pl);
+    const auto e1 = compare_last(s1);
 
     // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
     // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
@@ -485,14 +707,8 @@ const char* search(const char* s, const char* e, const char* p, std::size_t k = 
       const auto o = _tzcnt_u32(em);
 
       // Compare memory ignoring the first and last data (p) bytes since they already match.
-      if constexpr (K == 0) {
-        if (std::memcmp(i + o + 1, p + 1, k - 2) == 0) {
-          return i + o;
-        }
-      } else {
-        if (equal<K - 2>(i + o + 1, p + 1)) {
-          return i + o;
-        }
+      if (compare(i + o)) {
+        return i + o;
       }
 
       // Unset least significant set bit.
@@ -503,14 +719,30 @@ const char* search(const char* s, const char* e, const char* p, std::size_t k = 
 }
 
 template <>
-inline const char* search<1>(const char* s, const char* e, const char* p, std::size_t) noexcept
+inline const char* search<false, false, 1>(
+  const char* s,
+  const char* e,
+  const char* p,
+  const char* m,
+  std::size_t) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(!m);  // guaranteed by qis::scan
+#endif
   return std::find(s, e, p[0]);
 }
 
 template <>
-inline const char* search<2>(const char* s, const char* e, const char* p, std::size_t) noexcept
+inline const char* search<false, false, 2>(
+  const char* s,
+  const char* e,
+  const char* p,
+  const char* m,
+  std::size_t) noexcept
 {
+#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
+  assert(!m);  // guaranteed by qis::scan
+#endif
   // Fill 32 bytes of 'p0' with the first data (p) byte.
   const auto p0 = _mm256_set1_epi8(p[0]);
 
@@ -549,20 +781,31 @@ inline const char* search<2>(const char* s, const char* e, const char* p, std::s
   return e;
 }
 
-template <std::size_t... I>
+template <bool Left, bool Right, std::size_t... I>
 consteval auto make_search_table(std::index_sequence<I...>) noexcept
 {
-  return std::array<const char* (*)(const char*, const char*, const char*, std::size_t), sizeof...(I)>{
-    { &search<I>... }
-  };
+  return std::array<decltype(&search<Left, Right, 0>), sizeof...(I)>{ { &search<Left, Right, I>... } };
 }
 
-inline const char* fast_search(const char* s, const char* e, const char* p, std::size_t k) noexcept
+inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  static constexpr auto search_table = make_search_table(std::make_index_sequence<17>());
-  return k < 17 ? search_table[k](s, e, p, k) : search<0>(s, e, p, k);
+  static constexpr auto mask_none = make_search_table<false, false>(std::make_index_sequence<17>());
+  static constexpr auto mask_right = make_search_table<false, true>(std::make_index_sequence<17>());
+  static constexpr auto mask_left = make_search_table<true, false>(std::make_index_sequence<17>());
+  static constexpr auto mask_both = make_search_table<true, true>(std::make_index_sequence<17>());
+  if (m) {
+    if (m[0] != char(0xFF)) {
+      if (m[k - 1] != char(0xFF)) {
+        return mask_both[k < mask_both.size() ? k : 0](s, e, p, m, k);
+      }
+      return mask_left[k < mask_left.size() ? k : 0](s, e, p, m, k);
+    }
+    return mask_right[k < mask_right.size() ? k : 0](s, e, p, m, k);
+  }
+  return mask_none[k < mask_none.size() ? k : 0](s, e, p, m, k);
 }
 
+/*
 inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
   if (!m) {
@@ -627,6 +870,7 @@ inline const char* fast_search(const char* s, const char* e, const char* p, cons
   }
   return e;
 }
+*/
 
 #else
 

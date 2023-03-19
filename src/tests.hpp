@@ -583,11 +583,9 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s5.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s5) == qis::npos);
 
-  std::array<char, 1024> m{};
-
   SUBCASE("qis::detail::equal<1>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -595,7 +593,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<2>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -603,7 +601,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<3>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -611,7 +609,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<4>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -619,7 +617,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<5>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -627,7 +625,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<6>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -635,7 +633,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<7>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -643,7 +641,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<8>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37 38");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -651,7 +649,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<9>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37 38 39");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -659,7 +657,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<10>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -667,7 +665,7 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<11>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
@@ -675,56 +673,258 @@ QIS_TEST("scan")
 
   SUBCASE("qis::detail::equal<12>")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equal<13>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equal<14>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3F");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equal<15>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("qis::detail::equal<16>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40 41");
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("std::memcmp")
   {
-    m.fill('0');
-    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D");
+    std::array<char, 1024> m{};
+    const qis::signature s("31 32 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40 41 42");
     std::memcpy(m.data() + 8, s.data(), s.size());
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<1>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("?1");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[8] = '\x91';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<2> (first)")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("?1 32");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[8] = '\x91';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<2> (last)")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?2");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<3>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<4>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<5>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<6>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<7>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<8>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<9>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<10>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<11>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<12>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<13>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C 3D");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<14>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C 3D 3F");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<15>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: qis::detail::equal<16>")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40 41");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
+    REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
+  }
+
+  SUBCASE("mask: std::equal")
+  {
+    std::array<char, 1024> m{};
+    const qis::signature s("31 ?? 33 34 35 36 37 38 39 3A 3B 3C 3D 3F 40 41 42");
+    std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x92';
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("mask: padding left")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("?? 31 32");
     std::memcpy(m.data() + 8, s.data(), s.size());
+    m[8] = '\x61';
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("mask: padding right")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 32 ??");
     std::memcpy(m.data() + 8, s.data(), s.size());
+    m[10] = '\x61';
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("mask: padding")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("?? 31 32 ??");
     std::memcpy(m.data() + 8, s.data(), s.size());
+    m[8] = '\x61';
+    m[11] = '\x62';
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("mask: gap")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("31 ?? 32");
     std::memcpy(m.data() + 8, s.data(), s.size());
+    m[9] = '\x61';
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
 
   SUBCASE("mask: padding and gap")
   {
-    m.fill('0');
+    std::array<char, 1024> m{};
     const qis::signature s("?? 31 ?? 32 ??");
+    m[8] = '\x61';
+    m[10] = '\x62';
+    m[12] = '\x63';
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
