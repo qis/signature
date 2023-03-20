@@ -60,39 +60,40 @@ The container and search algorithms were extensively tested. See
 All benchmark results use the following report syntax.
 
 ```
------------------------------------------------------------
-Benchmark                 Time             CPU   Iterations
------------------------------------------------------------
-find avx     05 16 kb   150 ns          120 ns      1000000
-scan     tbb 06 32 kb   300 ns          280 ns      1000000
- ^    ^   ^   ^  ^
- |    |   |   |  +--- Searched memory block size.
- |    |   |   +------ Signature size used for the search.
- |    |   +---------- Benchmark compiled with TBB support.
- |    +-------------- Benchmark compiled with AVX2 support.
- +------------------- Signature type used for the search.
+                      + Scanned memory block size.
+                      v
+-----------------------------------------------------------------
+Type |  K | AVX TBB | 1 GiB     Time             CPU   Iterations
+-----------------------------------------------------------------
+mask | 12 |         |   853445625 ns    853515625 ns            8
+mask | 12 |     tbb |   129104875 ns    123046875 ns            8
+mask | 12 | avx     |    50333100 ns     46875000 ns            8
+mask | 12 | avx tbb |    36736000 ns     37109375 ns            8
+ ^      ^    ^   ^
+ |      |    |   +----- Benchmark compiled with TBB support.
+ |      |    +--------- Benchmark compiled with AVX2 support.
+ |      +-------------- Signature size used for the scan.
+ +--------------------- Signature type used for the scan.
 ```
 
-There are two types of signatures used by the benchmarks and tests:
+There are two types of signature types used for the benchmarks:
 
-* `find` has all bytes defined and the search algorithm can be optimized for it.
+* `data` has all bytes defined and the search algorithm can be optimized for it.
 
 ```sh
-DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+DB E7 DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 ```
 
-* `scan` contains unmasked 4-bit entries (`?`) and uses a slower algorithm.
+* `mask` contains an unmasked 4-bit entry (`?`) and uses a slower algorithm.
 
 ```sh
-DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
+DB E? DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 ```
 
-The searched memory block ends with the `find` signature and is guaranteed to
-never contain the `DB 27 5B` byte sequence anywhere else.
+The `K` column shows how many bytes of the signature type were used during scans.
+In the example above, `mask | 12` means `DB E? DB DA EB DE E1 EC DD DE DD D6`.
 
-In the example above:
-* Searched 16 KiB for `DB 27 5B FA FB` using the AVX2 algorithm.
-* Searched 32 KiB for `DB 27 5B ?? FB ?E` using `<algorithm>` and TBB.
+The scanned memory block always contains the signature at the very end.
 
 All benchmark results were recorded on the same system.
 
