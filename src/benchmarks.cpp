@@ -36,7 +36,7 @@ public:
     ConsoleReporter::ReportRuns(runs);
   }
 
-  static void print_header(std::string text) noexcept
+  static void print_header(std::string text)
   {
     text = std::format("Type |  K | AVX TBB | {:<7}", text);
     std::puts("-----------------------------------------------------------------");
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
       std::cout << "<summary>" + size_text + "</summary>" << std::endl;
       std::cout << std::endl;
       std::cout << "```" << std::endl;
-      reporter.print_header(size_text);
+      console_reporter::print_header(size_text);
 
       for (const auto i : { 6, 12, 24 }) {
         if (i > 1) {

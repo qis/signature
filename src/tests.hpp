@@ -931,6 +931,47 @@ QIS_TEST("scan")
     std::memcpy(m.data() + 8, s.data(), s.size());
     REQUIRE(qis::scan(m.data(), m.size(), s) == 8);
   }
+
+  SUBCASE("large k")
+  {
+    std::vector<char> m(1_mb, '\xCD');
+    std::string pattern;
+    for (std::size_t i = 0; i < 128; i++) {
+      if (i) {
+        pattern.push_back(' ');
+      }
+      pattern.append("EF");
+    }
+    const qis::signature s0(pattern);
+    REQUIRE(s0.size() == 128);
+    REQUIRE(s0.mask() == nullptr);
+    for (std::size_t i = 0; i < 128; i++) {
+      REQUIRE(s0.data()[i] == '\xEF');
+    }
+    REQUIRE(qis::scan(m.data(), m.size(), s0) == qis::npos);
+    std::memcpy(m.data() + m.size() - 128, s0.data(), 128);
+    REQUIRE(qis::scan(m.data(), m.size(), s0) == m.size() - 128);
+
+    pattern[4] = '?';
+    const qis::signature s1(pattern);
+    REQUIRE(s1.size() == 128);
+    REQUIRE(s1.mask() != nullptr);
+    for (std::size_t i = 0; i < 128; i++) {
+      if (i == 1) {
+        REQUIRE(s1.data()[i] == '\xE0');
+        REQUIRE(s1.mask()[i] == '\xF0');
+      } else {
+        REQUIRE(s1.data()[i] == '\xEF');
+        REQUIRE(s1.mask()[i] == '\xFF');
+      }
+    }
+    std::fill(m.data() + m.size() - 128, m.data() + m.size(), '\xCD');
+    REQUIRE(qis::scan(m.data(), m.size(), s1) == qis::npos);
+    std::memcpy(m.data() + m.size() - 128, s1.data(), 128);
+    REQUIRE(m[m.size() - 127] == '\xE0');
+    m[m.size() - 127] = '\xE5';
+    REQUIRE(qis::scan(m.data(), m.size(), s1) == m.size() - 128);
+  }
 }
 
 #if QIS_SIGNATURE_USE_TBB
