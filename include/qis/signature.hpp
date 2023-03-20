@@ -34,6 +34,7 @@
 #include <string_view>
 #include <utility>
 
+// Enables or disables AVX2 optimizations.
 #ifndef QIS_SIGNATURE_USE_AVX2
 #ifdef __AVX2__
 #define QIS_SIGNATURE_USE_AVX2 1
@@ -42,6 +43,7 @@
 #endif
 #endif
 
+// Enables or disables concurrency using oneTBB.
 #ifndef QIS_SIGNATURE_USE_TBB
 #if __has_include(<tbb/parallel_for.h>)
 #define QIS_SIGNATURE_USE_TBB 1
@@ -50,6 +52,21 @@
 #endif
 #endif
 
+// Minimum scan data size before concurrency is used.
+#ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
+#if QIS_SIGNATURE_USE_AVX2
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
+#else
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
+#endif
+#endif
+
+// Maximum number of concurrently scanned ranges.
+#ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
+#define QIS_SIGNATURE_CONCURRENCY_RANGES 64
+#endif
+
+// Enables or disables throwing exceptions during signature parsing.
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
 #ifdef __cpp_exceptions
 #define QIS_SIGNATURE_USE_EXCEPTIONS 1
@@ -58,6 +75,10 @@
 #endif
 #endif
 
+// Verify settings.
+static_assert(QIS_SIGNATURE_CONCURRENCY_THRESHOLD >= 0);
+static_assert(QIS_SIGNATURE_CONCURRENCY_RANGES > 0);
+
 #if QIS_SIGNATURE_USE_AVX2
 #include <immintrin.h>
 #endif
@@ -65,16 +86,6 @@
 #if QIS_SIGNATURE_USE_TBB
 #include <tbb/parallel_for.h>
 #include <atomic>
-#ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
-#define QIS_SIGNATURE_CONCURRENCY_RANGES 64
-#endif
-#ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
-#if QIS_SIGNATURE_USE_AVX2
-#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
-#else
-#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
-#endif
-#endif
 #endif
 
 #if QIS_SIGNATURE_USE_EXCEPTIONS
@@ -112,10 +123,13 @@ public:
 
 #endif
 
+/// Signature parser and storage container.
 class signature {
 public:
+  /// Creates empty signature.
   signature() noexcept = default;
 
+  /// Creates signature from string.
   template <std::size_t N>
   explicit signature(const char (&data)[N]) : signature(std::string_view(data))
   {
@@ -123,6 +137,7 @@ public:
     static_assert(N % 3 == 0, "invalid signature");
   }
 
+  /// Creates signature from string and replaces mask with the 'mask' definition.
   template <std::size_t N, std::size_t K>
   explicit signature(const char (&data)[N], const char (&mask)[K]) :
     signature(std::string_view(data), std::string_view(mask))
@@ -133,6 +148,7 @@ public:
     static_assert(K == 1 || K % 3 == 0, "invalid signature");
   }
 
+  /// Creates signature from string and replaces mask with the 'mask' definition (optional).
   explicit signature(std::string_view data, std::string_view mask = {}) :
     size_((data.size() + 1) / 3), mask_(!mask.empty() || data.find('?') != std::string_view::npos)
   {
@@ -234,21 +250,25 @@ public:
 
   ~signature() = default;
 
+  /// Returns binary signature data.
   constexpr const char* data() const noexcept
   {
     return data_.get();
   }
 
+  /// Returns binary signature mask.
   constexpr const char* mask() const noexcept
   {
     return mask_ ? data_.get() + size_ : nullptr;
   }
 
+  /// Returns binary signature data and mask size.
   constexpr std::size_t size() const noexcept
   {
     return size_;
   }
 
+  /// Resets signature and releases allocated memory.
   void reset() noexcept
   {
     size_ = 0;
@@ -279,9 +299,11 @@ private:
   bool mask_{ false };
 };
 
-static constexpr std::size_t npos = std::string_view::npos;
-
+/// Scans 'size' number of bytes in 'data' for the signature.
 [[nodiscard]] std::size_t scan(const void* data, std::size_t size, const signature& search) noexcept;
+
+/// Indicates that the signature was not found.
+static constexpr std::size_t npos = std::string_view::npos;
 
 namespace detail {
 
@@ -595,282 +617,301 @@ inline bool equal<16>(const char* s, const char* p, const char* m) noexcept
 
 inline const char* safe_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  if (!m) {
-    return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
-  }
-  auto c = m;
-  const auto compare = [m, &c](char lhs, char rhs) noexcept {
-    if ((lhs & *c++) == rhs) {
-      return true;
+  if (k == 1) {
+    if (m) {
+      const auto compare = [p0 = p[0], m0 = m[0]](char s0) noexcept {
+        return (s0 & m0) == p0;
+      };
+      return std::find_if(s, e, compare);
     }
-    c = m;
-    return false;
-  };
-  return std::search(s, e, std::default_searcher(p, p + k, compare));
+    return std::find(s, e, p[0]);
+  }
+  if (m) {
+    auto m0 = m;
+    const auto compare = [m, &m0](char s0, char p0) noexcept {
+      if ((s0 & *m0++) == p0) {
+        return true;
+      }
+      m0 = m;
+      return false;
+    };
+    return std::search(s, e, std::default_searcher(p, p + k, compare));
+  }
+  return std::search(s, e, std::boyer_moore_horspool_searcher(p, p + k));
 }
 
 #if QIS_SIGNATURE_USE_AVX2
 
-template <bool First, bool Last, std::size_t K>
-const char* search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
-{
-  if constexpr ((First || Last) && K == 1) {
+template <bool M0, bool MK, std::size_t K>
+struct searcher {
+  static inline const char* search(
+    const char* s,
+    const char* e,
+    const char* p,
+    const char* m,
+    std::size_t k) noexcept
+  {
+    // Fill 32 bytes of 'p0' with the first data (p) byte.
+    const auto p0 = _mm256_set1_epi8(p[0]);
+
+    // Fill 32 bytes of 'm0' with the first mask (m) byte.
+    const auto m0 = [m]() noexcept {
+      if constexpr (M0) {
+        return _mm256_set1_epi8(m[0]);
+      } else {
+        return __m256i{};
+      }
+    }();
+
+    // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
+    const auto compare_p0 = [p0, m0](__m256i si) noexcept {
+      if constexpr (M0) {
+        return _mm256_cmpeq_epi8(_mm256_and_si256(si, m0), p0);
+      } else {
+        return _mm256_cmpeq_epi8(si, p0);
+      }
+    };
+
+    // Fill 32 bytes of 'pk' with the last data (p) byte.
+    const auto pk = _mm256_set1_epi8(p[k - 1]);
+
+    // Fill 32 bytes of 'mk' with the last mask (m) byte.
+    const auto mk = [m, k]() noexcept {
+      if constexpr (MK) {
+        return _mm256_set1_epi8(m[k - 1]);
+      } else {
+        return __m256i{};
+      }
+    }();
+
+    // Compares all bytes in 'si' with the last byte in 'p' (applies mask).
+    const auto compare_pk = [pk, mk](__m256i si) noexcept {
+      if constexpr (MK) {
+        return _mm256_cmpeq_epi8(_mm256_and_si256(si, mk), pk);
+      } else {
+        return _mm256_cmpeq_epi8(si, pk);
+      }
+    };
+
+    // Compares [i+1..i+k-2] with [p+1..p+k-2] (applies mask).
+    const auto compare = [p, m, k](const char* i) noexcept {
+      if constexpr (M0 || MK) {
+        if constexpr (K == 0) {
+          auto c = m + 1;
+          return std::equal(i + 1, i + k - 1, p + 1, p + k - 1, [&c](char lhs, char rhs) noexcept {
+            return (lhs & *c++) == rhs;
+          });
+        } else {
+          return equal<K - 2>(i + 1, p + 1, m + 1);
+        }
+      } else {
+        if constexpr (K == 0) {
+          return std::memcmp(i + 1, p + 1, k - 2) == 0;
+        } else {
+          return equal<K - 2>(i + 1, p + 1);
+        }
+      }
+    };
+
+    // Iterate over scan (s) 32 bytes at a time.
+    for (auto i = s; i < e; i += 32) {
+      // Load 32 scan (s) bytes into 's0'.
+      const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
+
+      // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
+      const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
+
+      // Compare each byte in 's0' with the first data (p) byte.
+      const auto e0 = compare_p0(s0);
+
+      // Compare each byte in 's1' with the last data (p) byte.
+      const auto e1 = compare_pk(s1);
+
+      // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
+      // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
+      // at positions that represent 'si' offsets where the first and last byte match 'k'.
+      auto em = static_cast<unsigned>(_mm256_movemask_epi8(_mm256_and_si256(e0, e1)));
+
+      // Iterate over set bites in the equality mask.
+      while (em) {
+        // Get least significant set bit offset.
+        const auto o = _tzcnt_u32(em);
+
+        // Compare memory ignoring the first and last data (p) bytes since they already match.
+        if (compare(i + o)) {
+          return i + o;
+        }
+
+        // Unset least significant set bit.
+        em &= em - 1;
+      }
+    }
+    return e;
+  }
+};
+
+template <bool M0, bool MK>
+struct searcher<M0, MK, 1> {
+  static inline const char* search(
+    const char* s,
+    const char* e,
+    const char* p,
+    const char* m,
+    std::size_t k) noexcept
+  {
+#ifdef _MSVC_STL_VERSION
+    // The MSVC STL std::find implementation is already optimized.
     return safe_search(s, e, p, m, k);
+#else
+    // Fill 32 bytes of 'p0' with the first data (p) byte.
+    const auto p0 = _mm256_set1_epi8(p[0]);
+
+    // Fill 32 bytes of 'm0' with the first mask (m) byte.
+    const auto m0 = [m]() noexcept {
+      if constexpr (M0 || MK) {
+        return _mm256_set1_epi8(m[0]);
+      } else {
+        return __m256i{};
+      }
+    }();
+
+    // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
+    const auto compare_p0 = [p0, m0](__m256i si) noexcept {
+      if constexpr (M0 || MK) {
+        return _mm256_cmpeq_epi8(_mm256_and_si256(si, m0), p0);
+      } else {
+        return _mm256_cmpeq_epi8(si, p0);
+      }
+    };
+
+    // Iterate over scan (s) 32 bytes at a time.
+    for (auto i = s; i < e; i += 32) {
+      // Load 32 scan (s) bytes into 's0'.
+      auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
+
+      // Compare each byte in 's0' with the first data (p) byte.
+      const auto e0 = compare_p0(s0);
+
+      // Create and check an equality mask with bits set where 'e0' has a match.
+      if (const auto em = _mm256_movemask_epi8(e0)) {
+        // Use position of least significant set bit as 'si' offset.
+        return i + _tzcnt_u32(static_cast<unsigned>(em));
+      }
+    }
+    return e;
+#endif
   }
+};
 
-  // Fill 32 bytes of 'pf' with the first data (p) byte.
-  const auto pf = _mm256_set1_epi8(p[0]);
+template <bool M0, bool M1>
+struct searcher<M0, M1, 2> {
+  static inline const char* search(
+    const char* s,
+    const char* e,
+    const char* p,
+    const char* m,
+    std::size_t k) noexcept
+  {
+    // Fill 32 bytes of 'p0' with the first data (p) byte.
+    const auto p0 = _mm256_set1_epi8(p[0]);
 
-  // Fill 32 bytes of 'pl' with the last data (p) byte.
-  const auto pl = _mm256_set1_epi8(p[k - 1]);
-
-  // Fill 32 bytes of 'mf' with the first mask (m) byte.
-  const auto mf = [m]() noexcept {
-    if constexpr (First) {
-      return _mm256_set1_epi8(m[0]);
-    } else {
-      return __m256i{};
-    }
-  }();
-
-  // Fill 32 bytes of 'ml' with the last mask (m) byte.
-  const auto ml = [m, k]() noexcept {
-    if constexpr (Last) {
-      return _mm256_set1_epi8(m[k - 1]);
-    } else {
-      return __m256i{};
-    }
-  }();
-
-  // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
-  const auto compare_first = [pf, mf](__m256i si) noexcept {
-    if constexpr (First) {
-      return _mm256_cmpeq_epi8(_mm256_and_si256(si, mf), pf);
-    } else {
-      return _mm256_cmpeq_epi8(si, pf);
-    }
-  };
-
-  // Compares all bytes in 'si' with the last byte in 'p' (applies mask).
-  const auto compare_last = [pl, ml](__m256i si) noexcept {
-    if constexpr (Last) {
-      return _mm256_cmpeq_epi8(_mm256_and_si256(si, ml), pl);
-    } else {
-      return _mm256_cmpeq_epi8(si, pl);
-    }
-  };
-
-  // Compares [i+1..i+k-2] with [p+1..p+k-2] (applies mask).
-  const auto compare = [p, m, k](const char* i) noexcept {
-    if constexpr (First || Last) {
-      if constexpr (K == 0) {
-        auto c = m + 1;
-        return std::equal(i + 1, i + k - 1, p + 1, p + k - 1, [&c](char lhs, char rhs) noexcept {
-          return (lhs & *c++) == rhs;
-        });
-      } else if constexpr (K > 2) {
-        return equal<K - 2>(i + 1, p + 1, m + 1);
+    // Fill 32 bytes of 'm0' with the first mask (m) byte.
+    const auto m0 = [m]() noexcept {
+      if constexpr (M0) {
+        return _mm256_set1_epi8(m[0]);
       } else {
-        return true;
+        return __m256i{};
       }
-    } else {
-      if constexpr (K == 0) {
-        return std::memcmp(i + 1, p + 1, k - 2) == 0;
-      } else {
-        return equal<K - 2>(i + 1, p + 1);
-      }
-    }
-  };
+    }();
 
-  // Iterate over scan (s) 32 bytes at a time.
-  for (auto i = s; i < e; i += 32) {
+    // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
+    const auto compare_p0 = [p0, m0](__m256i si) noexcept {
+      if constexpr (M0) {
+        return _mm256_cmpeq_epi8(_mm256_and_si256(si, m0), p0);
+      } else {
+        return _mm256_cmpeq_epi8(si, p0);
+      }
+    };
+
+    // Fill 32 bytes of 'p1' with the second data (p) byte.
+    const auto p1 = _mm256_set1_epi8(p[1]);
+
+    // Fill 32 bytes of 'ml' with the second mask (m) byte.
+    const auto m1 = [m]() noexcept {
+      if constexpr (M1) {
+        return _mm256_set1_epi8(m[1]);
+      } else {
+        return __m256i{};
+      }
+    }();
+
+    // Compares all bytes in 'si' with the second byte in 'p' (applies mask).
+    const auto compare_p1 = [p1, m1](__m256i si) noexcept {
+      if constexpr (M1) {
+        return _mm256_cmpeq_epi8(_mm256_and_si256(si, m1), p1);
+      } else {
+        return _mm256_cmpeq_epi8(si, p1);
+      }
+    };
+
     // Load 32 scan (s) bytes into 's0'.
-    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
+    auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
 
-    // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
-    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
+    // Iterate over scan (s) 32 bytes at a time.
+    for (auto i = s; i < e; i += 32) {
+      // Load the next 32 scan (s) bytes into 's1'.
+      const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
 
-    // Compare each byte in 's0' with the first data (p) byte.
-    const auto e0 = compare_first(s0);
+      // Compare each byte in 's0' with the first data (p) byte.
+      const auto e0 = compare_p0(s0);
 
-    // Compare each byte in 's1' with the last data (p) byte.
-    const auto e1 = compare_last(s1);
+      // Create substring 'ss' by shifting 's0' 1 byte to the left
+      // and filling the last byte with the first byte from 's1'.
+      auto ss = _mm256_castsi128_si256(_mm256_extracti128_si256(s0, 1));
+      ss = _mm256_inserti128_si256(ss, _mm256_castsi256_si128(s1), 1);
+      ss = _mm256_alignr_epi8(ss, s0, 1);
 
-    // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
-    // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
-    // at positions that represent 'si' offsets where the first and last byte match 'k'.
-    auto em = static_cast<unsigned>(_mm256_movemask_epi8(_mm256_and_si256(e0, e1)));
+      // Compare each byte in 'ss' with the second data (p) byte.
+      const auto e1 = compare_p1(ss);
 
-    // Iterate over set bites in the equality mask.
-    while (em) {
-      // Get least significant set bit offset.
-      const auto o = _tzcnt_u32(em);
-
-      // Compare memory ignoring the first and last data (p) bytes since they already match.
-      if (compare(i + o)) {
-        return i + o;
+      // Create and check an equality mask with bits set where 'e0' and 'e1' match.
+      if (const auto em = _mm256_movemask_epi8(_mm256_and_si256(e0, e1))) {
+        // Use position of least significant set bit as 'si' offset.
+        return i + _tzcnt_u32(static_cast<unsigned>(em));
       }
 
-      // Unset least significant set bit.
-      em &= em - 1;
+      // Use 's1' as 's0' for the next iteration.
+      s0 = s1;
     }
+    return e;
   }
-  return e;
-}
-
-template <>
-inline const char* search<false, false, 1>(
-  const char* s,
-  const char* e,
-  const char* p,
-  const char* m,
-  std::size_t) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(!m);  // guaranteed by qis::scan
-#endif
-  return std::find(s, e, p[0]);
-}
-
-template <>
-inline const char* search<false, false, 2>(
-  const char* s,
-  const char* e,
-  const char* p,
-  const char* m,
-  std::size_t) noexcept
-{
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(!m);  // guaranteed by qis::scan
-#endif
-  // Fill 32 bytes of 'p0' with the first data (p) byte.
-  const auto p0 = _mm256_set1_epi8(p[0]);
-
-  // Fill 32 bytes of 'p1' with the second data (p) byte.
-  const auto p1 = _mm256_set1_epi8(p[1]);
-
-  // Load 32 scan (s) bytes into 's0'.
-  auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(s));
-
-  // Iterate over scan (s) 32 bytes at a time.
-  for (auto i = s; i < e; i += 32) {
-    // Load the next 32 scan (s) bytes into 's1'.
-    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
-
-    // Compare each byte in 's0' with the first data (p) byte.
-    const auto e0 = _mm256_cmpeq_epi8(s0, p0);
-
-    // Create substring 'ss' by shifting 's0' 1 byte to the left
-    // and filling the last byte with the first byte from 's1'.
-    auto ss = _mm256_castsi128_si256(_mm256_extracti128_si256(s0, 1));
-    ss = _mm256_inserti128_si256(ss, _mm256_castsi256_si128(s1), 1);
-    ss = _mm256_alignr_epi8(ss, s0, 1);
-
-    // Compare each byte in 'ss' with the second data (p) byte.
-    const auto e1 = _mm256_cmpeq_epi8(ss, p1);
-
-    // Create and check an equality mask with bits set where 'e0' and 'e1' match.
-    if (const auto em = _mm256_movemask_epi8(_mm256_and_si256(e0, e1))) {
-      // Use position of least significant set bit as 'si' offset.
-      return i + _tzcnt_u32(static_cast<unsigned>(em));
-    }
-
-    // Use 's1' as 's0' for the next iteration.
-    s0 = s1;
-  }
-  return e;
-}
+};
 
 template <bool Left, bool Right, std::size_t... I>
-consteval auto make_search_table(std::index_sequence<I...>) noexcept
+consteval auto make_searchers(std::index_sequence<I...>) noexcept
 {
-  return std::array<decltype(&search<Left, Right, 0>), sizeof...(I)>{ { &search<Left, Right, I>... } };
-}
-
-inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
-{
-  static constexpr auto mask_none = make_search_table<false, false>(std::make_index_sequence<17>());
-  static constexpr auto mask_right = make_search_table<false, true>(std::make_index_sequence<17>());
-  static constexpr auto mask_left = make_search_table<true, false>(std::make_index_sequence<17>());
-  static constexpr auto mask_both = make_search_table<true, true>(std::make_index_sequence<17>());
-  if (m) {
-    if (m[0] != char(0xFF)) {
-      if (m[k - 1] != char(0xFF)) {
-        return mask_both[k < mask_both.size() ? k : 0](s, e, p, m, k);
-      }
-      return mask_left[k < mask_left.size() ? k : 0](s, e, p, m, k);
-    }
-    return mask_right[k < mask_right.size() ? k : 0](s, e, p, m, k);
-  }
-  return mask_none[k < mask_none.size() ? k : 0](s, e, p, m, k);
-}
-
-/*
-inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
-{
-  if (!m) {
-    return fast_search(s, e, p, k);
-  }
-#ifdef QIS_SIGNATURE_EXTRA_ASSERTS
-  assert(k > 2);  // guaranteed by qis::scan
-#endif
-  // If the first or last mask byte is not 0xFF, the AVX2
-  // algorithm has to apply them to 's' before comparing.
-  if (m[0] != char(0xFF) || m[k - 1] != char(0xFF)) {
-    return safe_search(s, e, p, m, k);
-  }
-
-  // If the first and last mask byte is 0xFF, the AVX2
-  // algorithm can be implemented as if there was no mask,
-  // except for the equality function.
-  auto c = m + 1;
-  const auto compare = [&c](char lhs, char rhs) noexcept {
-    return (lhs & *c++) == rhs;
+  return std::array<decltype(&searcher<Left, Right, 0>::search), sizeof...(I)>{
+    { &searcher<Left, Right, I>::search... }
   };
-
-  // Fill 32 bytes of 'pf' with the first data (p) byte.
-  const auto pf = _mm256_set1_epi8(p[0]);
-
-  // Fill 32 bytes of 'pl' with the last data (p) byte.
-  const auto pl = _mm256_set1_epi8(p[k - 1]);
-
-  // Iterate over scan (s) 32 bytes at a time.
-  for (auto i = s; i < e; i += 32) {
-    // Load 32 scan (s) bytes into 's0'.
-    const auto s0 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i));
-
-    // Load 32 scan (s) bytes into 's1' at an offset one less, than data size (k).
-    const auto s1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(i + k - 1));
-
-    // Compare each byte in 's0' with the first data (p) byte.
-    const auto e0 = _mm256_cmpeq_epi8(s0, pf);
-
-    // Compare each byte in 's1' with the last data (p) byte.
-    const auto e1 = _mm256_cmpeq_epi8(s1, pl);
-
-    // Create equality mask 'em' with bits set where 'e0' and 'e1' match.
-    // Since 's0' and 's1' have an offset of 'k - 1', the equality mask bytes will be set
-    // at positions that represent 'si' offsets where the first and last byte match 'k'.
-    auto em = static_cast<unsigned>(_mm256_movemask_epi8(_mm256_and_si256(e0, e1)));
-
-    // Iterate over set bites in the equality mask.
-    while (em) {
-      // Get least significant set bit offset.
-      const auto o = _tzcnt_u32(em);
-
-      // Compare memory ignoring the first and last data (p) bytes since they already match.
-      if (std::equal(i + o + 1, i + o + k - 1, p + 1, p + k - 1, compare)) {
-        return i + o;
-      }
-      c = m + 1;
-
-      // Unset least significant set bit.
-      em &= em - 1;
-    }
-  }
-  return e;
 }
-*/
+
+inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
+{
+  static constexpr auto none = make_searchers<false, false>(std::make_index_sequence<17>());
+  static constexpr auto mkmk = make_searchers<false, true>(std::make_index_sequence<17>());
+  static constexpr auto m0m0 = make_searchers<true, false>(std::make_index_sequence<17>());
+  static constexpr auto m0mk = make_searchers<true, true>(std::make_index_sequence<17>());
+  if (m) {
+    if (m[0] != '\xFF') {
+      if (m[k - 1] != '\xFF') {
+        return m0mk[k < m0mk.size() ? k : 0](s, e, p, m, k);
+      }
+      return m0m0[k < m0m0.size() ? k : 0](s, e, p, m, k);
+    }
+    return mkmk[k < mkmk.size() ? k : 0](s, e, p, m, k);
+  }
+  return none[k < none.size() ? k : 0](s, e, p, m, k);
+}
 
 #else
 
@@ -884,7 +925,7 @@ inline const char* fast_search(const char* s, const char* e, const char* p, cons
 inline const char* fast_scan(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
 #if QIS_SIGNATURE_USE_TBB
-  // Changes to 'ranges', 'threshold' and 'block_size' must match the "tbb ranges" test.
+  // Changes to this algorithm might invalidate the "tbb ranges" test.
   static constexpr auto ranges = std::size_t(QIS_SIGNATURE_CONCURRENCY_RANGES);
   static constexpr auto threshold = std::size_t(QIS_SIGNATURE_CONCURRENCY_THRESHOLD);
   if (const auto n = static_cast<std::size_t>(e - s); n > threshold && n > k * 2) {

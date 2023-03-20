@@ -1,4 +1,6 @@
 #pragma once
+#define QIS_SIGNATURE_USE_AVX2_DATA_MAX 16     // NOLINT
+#define QIS_SIGNATURE_USE_AVX2_DATA_MAX 16     // NOLINT
 #define QIS_SIGNATURE_CONCURRENCY_RANGES 2     // NOLINT
 #define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 0  // NOLINT
 #define QIS_SIGNATURE_EXTRA_ASSERTS
@@ -500,10 +502,11 @@ QIS_TEST("scan")
   const auto m26b = mem::get(26_b);
   const auto m30b = mem::get(30_b);
   const auto m1mb = mem::get(1_mb);
-  const auto find = mem::find();
-  const auto scan = mem::scan();
+  const auto data = mem::signature();
+  auto mask = data;
+  mask[3] = '?';
 
-  const qis::signature s0{ find.substr(0, 2) };
+  const qis::signature s0{ data.substr(0, 2) };
   const qis::signature s1{ "??" };
 
   REQUIRE(std::memcmp(s0.data(), m15b.data(), 1) == 0);
@@ -525,7 +528,7 @@ QIS_TEST("scan")
 
   REQUIRE(qis::scan(m15b.data(), 1, qis::signature()) == 0);
 
-  const qis::signature s2(find);
+  const qis::signature s2(data);
   REQUIRE(s2.size() == 26);
   REQUIRE(s2.mask() == nullptr);
 
@@ -541,7 +544,7 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s2.data(), m1mb.data() + 1_mb - 26, 26) == 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s2) == 1_mb - 26);
 
-  const qis::signature s3(scan);
+  const qis::signature s3(mask);
   REQUIRE(s3.size() == 26);
   REQUIRE(s3.mask() != nullptr);
 
@@ -561,22 +564,22 @@ QIS_TEST("scan")
   REQUIRE(std::memcmp(s3.mask(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s3) == 1_mb - 26);
 
-  REQUIRE(find[1] != 'F');
-  std::string find_miss(find);
-  find_miss[1] = 'F';
+  REQUIRE(data[1] != 'F');
+  std::string data_miss(data);
+  data_miss[1] = 'F';
 
-  const qis::signature s4(find_miss);
+  const qis::signature s4(data_miss);
   REQUIRE(s4.size() == 26);
   REQUIRE(s4.mask() == nullptr);
   REQUIRE(std::memcmp(s4.data(), m1mb.data() + 1_mb - 26, 26) != 0);
   REQUIRE(qis::scan(m1mb.data(), 1_mb, s4) == qis::npos);
 
-  REQUIRE(scan[1] != 'F');
-  REQUIRE(scan[1] != '?');
-  std::string scan_miss(scan);
-  scan_miss[1] = 'F';
+  REQUIRE(mask[1] != 'F');
+  REQUIRE(mask[1] != '?');
+  std::string mask_miss(mask);
+  mask_miss[1] = 'F';
 
-  const qis::signature s5(scan_miss);
+  const qis::signature s5(mask_miss);
   REQUIRE(s5.size() == 26);
   REQUIRE(s5.mask() != nullptr);
   REQUIRE(std::memcmp(s5.data(), m1mb.data() + 1_mb - 26, 26) != 0);
@@ -993,10 +996,6 @@ QIS_TEST("memory access")
   GetSystemInfo(&si);
   REQUIRE(si.dwPageSize >= 256);
 
-  const auto find = mem::find();
-  const auto scan = mem::scan();
-  const qis::signature data(find);
-
   std::shared_ptr<char> memory(
     reinterpret_cast<char*>(VirtualAlloc(nullptr, si.dwPageSize * 2, MEM_COMMIT, PAGE_READWRITE)),
     [](auto address) noexcept {
@@ -1018,14 +1017,18 @@ QIS_TEST("memory access")
     }
   };
 
-  check(mem::find());
-  check(mem::scan());
+  const auto data = mem::signature();
+  auto mask = data;
+  mask[3] = '?';
+
+  check(data);
+  check(mask);
 
   DWORD protect = 0;
   REQUIRE(VirtualProtect(end, si.dwPageSize, PAGE_NOACCESS, &protect));
 
-  check(mem::find());
-  check(mem::scan());
+  check(data);
+  check(mask);
 }
 
 #endif

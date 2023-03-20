@@ -125,7 +125,6 @@ std::vector<std::uint8_t> random(std::size_t size)
   std::vector<std::uint8_t> memory(size);
 
   // Write random data.
-  std::uint8_t m = 0;
   std::random_device rd;
   std::mt19937_64 mt(rd());
   std::uniform_int_distribution<std::uint64_t> ud;
@@ -133,31 +132,12 @@ std::vector<std::uint8_t> random(std::size_t size)
   for (std::size_t i = 0, max = size / sizeof(std::uint64_t); i < max; i++) {
     *reinterpret_cast<std::uint64_t*>(dst) = ud(mt);
     for (std::size_t j = 0; j < sizeof(std::uint64_t); j++) {
-      switch (m) {
-      case 0:
-        if (dst[j] == 0xDB) {
-          m = 1;
-        }
-        break;
-      case 1:
-        m = dst[j] == 0x27 ? 2 : 0;
-        break;
-      case 2:
-        if (dst[j] == 0x5B) {
-          dst[j] = 0x5C;
-        }
-        m = 0;
-        break;
+      const auto upper = dst[j] >> 4;
+      if (upper == '\x0D' || upper == '\x0E') {
+        dst[j] = '\xF0' + (dst[j] & 0x0F);
       }
     }
     dst += sizeof(std::uint64_t);
-  }
-  switch (auto& byte = memory[size - 1]) {
-  case 0xDB:
-  case 0x27:
-  case 0x5B:
-    byte = 0xFE;
-    break;
   }
   return memory;
 }
@@ -173,13 +153,13 @@ void initialize(std::span<const std::size_t> sizes)
     return;
   }
 
-  // Generate data.
-  const auto data = random(data_size);
-
   // Create signature.
-  const qis::signature search(find());
+  const qis::signature search(signature());
   assert(search.size() == 26);
   assert(search.data());
+
+  // Generate random data.
+  const auto src = random(data_size);
 
   // Allocate memory.
   const std::lock_guard lock(g_mutex);
@@ -195,7 +175,7 @@ void initialize(std::span<const std::size_t> sizes)
     // Copy data.
     auto dst = memory.data();
     for (std::size_t i = 0; i < size; i += data_size) {
-      std::memcpy(dst + i, dst, std::min(data_size, size - i));
+      std::memcpy(dst + i, src.data(), std::min(data_size, size - i));
     }
 
     // Copy signature.
@@ -230,22 +210,12 @@ std::span<const std::uint8_t> get(std::size_t size)
   throw std::invalid_argument(std::format("memory size not initialized: {}", size));
 }
 
-std::string_view find(std::size_t size)
+std::string signature(std::size_t size)
 {
   assert(size <= 26);
   // clang-format off
-  return std::string_view{
-    "DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89"
-  }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
-  // clang-format on
-}
-
-std::string_view scan(std::size_t size)
-{
-  assert(size <= 26);
-  // clang-format off
-  return std::string_view{
-    "DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??"
+  return std::string{
+    "DB E7 DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9"
   }.substr(0, std::min(size, std::size_t(26)) * 3 - 1);
   // clang-format on
 }

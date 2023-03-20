@@ -21,7 +21,7 @@ public:
 
   bool ReportContext(const Context& context) override
   {
-    name_field_width_ = 22;
+    name_field_width_ = 19;
     return true;
   }
 
@@ -29,7 +29,7 @@ public:
   {
     auto runs = reports;
     for (auto& run : runs) {
-      run.run_name.function_name = format(run.run_name.function_name);
+      run.run_name.function_name = format(run.run_name.function_name, run.run_name.args);
       run.run_name.iterations.clear();
       run.run_name.time_type.clear();
       run.run_name.args.clear();
@@ -41,64 +41,37 @@ public:
   }
 
 private:
-  static std::string format(const std::string& name)
+  static std::string format(const std::string& function, const std::string& args)
   {
-    const auto begin = name.data();
-    const auto end = begin + name.size();
-
     std::size_t type = 0;
-    auto [scan_end, scan_ec] = std::from_chars(begin, end, type);
-    if (scan_ec != std::errc() || ++scan_end >= end) {
-      return name;
-    }
+    std::from_chars(args.data(), args.data() + 3, type);
 
     std::size_t size = 0;
-    auto [size_end, size_ec] = std::from_chars(scan_end, end, size, 16);
-    if (size_ec != std::errc() || ++size_end >= end) {
-      return name;
-    }
+    std::from_chars(args.data() + 4, args.data() + args.size(), size);
 
-    std::string size_text;
-    if (size / 1_gb > 0 && size % 1_gb == 0) {
-      size_text = std::format("{} gb", size / 1024 / 1024 / 1024);
-    } else if (size / 1_mb > 0 && size % 1_mb == 0) {
-      size_text = std::format("{} mb", size / 1024 / 1024);
-    } else if (size / 1_kb > 0 && size % 1_kb == 0) {
-      size_text = std::format("{} kb", size / 1024);
+    const auto data = type < 200;
+    auto name = std::format("{} | {:2d} | ", data ? "data" : "mask", data ? type - 100 : type - 200);
+
+    if (const auto opt = function.substr(0, 3); opt == "std") {
+      name.append("   ");
     } else {
-      size_text = std::format("{}", size);
+      name.append(opt);
     }
-
-    std::string type_text;
-    std::string signature;
-    if (type > 200) {
-      type_text = "scan";
-      signature = std::format("{:02d}", type - 200);
+    name.push_back(' ');
+    if (const auto con = function.substr(4, 3); con == "seq") {
+      name.append("   ");
     } else {
-      type_text = "find";
-      signature = std::format("{:02d}", type - 100);
+      name.append(con);
     }
 
-    std::string test_text;
-    const std::string_view abi(size_end, end);
-    if (abi.size() >= 7 && abi[3] == '_') {
-      test_text.append(abi.substr(0, 3) != "std" ? abi.substr(0, 3) : "   ");
-      test_text.push_back(' ');
-      test_text.append(abi.substr(4, 3) != "seq" ? abi.substr(4, 3) : "   ");
-      test_text.push_back(' ');
-    } else {
-      test_text = abi;
-      test_text.push_back(' ');
-    }
-
-    return type_text + ' ' + test_text + signature + ' ' + size_text;
+    return name;
   }
 };
 
-std::vector<std::pair<std::size_t, std::size_t>>& benchmarks()
+std::set<std::size_t>& memory()
 {
-  static std::vector<std::pair<std::size_t, std::size_t>> benchmarks;
-  return benchmarks;
+  static std::set<std::size_t> memory;
+  return memory;
 }
 
 int main(int argc, char** argv)
@@ -110,81 +83,67 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
-    // Initialize data.
-    const auto runs = benchmarks();
-    std::vector<std::size_t> finds;
-    std::vector<std::size_t> scans;
+    // Initialize memory.
     std::vector<std::size_t> sizes;
-    for (auto& e : runs) {
-      if (e.first < 200) {
-        finds.push_back(e.first);
-      } else {
-        scans.push_back(e.first);
-      }
-      sizes.push_back(e.second);
+    for (auto e : memory()) {
+      sizes.push_back(e);
     }
-
-    std::sort(finds.begin(), finds.end());
-    finds.erase(std::unique(finds.begin(), finds.end()), finds.end());
-
-    std::sort(scans.begin(), scans.end());
-    scans.erase(std::unique(scans.begin(), scans.end()), scans.end());
-
     std::sort(sizes.begin(), sizes.end());
-    sizes.erase(std::unique(sizes.begin(), sizes.end()), sizes.end());
-
     mem::initialize(sizes);
 
     // Run benchmarks.
     console_reporter reporter;
     for (auto size : sizes) {
-      // clang-format off
-      const auto find = std::find_if(runs.begin(), runs.end(), [size](const auto& e) {
-        return e.first < 200 && e.second == size;
-        }) != runs.end();
-        const auto scan = std::find_if(runs.begin(), runs.end(), [size](const auto& e) {
-          return e.first >= 200 && e.second == size;
-          }) != runs.end();
-      // clang-format on
+      std::string size_text;
+      if (size / 1_gb > 0 && size % 1_gb == 0) {
+        size_text = std::format("{} GiB", size / 1024 / 1024 / 1024);
+      } else if (size / 1_mb > 0 && size % 1_mb == 0) {
+        size_text = std::format("{} MiB", size / 1024 / 1024);
+      } else if (size / 1_kb > 0 && size % 1_kb == 0) {
+        size_text = std::format("{} KiB", size / 1024);
+      } else {
+        size_text = std::format("{} Bytes", size);
+      }
+      std::cout << "<details>" << std::endl;
+      std::cout << "<summary>" + size_text + "</summary>" << std::endl;
+      std::cout << std::endl;
+      std::cout << "```" << std::endl;
+      reporter.printed_header(false);
 
-      if (find || scan) {
-        std::string size_text;
-        if (size / 1_gb > 0 && size % 1_gb == 0) {
-          size_text = std::format("{} GiB", size / 1024 / 1024 / 1024);
-        } else if (size / 1_mb > 0 && size % 1_mb == 0) {
-          size_text = std::format("{} MiB", size / 1024 / 1024);
-        } else if (size / 1_kb > 0 && size % 1_kb == 0) {
-          size_text = std::format("{} KiB", size / 1024);
-        } else {
-          size_text = std::format("{} Bytes", size);
+      for (int i = 1; i <= 26; i++) {
+        if (i > 1) {
+          std::cout << std::endl;
         }
-        std::cout << "<details>" << std::endl;
-        std::cout << "<summary>" + size_text + "</summary>" << std::endl;
-        std::cout << std::endl;
-        std::cout << "```" << std::endl;
-        reporter.printed_header(false);
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("std_seq::scan/{}/{}/", 100 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("avx_seq::scan/{}/{}/", 100 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("std_tbb::scan/{}/{}/", 100 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("avx_tbb::scan/{}/{}/", 100 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("std_seq::scan/{}/{}/", 200 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("avx_seq::scan/{}/{}/", 200 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("std_tbb::scan/{}/{}/", 200 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
+          std::format("avx_tbb::scan/{}/{}/", 200 + i, size));
       }
-      if (find) {
-        for (auto type : finds) {
-          const auto spec = std::format("{}:{:08X}:", type, size);
-          benchmark::RunSpecifiedBenchmarks(&reporter, spec);
-        }
-      }
-      if (find && scan) {
-        std::cout << std::endl;
-      }
-      if (scan) {
-        for (auto type : scans) {
-          const auto spec = std::format("{}:{:08X}:", type, size);
-          benchmark::RunSpecifiedBenchmarks(&reporter, spec);
-        }
-      }
-      if (find || scan) {
-        std::cout << "```" << std::endl;
-        std::cout << std::endl;
-        std::cout << "</details>" << std::endl;
-        std::cout << std::endl;
-      }
+
+      std::cout << "```" << std::endl;
+      std::cout << std::endl;
+      std::cout << "</details>" << std::endl;
+      std::cout << std::endl;
     }
   }
   catch (const std::exception& e) {

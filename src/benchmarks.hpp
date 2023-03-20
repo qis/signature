@@ -8,73 +8,63 @@
 #include <cstdio>
 #include <cstdlib>
 
-// clang-format off
+#define QIS_BENCHMARK_REGISTER(abi, name) BENCHMARK(abi::name)
+#define QIS_BENCHMARK(size)                                               \
+  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, scan)                         \
+    ->ArgsProduct({ benchmark::CreateDenseRange(101, 126, 1), { size } }) \
+    ->ArgsProduct({ benchmark::CreateDenseRange(201, 226, 1), { size } }) \
+    ->Iterations(benchmark_iterations(size))
 
-#define QIS_BENCHMARK_REGISTER(abi, name)              \
-  BENCHMARK(abi::name)
-
-#define QIS_BENCHMARK(scan, size)                      \
-  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, signature) \
-    ->Name(benchmark_name(scan, size))                 \
-    ->Iterations(benchmark_iterations(size))           \
-    ->ArgPair(size, static_cast<std::int64_t>(scan))
-
-#define QIS_BENCHMARK_ABORT(message)                   \
-  std::fputs("\nError: " message "\n", stderr);        \
+#define QIS_BENCHMARK_ABORT(message)            \
+  std::fputs("\nError: " message "\n", stderr); \
   std::exit(EXIT_FAILURE);
 
-// clang-format on
-
-std::vector<std::pair<std::size_t, std::size_t>>& benchmarks();
+std::set<std::size_t>& memory();
 
 namespace QIS_SIGNATURE_ABI {
 
 using namespace mem::literals;
-using benchmark::kNanosecond;
-using benchmark::kMicrosecond;
-using benchmark::kMillisecond;
 
-static std::string benchmark_name(std::size_t type, std::size_t size)
+static benchmark::IterationCount benchmark_iterations(std::size_t size) noexcept
 {
-  if (type < 100 || type > 226 || (type > 126 && type < 200)) {
-    QIS_BENCHMARK_ABORT("Invalid type.");
-  }
-  if (size < 26) {
-    QIS_BENCHMARK_ABORT("Invalid size.");
-  }
-  benchmarks().emplace_back(type, size);
-  return std::format("{}:{:08X}:{}", type, size, QIS_STRINGIFY_EXPAND(QIS_SIGNATURE_ABI));
-}
-
-static benchmark::IterationCount benchmark_iterations(std::size_t s) noexcept
-{
+  memory().insert(size);
   // clang-format off
-  return s <=  64_kb ? 4096
-       : s <= 256_kb ? 2048
-       : s <=   1_mb ? 1024
-       : s <=   4_mb ? 512
-       : s <=  16_mb ? 64
-       : s <=  64_mb ? 32
-       : s <= 256_mb ? 16 : 8;
+  return size <=  64_kb ? 4096
+       : size <= 256_kb ? 2048
+       : size <=   1_mb ? 1024
+       : size <=   4_mb ? 512
+       : size <=  16_mb ? 64
+       : size <=  64_mb ? 32
+       : size <= 256_mb ? 16 : 8;
   // clang-format on
 }
 
-static void signature(benchmark::State& state)
+static void scan(benchmark::State& state)
 {
   using benchmark::DoNotOptimize;
 
   // Handle benchmark parameters.
-  const auto size = static_cast<std::size_t>(state.range(0));
-  const auto type = static_cast<std::size_t>(state.range(1));
-  const auto scan = qis::signature(type > 200 ? mem::scan(type - 200) : mem::find(type - 100));
+  const auto type = static_cast<std::size_t>(state.range(0));
+  const auto size = static_cast<std::size_t>(state.range(1));
+
+  // Create signature.
+  const auto signature = [&]() {
+    auto pattern = mem::signature(type < 200 ? type - 100 : type - 200);
+    if (type >= 200) {
+      pattern[size == 1 ? 1 : 4] = '?';
+    }
+    return qis::signature(pattern);
+  }();
+
+  // Get random data.
   const auto data = mem::get(size);
 
-  // Create and initialize data copy.
+  // Create and initialize memory for a copy of the data.
   std::vector<std::uint8_t> copy(size);
   DoNotOptimize(std::memcpy(copy.data(), data.data(), size));
 
   // Verify data copy and signature.
-  if (const auto pos = qis::scan(copy.data(), size, scan); pos != size - 26) {
+  if (const auto pos = qis::scan(copy.data(), size, signature); pos != size - 26) {
     QIS_BENCHMARK_ABORT("Scan failed.");
   }
 
@@ -83,95 +73,23 @@ static void signature(benchmark::State& state)
     state.PauseTiming();
     DoNotOptimize(std::memcpy(copy.data(), data.data(), size));
     state.ResumeTiming();
-    const auto pos = qis::scan(copy.data(), size, scan);
+    const auto pos = qis::scan(copy.data(), size, signature);
     DoNotOptimize(pos);
   }
 }
 
-enum type : std::size_t {
-  find = 100,
-  scan = 200,
-};
-
 // clang-format off
-
-QIS_BENCHMARK(find + 6, 16_kb);
-QIS_BENCHMARK(scan + 6, 16_kb);
-QIS_BENCHMARK(find + 12, 16_kb);
-QIS_BENCHMARK(scan + 12, 16_kb);
-QIS_BENCHMARK(find + 24, 16_kb);
-QIS_BENCHMARK(scan + 24, 16_kb);
-
-QIS_BENCHMARK(find + 6, 64_kb);
-QIS_BENCHMARK(scan + 6, 64_kb);
-QIS_BENCHMARK(find + 12, 64_kb);
-QIS_BENCHMARK(scan + 12, 64_kb);
-QIS_BENCHMARK(find + 24, 64_kb);
-QIS_BENCHMARK(scan + 24, 64_kb);
-
-QIS_BENCHMARK(find + 6, 256_kb);
-QIS_BENCHMARK(scan + 6, 256_kb);
-QIS_BENCHMARK(find + 12, 256_kb);
-QIS_BENCHMARK(scan + 12, 256_kb);
-QIS_BENCHMARK(find + 24, 256_kb);
-QIS_BENCHMARK(scan + 24, 256_kb);
-
-QIS_BENCHMARK(find + 6, 1_mb);
-QIS_BENCHMARK(scan + 6, 1_mb);
-QIS_BENCHMARK(find + 12, 1_mb);
-QIS_BENCHMARK(scan + 12, 1_mb);
-QIS_BENCHMARK(find + 24, 1_mb);
-QIS_BENCHMARK(scan + 24, 1_mb);
-
-QIS_BENCHMARK(find + 6, 4_mb);
-QIS_BENCHMARK(scan + 6, 4_mb);
-QIS_BENCHMARK(find + 12, 4_mb);
-QIS_BENCHMARK(scan + 12, 4_mb);
-QIS_BENCHMARK(find + 24, 4_mb);
-QIS_BENCHMARK(scan + 24, 4_mb);
-
-QIS_BENCHMARK(find + 6, 16_mb);
-QIS_BENCHMARK(scan + 6, 16_mb);
-QIS_BENCHMARK(find + 12, 16_mb);
-QIS_BENCHMARK(scan + 12, 16_mb);
-QIS_BENCHMARK(find + 24, 16_mb);
-QIS_BENCHMARK(scan + 24, 16_mb);
-
-QIS_BENCHMARK(find + 6, 64_mb);
-QIS_BENCHMARK(scan + 6, 64_mb);
-QIS_BENCHMARK(find + 12, 64_mb);
-QIS_BENCHMARK(scan + 12, 64_mb);
-QIS_BENCHMARK(find + 24, 64_mb);
-QIS_BENCHMARK(scan + 24, 64_mb);
-
-QIS_BENCHMARK(find + 6, 256_mb);
-QIS_BENCHMARK(scan + 6, 256_mb);
-QIS_BENCHMARK(find + 12, 256_mb);
-QIS_BENCHMARK(scan + 12, 256_mb);
-QIS_BENCHMARK(find + 24, 256_mb);
-QIS_BENCHMARK(scan + 24, 256_mb);
-
-QIS_BENCHMARK(find + 6, 512_mb);
-QIS_BENCHMARK(scan + 6, 512_mb);
-QIS_BENCHMARK(find + 12, 512_mb);
-QIS_BENCHMARK(scan + 12, 512_mb);
-QIS_BENCHMARK(find + 24, 512_mb);
-QIS_BENCHMARK(scan + 24, 512_mb);
-
-QIS_BENCHMARK(find + 6, 1_gb);
-QIS_BENCHMARK(scan + 6, 1_gb);
-QIS_BENCHMARK(find + 12, 1_gb);
-QIS_BENCHMARK(scan + 12, 1_gb);
-QIS_BENCHMARK(find + 24, 1_gb);
-QIS_BENCHMARK(scan + 24, 1_gb);
-
-QIS_BENCHMARK(find + 6, 2_gb);
-QIS_BENCHMARK(scan + 6, 2_gb);
-QIS_BENCHMARK(find + 12, 2_gb);
-QIS_BENCHMARK(scan + 12, 2_gb);
-QIS_BENCHMARK(find + 24, 2_gb);
-QIS_BENCHMARK(scan + 24, 2_gb);
-
+QIS_BENCHMARK( 16_kb);
+QIS_BENCHMARK( 64_kb);
+QIS_BENCHMARK(256_kb);
+QIS_BENCHMARK(  1_mb);
+QIS_BENCHMARK(  4_mb);
+QIS_BENCHMARK( 16_mb);
+QIS_BENCHMARK( 64_mb);
+QIS_BENCHMARK(256_mb);
+QIS_BENCHMARK(512_mb);
+QIS_BENCHMARK(  1_gb);
+QIS_BENCHMARK(  2_gb);
 // clang-format on
 
 }  // namespace QIS_SIGNATURE_ABI

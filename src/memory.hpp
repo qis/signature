@@ -16,17 +16,15 @@ std::vector<std::uint8_t> create(std::size_t size, std::string_view signature);
 void write(std::span<std::uint8_t> memory, std::size_t position, std::string_view signature);
 void write(void* data, std::size_t size, std::size_t position, std::string_view signature);
 
-// Generates random data of given size and returns it.
-// The data is guaranteed not to contain the complete DB 27 5B signature.
-// The last byte is guaranteed not to be one of the DB 27 5B signature bytes.
-// The data is guaranteed not to end with the 0xDB or the 0x27 byte.
+// Generates random data of given size.
+// The data is guaranteed not to match "D?" and "E?".
 std::vector<std::uint8_t> random(std::size_t size);
 
 // Allocates immutable random data of given sizes.
-// The data is guaranteed not to contain the complete DB 27 5B signature.
+// The data is guaranteed not to match "D?" and "E?" before 'size - min(26, size)'.
 // If size is greater, than 128 MiB, then the the first 128 MiB will be randomly generated and repeated.
 // The data is guaranteed to end with at most 26 bytes of the following signature:
-// DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+// DB E7 DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
 void initialize(std::span<const std::size_t> sizes);
 
@@ -38,14 +36,9 @@ void shutdown();
 std::span<const std::uint8_t> get(std::size_t size);
 
 // Returns a substring of given size to the following signature:
-// DB 27 5B FA FB 5E F1 FC FD FE FD 56 AF 97 F7 DF 07 EA 57 FF E2 57 56 D6 00 89
+// DB E7 DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 //  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
-std::string_view find(std::size_t size = 26);
-
-// Returns a substring of given size to the following signature:
-// DB 27 5B ?? FB ?E F? FC FD FE ?? ?? ?? ?? F7 DF 07 EA 57 FF ?? ?? ?? D6 00 ??
-//  ¹  ²  ³  ⁴  ⁵  ⁶  ⁷  ⁸  ⁹ ¹⁰ ¹¹ ¹² ¹³ ¹⁴ ¹⁵ ¹⁶ ¹⁷ ¹⁸ ¹⁹ ²⁰ ²¹ ²² ²³ ²⁴ ²⁵ ²⁶
-std::string_view scan(std::size_t size = 26);
+std::string signature(std::size_t size = 26);
 
 inline namespace literals {
 
