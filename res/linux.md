@@ -8,33 +8,37 @@ Benchmark results sorted by scanned memory block sizes.
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 16 KiB    Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 16 kb        1078 ns         1085 ns         4096
-find avx tbb 06 16 kb        1080 ns         1077 ns         4096
-find         06 16 kb        7448 ns         7489 ns         4096
-find     tbb 06 16 kb        8456 ns         8501 ns         4096
-find avx     12 16 kb        1221 ns         1223 ns         4096
-find avx tbb 12 16 kb        1187 ns         1185 ns         4096
-find         12 16 kb        4331 ns         4359 ns         4096
-find     tbb 12 16 kb        8160 ns         8205 ns         4096
-find avx     24 16 kb        1278 ns         1276 ns         4096
-find avx tbb 24 16 kb        1279 ns         1268 ns         4096
-find         24 16 kb        2692 ns         2719 ns         4096
-find     tbb 24 16 kb        7862 ns         7896 ns         4096
+data |  6 |         |        7400 ns         7443 ns         4096
+data |  6 |     tbb |        8522 ns         8552 ns         4096
+data |  6 | avx     |        1209 ns         1186 ns         4096
+data |  6 | avx tbb |        5639 ns         5636 ns         4096
 
-scan avx     06 16 kb        1165 ns         1170 ns         4096
-scan avx tbb 06 16 kb        1181 ns         1168 ns         4096
-scan         06 16 kb        6150 ns         6191 ns         4096
-scan     tbb 06 16 kb        7277 ns         7321 ns         4096
-scan avx     12 16 kb        1180 ns         1185 ns         4096
-scan avx tbb 12 16 kb        1170 ns         1164 ns         4096
-scan         12 16 kb        6117 ns         6150 ns         4096
-scan     tbb 12 16 kb        7267 ns         7298 ns         4096
-scan avx     24 16 kb        1204 ns         1201 ns         4096
-scan avx tbb 24 16 kb        1179 ns         1174 ns         4096
-scan         24 16 kb        6130 ns         6171 ns         4096
-scan     tbb 24 16 kb        7221 ns         7261 ns         4096
+mask |  6 |         |        7816 ns         7875 ns         4096
+mask |  6 |     tbb |        6607 ns         6651 ns         4096
+mask |  6 | avx     |        1127 ns         1114 ns         4096
+mask |  6 | avx tbb |        5588 ns         5608 ns         4096
+
+data | 12 |         |        4625 ns         4690 ns         4096
+data | 12 |     tbb |        7798 ns         7844 ns         4096
+data | 12 | avx     |        1294 ns         1280 ns         4096
+data | 12 | avx tbb |        5591 ns         5578 ns         4096
+
+mask | 12 |         |        8320 ns         8388 ns         4096
+mask | 12 |     tbb |        6599 ns         6641 ns         4096
+mask | 12 | avx     |        1181 ns         1183 ns         4096
+mask | 12 | avx tbb |        5497 ns         5521 ns         4096
+
+data | 24 |         |        2736 ns         2780 ns         4096
+data | 24 |     tbb |        8450 ns         8487 ns         4096
+data | 24 | avx     |        1351 ns         1348 ns         4096
+data | 24 | avx tbb |        5616 ns         5608 ns         4096
+
+mask | 24 |         |        8461 ns         8517 ns         4096
+mask | 24 |     tbb |        6556 ns         6593 ns         4096
+mask | 24 | avx     |        1203 ns         1202 ns         4096
+mask | 24 | avx tbb |        5468 ns         5493 ns         4096
 ```
 
 </details>
@@ -44,33 +48,37 @@ scan     tbb 24 16 kb        7221 ns         7261 ns         4096
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 64 KiB    Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 64 kb        2558 ns         2551 ns         4096
-find avx tbb 06 64 kb        2533 ns         2541 ns         4096
-find         06 64 kb       28927 ns        28984 ns         4096
-find     tbb 06 64 kb       11182 ns        11219 ns         4096
-find avx     12 64 kb        2457 ns         2466 ns         4096
-find avx tbb 12 64 kb        2442 ns         2418 ns         4096
-find         12 64 kb       14510 ns        14567 ns         4096
-find     tbb 12 64 kb        9403 ns         9448 ns         4096
-find avx     24 64 kb        3018 ns         3039 ns         4096
-find avx tbb 24 64 kb        2778 ns         2782 ns         4096
-find         24 64 kb        8643 ns         8695 ns         4096
-find     tbb 24 64 kb        8500 ns         8532 ns         4096
+data |  6 |         |       27840 ns        27891 ns         4096
+data |  6 |     tbb |       10756 ns        10799 ns         4096
+data |  6 | avx     |        2978 ns         2976 ns         4096
+data |  6 | avx tbb |        6275 ns         6271 ns         4096
 
-scan avx     06 64 kb        2573 ns         2575 ns         4096
-scan avx tbb 06 64 kb        2548 ns         2557 ns         4096
-scan         06 64 kb       21165 ns        21215 ns         4096
-scan     tbb 06 64 kb       11859 ns        11902 ns         4096
-scan avx     12 64 kb        2527 ns         2510 ns         4096
-scan avx tbb 12 64 kb        2556 ns         2586 ns         4096
-scan         12 64 kb       21294 ns        21337 ns         4096
-scan     tbb 12 64 kb       11768 ns        11805 ns         4096
-scan avx     24 64 kb        2513 ns         2499 ns         4096
-scan avx tbb 24 64 kb        2502 ns         2501 ns         4096
-scan         24 64 kb       21339 ns        21387 ns         4096
-scan     tbb 24 64 kb       13076 ns        13114 ns         4096
+mask |  6 |         |       29709 ns        29773 ns         4096
+mask |  6 |     tbb |        9693 ns         9725 ns         4096
+mask |  6 | avx     |        2370 ns         2383 ns         4096
+mask |  6 | avx tbb |        6220 ns         6238 ns         4096
+
+data | 12 |         |       13943 ns        13994 ns         4096
+data | 12 |     tbb |        9150 ns         9184 ns         4096
+data | 12 | avx     |        3059 ns         3051 ns         4096
+data | 12 | avx tbb |        6253 ns         6254 ns         4096
+
+mask | 12 |         |       29685 ns        29751 ns         4096
+mask | 12 |     tbb |        9658 ns         9689 ns         4096
+mask | 12 | avx     |        2496 ns         2494 ns         4096
+mask | 12 | avx tbb |        6217 ns         6238 ns         4096
+
+data | 24 |         |        8066 ns         8116 ns         4096
+data | 24 |     tbb |        8521 ns         8557 ns         4096
+data | 24 | avx     |        2817 ns         2812 ns         4096
+data | 24 | avx tbb |        6308 ns         6302 ns         4096
+
+mask | 24 |         |       29506 ns        29565 ns         4096
+mask | 24 |     tbb |        9650 ns         9687 ns         4096
+mask | 24 | avx     |        2481 ns         2482 ns         4096
+mask | 24 | avx tbb |        6043 ns         6071 ns         4096
 ```
 
 </details>
@@ -80,33 +88,37 @@ scan     tbb 24 64 kb       13076 ns        13114 ns         4096
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 256 KiB   Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 256 kb       8062 ns         8076 ns         2048
-find avx tbb 06 256 kb       7836 ns         7785 ns         2048
-find         06 256 kb     108723 ns       108796 ns         2048
-find     tbb 06 256 kb      20710 ns        20625 ns         2048
-find avx     12 256 kb       8050 ns         8049 ns         2048
-find avx tbb 12 256 kb       7744 ns         7727 ns         2048
-find         12 256 kb      56523 ns        56581 ns         2048
-find     tbb 12 256 kb      15765 ns        15680 ns         2048
-find avx     24 256 kb       9467 ns         9431 ns         2048
-find avx tbb 24 256 kb       8962 ns         8956 ns         2048
-find         24 256 kb      31043 ns        31108 ns         2048
-find     tbb 24 256 kb      12725 ns        12665 ns         2048
+data |  6 |         |      106265 ns       106336 ns         2048
+data |  6 |     tbb |       20300 ns        20202 ns         2048
+data |  6 | avx     |       10103 ns        10126 ns         2048
+data |  6 | avx tbb |        9581 ns         9472 ns         2048
 
-scan avx     06 256 kb       8324 ns         8306 ns         2048
-scan avx tbb 06 256 kb       8283 ns         8265 ns         2048
-scan         06 256 kb      80379 ns        80417 ns         2048
-scan     tbb 06 256 kb      30546 ns        30473 ns         2048
-scan avx     12 256 kb       8284 ns         8325 ns         2048
-scan avx tbb 12 256 kb       8147 ns         8147 ns         2048
-scan         12 256 kb      82699 ns        82745 ns         2048
-scan     tbb 12 256 kb      30236 ns        30159 ns         2048
-scan avx     24 256 kb       8461 ns         8403 ns         2048
-scan avx tbb 24 256 kb       8439 ns         8423 ns         2048
-scan         24 256 kb      85620 ns        85693 ns         2048
-scan     tbb 24 256 kb      30168 ns        30091 ns         2048
+mask |  6 |         |      113219 ns       113264 ns         2048
+mask |  6 |     tbb |       21758 ns        21649 ns         2048
+mask |  6 | avx     |        8137 ns         8157 ns         2048
+mask |  6 | avx tbb |        9631 ns         9543 ns         2048
+
+data | 12 |         |       53032 ns        53081 ns         2048
+data | 12 |     tbb |       15167 ns        15081 ns         2048
+data | 12 | avx     |        9955 ns         9968 ns         2048
+data | 12 | avx tbb |        9625 ns         9516 ns         2048
+
+mask | 12 |         |      113183 ns       113232 ns         2048
+mask | 12 |     tbb |       21479 ns        21403 ns         2048
+mask | 12 | avx     |        8050 ns         8008 ns         2048
+mask | 12 | avx tbb |        9672 ns         9604 ns         2048
+
+data | 24 |         |       27335 ns        27381 ns         2048
+data | 24 |     tbb |       12561 ns        12466 ns         2048
+data | 24 | avx     |        8871 ns         8882 ns         2048
+data | 24 | avx tbb |        9696 ns         9575 ns         2048
+
+mask | 24 |         |      113014 ns       113068 ns         2048
+mask | 24 |     tbb |       21494 ns        21403 ns         2048
+mask | 24 | avx     |        8240 ns         8242 ns         2048
+mask | 24 | avx tbb |        9370 ns         9267 ns         2048
 ```
 
 </details>
@@ -116,33 +128,37 @@ scan     tbb 24 256 kb      30168 ns        30091 ns         2048
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 1 MiB     Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 1 mb        56573 ns        56583 ns         1024
-find avx tbb 06 1 mb        41575 ns        41426 ns         1024
-find         06 1 mb       434412 ns       434540 ns         1024
-find     tbb 06 1 mb        55415 ns        55295 ns         1024
-find avx     12 1 mb        55950 ns        55955 ns         1024
-find avx tbb 12 1 mb        41186 ns        41033 ns         1024
-find         12 1 mb       221124 ns       221193 ns         1024
-find     tbb 12 1 mb        44933 ns        44763 ns         1024
-find avx     24 1 mb        76880 ns        76956 ns         1024
-find avx tbb 24 1 mb        43189 ns        43040 ns         1024
-find         24 1 mb       128548 ns       128624 ns         1024
-find     tbb 24 1 mb        42809 ns        42692 ns         1024
+data |  6 |         |      417257 ns       417313 ns         1024
+data |  6 |     tbb |       52655 ns        52594 ns         1024
+data |  6 | avx     |       62206 ns        62174 ns         1024
+data |  6 | avx tbb |       40632 ns        40522 ns         1024
 
-scan avx     06 1 mb        57136 ns        57145 ns         1024
-scan avx tbb 06 1 mb        44510 ns        44441 ns         1024
-scan         06 1 mb       338976 ns       339091 ns         1024
-scan     tbb 06 1 mb        98490 ns        98395 ns         1024
-scan avx     12 1 mb        57657 ns        57666 ns         1024
-scan avx tbb 12 1 mb        41862 ns        41742 ns         1024
-scan         12 1 mb       326671 ns       326734 ns         1024
-scan     tbb 12 1 mb        97741 ns        97642 ns         1024
-scan avx     24 1 mb        58394 ns        58410 ns         1024
-scan avx tbb 24 1 mb        41116 ns        40954 ns         1024
-scan         24 1 mb       326362 ns       326464 ns         1024
-scan     tbb 24 1 mb        97230 ns        97166 ns         1024
+mask |  6 |         |      455639 ns       455750 ns         1024
+mask |  6 |     tbb |       66329 ns        66250 ns         1024
+mask |  6 | avx     |       56408 ns        56425 ns         1024
+mask |  6 | avx tbb |       39975 ns        39870 ns         1024
+
+data | 12 |         |      217398 ns       217465 ns         1024
+data | 12 |     tbb |       43421 ns        43343 ns         1024
+data | 12 | avx     |       62217 ns        62236 ns         1024
+data | 12 | avx tbb |       40302 ns        40187 ns         1024
+
+mask | 12 |         |      455882 ns       455957 ns         1024
+mask | 12 |     tbb |       70676 ns        70613 ns         1024
+mask | 12 | avx     |       55826 ns        55843 ns         1024
+mask | 12 | avx tbb |       39653 ns        39559 ns         1024
+
+data | 24 |         |      112481 ns       112545 ns         1024
+data | 24 |     tbb |       41937 ns        41865 ns         1024
+data | 24 | avx     |       58051 ns        58063 ns         1024
+data | 24 | avx tbb |       41050 ns        40908 ns         1024
+
+mask | 24 |         |      455758 ns       455839 ns         1024
+mask | 24 |     tbb |       63100 ns        63022 ns         1024
+mask | 24 | avx     |       56702 ns        56717 ns         1024
+mask | 24 | avx tbb |       39674 ns        39588 ns         1024
 ```
 
 </details>
@@ -152,33 +168,37 @@ scan     tbb 24 1 mb        97230 ns        97166 ns         1024
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 4 MiB     Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 4 mb       209565 ns       209454 ns          512
-find avx tbb 06 4 mb       218536 ns       216860 ns          512
-find         06 4 mb      1704364 ns      1704448 ns          512
-find     tbb 06 4 mb       313823 ns       313779 ns          512
-find avx     12 4 mb       220102 ns       219946 ns          512
-find avx tbb 12 4 mb       222218 ns       222064 ns          512
-find         12 4 mb       884653 ns       884688 ns          512
-find     tbb 12 4 mb       266216 ns       266085 ns          512
-find avx     24 4 mb       233239 ns       233110 ns          512
-find avx tbb 24 4 mb       219246 ns       219066 ns          512
-find         24 4 mb       491108 ns       491094 ns          512
-find     tbb 24 4 mb       255544 ns       255419 ns          512
+data |  6 |         |     1661641 ns      1661760 ns          512
+data |  6 |     tbb |      312179 ns       312215 ns          512
+data |  6 | avx     |      249465 ns       249402 ns          512
+data |  6 | avx tbb |      217905 ns       216428 ns          512
 
-scan avx     06 4 mb       225574 ns       225430 ns          512
-scan avx tbb 06 4 mb       225299 ns       225204 ns          512
-scan         06 4 mb      1309146 ns      1309232 ns          512
-scan     tbb 06 4 mb       446341 ns       446140 ns          512
-scan avx     12 4 mb       217739 ns       217606 ns          512
-scan avx tbb 12 4 mb       222455 ns       222399 ns          512
-scan         12 4 mb      1309212 ns      1309273 ns          512
-scan     tbb 12 4 mb       449076 ns       448943 ns          512
-scan avx     24 4 mb       221348 ns       221214 ns          512
-scan avx tbb 24 4 mb       221190 ns       221091 ns          512
-scan         24 4 mb      1309239 ns      1309315 ns          512
-scan     tbb 24 4 mb       447024 ns       446943 ns          512
+mask |  6 |         |     1825694 ns      1825810 ns          512
+mask |  6 |     tbb |      326321 ns       326377 ns          512
+mask |  6 | avx     |      207265 ns       207214 ns          512
+mask |  6 | avx tbb |      216638 ns       216699 ns          512
+
+data | 12 |         |      867533 ns       867537 ns          512
+data | 12 |     tbb |      270561 ns       270657 ns          512
+data | 12 | avx     |      248421 ns       248362 ns          512
+data | 12 | avx tbb |      221244 ns       221282 ns          512
+
+mask | 12 |         |     1822571 ns      1822647 ns          512
+mask | 12 |     tbb |      333668 ns       333700 ns          512
+mask | 12 | avx     |      203451 ns       203412 ns          512
+mask | 12 | avx tbb |      219034 ns       219067 ns          512
+
+data | 24 |         |      458247 ns       458210 ns          512
+data | 24 |     tbb |      254456 ns       254466 ns          512
+data | 24 | avx     |      220556 ns       220493 ns          512
+data | 24 | avx tbb |      220548 ns       220626 ns          512
+
+mask | 24 |         |     1819070 ns      1819180 ns          512
+mask | 24 |     tbb |      330776 ns       330764 ns          512
+mask | 24 | avx     |      207531 ns       207475 ns          512
+mask | 24 | avx tbb |      209128 ns       209201 ns          512
 ```
 
 </details>
@@ -188,33 +208,37 @@ scan     tbb 24 4 mb       447024 ns       446943 ns          512
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 16 MiB    Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 16 mb      820550 ns       820744 ns           64
-find avx tbb 06 16 mb      683131 ns       683073 ns           64
-find         06 16 mb     6852505 ns      6852155 ns           64
-find     tbb 06 16 mb      860984 ns       860958 ns           64
-find avx     12 16 mb      851706 ns       851695 ns           64
-find avx tbb 12 16 mb      692973 ns       692913 ns           64
-find         12 16 mb     3524373 ns      3524366 ns           64
-find     tbb 12 16 mb      743073 ns       743217 ns           64
-find avx     24 16 mb      921370 ns       921422 ns           64
-find avx tbb 24 16 mb      690852 ns       690831 ns           64
-find         24 16 mb     1943323 ns      1943347 ns           64
-find     tbb 24 16 mb      725189 ns       725164 ns           64
+data |  6 |         |     6794361 ns      6794398 ns           64
+data |  6 |     tbb |      845005 ns       845033 ns           64
+data |  6 | avx     |      992716 ns       992605 ns           64
+data |  6 | avx tbb |      681277 ns       681248 ns           64
 
-scan avx     06 16 mb      906289 ns       906242 ns           64
-scan avx tbb 06 16 mb      675384 ns       675353 ns           64
-scan         06 16 mb     5206992 ns      5206939 ns           64
-scan     tbb 06 16 mb     1552375 ns      1553236 ns           64
-scan avx     12 16 mb      869473 ns       869495 ns           64
-scan avx tbb 12 16 mb      691723 ns       691745 ns           64
-scan         12 16 mb     5271533 ns      5271514 ns           64
-scan     tbb 12 16 mb     1549081 ns      1548942 ns           64
-scan avx     24 16 mb      872413 ns       872392 ns           64
-scan avx tbb 24 16 mb      687437 ns       687389 ns           64
-scan         24 16 mb     5227936 ns      5228008 ns           64
-scan     tbb 24 16 mb     1550197 ns      1550048 ns           64
+mask |  6 |         |     7324628 ns      7324708 ns           64
+mask |  6 |     tbb |     1023520 ns      1023548 ns           64
+mask |  6 | avx     |      801428 ns       801241 ns           64
+mask |  6 | avx tbb |      673536 ns       673506 ns           64
+
+data | 12 |         |     3465956 ns      3465997 ns           64
+data | 12 |     tbb |      739688 ns       739700 ns           64
+data | 12 | avx     |      992417 ns       992270 ns           64
+data | 12 | avx tbb |      683334 ns       683278 ns           64
+
+mask | 12 |         |     7344511 ns      7332047 ns           64
+mask | 12 |     tbb |     1020744 ns      1020730 ns           64
+mask | 12 | avx     |      803259 ns       803112 ns           64
+mask | 12 | avx tbb |      671709 ns       671664 ns           64
+
+data | 24 |         |     1838937 ns      1838889 ns           64
+data | 24 |     tbb |      714125 ns       714106 ns           64
+data | 24 | avx     |      864695 ns       864536 ns           64
+data | 24 | avx tbb |      682009 ns       681937 ns           64
+
+mask | 24 |         |     7265289 ns      7265403 ns           64
+mask | 24 |     tbb |     1028016 ns      1028020 ns           64
+mask | 24 | avx     |      817183 ns       816961 ns           64
+mask | 24 | avx tbb |      677509 ns       677494 ns           64
 ```
 
 </details>
@@ -224,33 +248,37 @@ scan     tbb 24 16 mb     1550197 ns      1550048 ns           64
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 64 MiB    Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 64 mb     3225812 ns      3225550 ns           32
-find avx tbb 06 64 mb     2420131 ns      2419828 ns           32
-find         06 64 mb    27160391 ns     27160416 ns           32
-find     tbb 06 64 mb     2898231 ns      2898544 ns           32
-find avx     12 64 mb     3152769 ns      3152297 ns           32
-find avx tbb 12 64 mb     2413484 ns      2413784 ns           32
-find         12 64 mb    13841887 ns     13841725 ns           32
-find     tbb 12 64 mb     2551169 ns      2551094 ns           32
-find avx     24 64 mb     3492525 ns      3492600 ns           32
-find avx tbb 24 64 mb     2435831 ns      2435834 ns           32
-find         24 64 mb     7620416 ns      7620628 ns           32
-find     tbb 24 64 mb     2507000 ns      2484166 ns           32
+data |  6 |         |    26700169 ns     26699997 ns           32
+data |  6 |     tbb |     2894138 ns      2894412 ns           32
+data |  6 | avx     |     3752791 ns      3752556 ns           32
+data |  6 | avx tbb |     2438159 ns      2437828 ns           32
 
-scan avx     06 64 mb     3267313 ns      3267275 ns           32
-scan avx tbb 06 64 mb     2424975 ns      2425028 ns           32
-scan         06 64 mb    20590622 ns     20590422 ns           32
-scan     tbb 06 64 mb     5676837 ns      5676694 ns           32
-scan avx     12 64 mb     3294263 ns      3294250 ns           32
-scan avx tbb 12 64 mb     2424159 ns      2371234 ns           32
-scan         12 64 mb    20660256 ns     20659537 ns           32
-scan     tbb 12 64 mb     5666422 ns      5666087 ns           32
-scan avx     24 64 mb     3269906 ns      3269894 ns           32
-scan avx tbb 24 64 mb     2430084 ns      2430094 ns           32
-scan         24 64 mb    20665684 ns     20653991 ns           32
-scan     tbb 24 64 mb     5704663 ns      5704516 ns           32
+mask |  6 |         |    28762253 ns     28760581 ns           32
+mask |  6 |     tbb |     3614334 ns      3600131 ns           32
+mask |  6 | avx     |     3042225 ns      3041962 ns           32
+mask |  6 | avx tbb |     2437263 ns      2437247 ns           32
+
+data | 12 |         |    13541103 ns     13540816 ns           32
+data | 12 |     tbb |     2548278 ns      2548931 ns           32
+data | 12 | avx     |     3827066 ns      3826850 ns           32
+data | 12 | avx tbb |     2438100 ns      2438253 ns           32
+
+mask | 12 |         |    28787006 ns     28775966 ns           32
+mask | 12 |     tbb |     3621212 ns      3620753 ns           32
+mask | 12 | avx     |     3066434 ns      3066244 ns           32
+mask | 12 | avx tbb |     2438484 ns      2438922 ns           32
+
+data | 24 |         |     7022147 ns      7021856 ns           32
+data | 24 |     tbb |     2519256 ns      2519119 ns           32
+data | 24 | avx     |     3293313 ns      3293069 ns           32
+data | 24 | avx tbb |     2437003 ns      2436875 ns           32
+
+mask | 24 |         |    28808678 ns     28797631 ns           32
+mask | 24 |     tbb |     3630197 ns      3630028 ns           32
+mask | 24 | avx     |     3110497 ns      3110359 ns           32
+mask | 24 | avx tbb |     2441141 ns      2440888 ns           32
 ```
 
 </details>
@@ -260,33 +288,37 @@ scan     tbb 24 64 mb     5704663 ns      5704516 ns           32
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 256 MiB   Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 256 mb   12524144 ns     12523331 ns           16
-find avx tbb 06 256 mb    9398837 ns      9398650 ns           16
-find         06 256 mb  108441519 ns    108441544 ns           16
-find     tbb 06 256 mb   10976881 ns     10941019 ns           16
-find avx     12 256 mb   12556844 ns     12556794 ns           16
-find avx tbb 12 256 mb    9417069 ns      9416931 ns           16
-find         12 256 mb   54893500 ns     54871325 ns           16
-find     tbb 12 256 mb    9661419 ns      9661319 ns           16
-find avx     24 256 mb   13805081 ns     13805087 ns           16
-find avx tbb 24 256 mb    9420637 ns      9420544 ns           16
-find         24 256 mb   30156738 ns     30133544 ns           16
-find     tbb 24 256 mb    9605931 ns      9605812 ns           16
+data |  6 |         |   106033081 ns    106010144 ns           16
+data |  6 |     tbb |    10688544 ns     10688344 ns           16
+data |  6 | avx     |    15151400 ns     15151206 ns           16
+data |  6 | avx tbb |     9303031 ns      9302863 ns           16
 
-scan avx     06 256 mb   12900294 ns     12900225 ns           16
-scan avx tbb 06 256 mb    9432862 ns      9432781 ns           16
-scan         06 256 mb   82168413 ns     82146450 ns           16
-scan     tbb 06 256 mb   22049806 ns     21626125 ns           16
-scan avx     12 256 mb   12945725 ns     12946363 ns           16
-scan avx tbb 12 256 mb    9416750 ns      9416625 ns           16
-scan         12 256 mb   82205500 ns     82181669 ns           16
-scan     tbb 12 256 mb   22126825 ns     21463794 ns           16
-scan avx     24 256 mb   13113888 ns     13113806 ns           16
-scan avx tbb 24 256 mb    9422381 ns      9422213 ns           16
-scan         24 256 mb   82353256 ns     82331063 ns           16
-scan     tbb 24 256 mb   22182450 ns     21956356 ns           16
+mask |  6 |         |   115130331 ns    115091856 ns           16
+mask |  6 |     tbb |    13836156 ns     13780006 ns           16
+mask |  6 | avx     |    12136206 ns     12136056 ns           16
+mask |  6 | avx tbb |     9309906 ns      9310500 ns           16
+
+data | 12 |         |    55558500 ns     55520275 ns           16
+data | 12 |     tbb |     9517106 ns      9517769 ns           16
+data | 12 | avx     |    15065588 ns     15065300 ns           16
+data | 12 | avx tbb |     9290675 ns      9290506 ns           16
+
+mask | 12 |         |   115225262 ns    115183719 ns           16
+mask | 12 |     tbb |    13721450 ns     13689438 ns           16
+mask | 12 | avx     |    12062500 ns     12062338 ns           16
+mask | 12 | avx tbb |     9288819 ns      9288675 ns           16
+
+data | 24 |         |    28115119 ns     28076425 ns           16
+data | 24 |     tbb |     9475100 ns      9474938 ns           16
+data | 24 | avx     |    12855881 ns     12855706 ns           16
+data | 24 | avx tbb |     9314731 ns      9315319 ns           16
+
+mask | 24 |         |   115120781 ns    115078381 ns           16
+mask | 24 |     tbb |    13744906 ns     13713750 ns           16
+mask | 24 | avx     |    12263212 ns     12263394 ns           16
+mask | 24 | avx tbb |     9291600 ns      9291375 ns           16
 ```
 
 </details>
@@ -296,33 +328,37 @@ scan     tbb 24 256 mb   22182450 ns     21956356 ns           16
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 512 MiB   Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 512 mb   25469375 ns     25469138 ns            8
-find avx tbb 06 512 mb   18645837 ns     18644150 ns            8
-find         06 512 mb  214942187 ns    214899463 ns            8
-find     tbb 06 512 mb   22050225 ns     21623825 ns            8
-find avx     12 512 mb   25138150 ns     25137962 ns            8
-find avx tbb 12 512 mb   18652850 ns     18652725 ns            8
-find         12 512 mb  109614213 ns    109614062 ns            8
-find     tbb 12 512 mb   19213800 ns     19131363 ns            8
-find avx     24 512 mb   27692600 ns     27692412 ns            8
-find avx tbb 24 512 mb   18760500 ns     18760400 ns            8
-find         24 512 mb   60350500 ns     60302487 ns            8
-find     tbb 24 512 mb   19068837 ns     19068887 ns            8
+data |  6 |         |   212059488 ns    212059288 ns            8
+data |  6 |     tbb |    21749300 ns     21158850 ns            8
+data |  6 | avx     |    30669375 ns     30669150 ns            8
+data |  6 | avx tbb |    18532887 ns     18532550 ns            8
 
-scan avx     06 512 mb   25796363 ns     25796112 ns            8
-scan avx tbb 06 512 mb   18710837 ns     18674112 ns            8
-scan         06 512 mb  164281350 ns    164238437 ns            8
-scan     tbb 06 512 mb   43882550 ns     43104250 ns            8
-scan avx     12 512 mb   26141688 ns     26141500 ns            8
-scan avx tbb 12 512 mb   18747713 ns     18648975 ns            8
-scan         12 512 mb  164282813 ns    164282800 ns            8
-scan     tbb 12 512 mb   44226512 ns     42678138 ns            8
-scan avx     24 512 mb   26300262 ns     26300150 ns            8
-scan avx tbb 24 512 mb   18713125 ns     18713038 ns            8
-scan         24 512 mb  164562225 ns    164508125 ns            8
-scan     tbb 24 512 mb   43965587 ns     43317988 ns            8
+mask |  6 |         |   230075138 ns    230075087 ns            8
+mask |  6 |     tbb |    27458787 ns     27362638 ns            8
+mask |  6 | avx     |    24277650 ns     24277387 ns            8
+mask |  6 | avx tbb |    18482675 ns     18482550 ns            8
+
+data | 12 |         |   108440800 ns    108365538 ns            8
+data | 12 |     tbb |    18980387 ns     18906363 ns            8
+data | 12 | avx     |    30655300 ns     30655075 ns            8
+data | 12 | avx tbb |    18501513 ns     18501262 ns            8
+
+mask | 12 |         |   230226650 ns    230226500 ns            8
+mask | 12 |     tbb |    27345862 ns     27251325 ns            8
+mask | 12 | avx     |    24220325 ns     24220087 ns            8
+mask | 12 | avx tbb |    18503438 ns     18503325 ns            8
+
+data | 24 |         |    56220825 ns     56150212 ns            8
+data | 24 |     tbb |    18853562 ns     18853562 ns            8
+data | 24 | avx     |    25553912 ns     25553775 ns            8
+data | 24 | avx tbb |    18498600 ns     18498338 ns            8
+
+mask | 24 |         |   230088388 ns    230088275 ns            8
+mask | 24 |     tbb |    27321700 ns     27025200 ns            8
+mask | 24 | avx     |    24546713 ns     24546500 ns            8
+mask | 24 | avx tbb |    18487675 ns     18487587 ns            8
 ```
 
 </details>
@@ -332,33 +368,37 @@ scan     tbb 24 512 mb   43965587 ns     43317988 ns            8
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 1 GiB     Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 1 gb     50254713 ns     50251625 ns            8
-find avx tbb 06 1 gb     37288612 ns     37254913 ns            8
-find         06 1 gb    430194163 ns    430150687 ns            8
-find     tbb 06 1 gb     42739812 ns     41427900 ns            8
-find avx     12 1 gb     50162813 ns     50162650 ns            8
-find avx tbb 12 1 gb     37230475 ns     37227075 ns            8
-find         12 1 gb    219626075 ns    219583350 ns            8
-find     tbb 12 1 gb     37982188 ns     37558375 ns            8
-find avx     24 1 gb     55356588 ns     55312488 ns            8
-find avx tbb 24 1 gb     37426088 ns     37426175 ns            8
-find         24 1 gb    121319888 ns    121319750 ns            8
-find     tbb 24 1 gb     37945787 ns     37946050 ns            8
+data |  6 |         |   424166887 ns    424166687 ns            8
+data |  6 |     tbb |    42981163 ns     42259875 ns            8
+data |  6 | avx     |    61726838 ns     61726438 ns            8
+data |  6 | avx tbb |    37032075 ns     36177462 ns            8
 
-scan avx     06 1 gb     51831075 ns     51830750 ns            8
-scan avx tbb 06 1 gb     37339987 ns     37311963 ns            8
-scan         06 1 gb    328738937 ns    328697875 ns            8
-scan     tbb 06 1 gb     88297575 ns     87495575 ns            8
-scan avx     12 1 gb     51775363 ns     51722350 ns            8
-scan avx tbb 12 1 gb     37256787 ns     37231175 ns            8
-scan         12 1 gb    328591225 ns    328591325 ns            8
-scan     tbb 12 1 gb     88332313 ns     86726313 ns            8
-scan avx     24 1 gb     52550538 ns     52550325 ns            8
-scan avx tbb 24 1 gb     37318287 ns     37318437 ns            8
-scan         24 1 gb    328740962 ns    328697513 ns            8
-scan     tbb 24 1 gb     87884363 ns     84908900 ns            8
+mask |  6 |         |   460167287 ns    460092287 ns            8
+mask |  6 |     tbb |    55348788 ns     54536587 ns            8
+mask |  6 | avx     |    48312875 ns     48312550 ns            8
+mask |  6 | avx tbb |    36948462 ns     36936063 ns            8
+
+data | 12 |         |   216580413 ns    216505900 ns            8
+data | 12 |     tbb |    37535375 ns     37230462 ns            8
+data | 12 | avx     |    61404813 ns     61329888 ns            8
+data | 12 | avx tbb |    36997563 ns     36819312 ns            8
+
+mask | 12 |         |   460241163 ns    460170963 ns            8
+mask | 12 |     tbb |    54496525 ns     53007125 ns            8
+mask | 12 | avx     |    48646625 ns     48646325 ns            8
+mask | 12 | avx tbb |    36937987 ns     36906737 ns            8
+
+data | 24 |         |   112103125 ns    112102925 ns            8
+data | 24 |     tbb |    37660750 ns     37630062 ns            8
+data | 24 | avx     |    51074775 ns     50999050 ns            8
+data | 24 | avx tbb |    36962013 ns     36961862 ns            8
+
+mask | 24 |         |   460247225 ns    460172275 ns            8
+mask | 24 |     tbb |    54558850 ns     54062475 ns            8
+mask | 24 | avx     |    48742925 ns     48742600 ns            8
+mask | 24 | avx tbb |    36939850 ns     36923200 ns            8
 ```
 
 </details>
@@ -368,33 +408,37 @@ scan     tbb 24 1 gb     87884363 ns     84908900 ns            8
 
 ```
 -----------------------------------------------------------------
-Benchmark                       Time             CPU   Iterations
+Type |  K | AVX TBB | 2 GiB     Time             CPU   Iterations
 -----------------------------------------------------------------
-find avx     06 2 gb    101058000 ns    101056575 ns            8
-find avx tbb 06 2 gb     74493825 ns     73140925 ns            8
-find         06 2 gb    860234763 ns    860194700 ns            8
-find     tbb 06 2 gb     85159825 ns     83470150 ns            8
-find avx     12 2 gb    100976712 ns    100975563 ns            8
-find avx tbb 12 2 gb     74455050 ns     73879150 ns            8
-find         12 2 gb    439897362 ns    439897175 ns            8
-find     tbb 12 2 gb     76097425 ns     76010825 ns            8
-find avx     24 2 gb    110846750 ns    110846337 ns            8
-find avx tbb 24 2 gb     74580750 ns     71332300 ns            8
-find         24 2 gb    242186437 ns    242172350 ns            8
-find     tbb 24 2 gb     76121563 ns     75415025 ns            8
+data |  6 |         |   848413175 ns    848372100 ns            8
+data |  6 |     tbb |    86006050 ns     83639387 ns            8
+data |  6 | avx     |   121445600 ns    121373662 ns            8
+data |  6 | avx tbb |    73845175 ns     72491950 ns            8
 
-scan avx     06 2 gb    103072263 ns    103071837 ns            8
-scan avx tbb 06 2 gb     74479888 ns     74299388 ns            8
-scan         06 2 gb    657747675 ns    657697175 ns            8
-scan     tbb 06 2 gb    175372000 ns    173220663 ns            8
-scan avx     12 2 gb    102875975 ns    102875550 ns            8
-scan avx tbb 12 2 gb     74499100 ns     73003787 ns            8
-scan         12 2 gb    657166888 ns    657126162 ns            8
-scan     tbb 12 2 gb    176446712 ns    171567600 ns            8
-scan avx     24 2 gb    104984925 ns    104945475 ns            8
-scan avx tbb 24 2 gb     74528925 ns     73906900 ns            8
-scan         24 2 gb    656854063 ns    656814650 ns            8
-scan     tbb 24 2 gb    175397525 ns    171149175 ns            8
+mask |  6 |         |   920562475 ns    920404300 ns            8
+mask |  6 |     tbb |   109193038 ns    106293925 ns            8
+mask |  6 | avx     |    97157300 ns     97157188 ns            8
+mask |  6 | avx tbb |    73854925 ns     73181887 ns            8
+
+data | 12 |         |   436954963 ns    436954925 ns            8
+data | 12 |     tbb |    75116613 ns     73674487 ns            8
+data | 12 | avx     |   121999987 ns    121957212 ns            8
+data | 12 | avx tbb |    73788262 ns     70960437 ns            8
+
+mask | 12 |         |   920602662 ns    920563725 ns            8
+mask | 12 |     tbb |   109549612 ns    108511312 ns            8
+mask | 12 | avx     |    96689963 ns     96689725 ns            8
+mask | 12 | avx tbb |    73717525 ns     73550338 ns            8
+
+data | 24 |         |   224368387 ns    224368512 ns            8
+data | 24 |     tbb |    75086100 ns     74032362 ns            8
+data | 24 | avx     |   103494500 ns    103494262 ns            8
+data | 24 | avx tbb |    73749437 ns     72856900 ns            8
+
+mask | 24 |         |   920574975 ns    920535012 ns            8
+mask | 24 |     tbb |   109798075 ns    106688988 ns            8
+mask | 24 | avx     |    98211313 ns     98211050 ns            8
+mask | 24 | avx tbb |    73725150 ns     73196163 ns            8
 ```
 
 </details>
