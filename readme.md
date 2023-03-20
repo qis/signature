@@ -90,7 +90,7 @@ DB E7 DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 DB E? DB DA EB DE E1 EC DD DE DD D6 EF E7 D7 EF E7 EA E7 DF D2 D7 E6 D6 D0 D9
 ```
 
-The `K` column shows how many bytes of the signature type were used during scans.
+The `K` column shows how many bytes of the signature type were used during scans.<br/>
 In the example above, `mask | 12` means `DB E? DB DA EB DE E1 EC DD DE DD D6`.
 
 The scanned memory block always contains the signature at the very end.
