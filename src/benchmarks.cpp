@@ -14,14 +14,10 @@ class console_reporter : public benchmark::ConsoleReporter {
 public:
   using ConsoleReporter::ConsoleReporter;
 
-  void printed_header(bool value) noexcept
-  {
-    printed_header_ = value;
-  }
-
   bool ReportContext(const Context& context) override
   {
-    name_field_width_ = 19;
+    name_field_width_ = 22;
+    printed_header_ = true;
     return true;
   }
 
@@ -38,6 +34,14 @@ public:
       }
     }
     ConsoleReporter::ReportRuns(runs);
+  }
+
+  static void print_header(std::string text) noexcept
+  {
+    text = std::format("Type |  K | AVX TBB | {:<7}", text);
+    std::puts("-----------------------------------------------------------------");
+    std::puts(std::format("{}   Time             CPU   Iterations", text).data());
+    std::fputs("-----------------------------------------------------------------", stdout);
   }
 
 private:
@@ -63,6 +67,7 @@ private:
     } else {
       name.append(con);
     }
+    name.append(" |");
 
     return name;
   }
@@ -108,9 +113,9 @@ int main(int argc, char** argv)
       std::cout << "<summary>" + size_text + "</summary>" << std::endl;
       std::cout << std::endl;
       std::cout << "```" << std::endl;
-      reporter.printed_header(false);
+      reporter.print_header(size_text);
 
-      for (int i = 1; i <= 26; i++) {
+      for (const auto i : { 6, 12, 24 }) {
         if (i > 1) {
           std::cout << std::endl;
         }
@@ -119,22 +124,23 @@ int main(int argc, char** argv)
           std::format("std_seq::scan/{}/{}/", 100 + i, size));
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
-          std::format("avx_seq::scan/{}/{}/", 100 + i, size));
-        benchmark::RunSpecifiedBenchmarks(
-          &reporter,
           std::format("std_tbb::scan/{}/{}/", 100 + i, size));
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
+          std::format("avx_seq::scan/{}/{}/", 100 + i, size));
+        benchmark::RunSpecifiedBenchmarks(
+          &reporter,
           std::format("avx_tbb::scan/{}/{}/", 100 + i, size));
+        std::cout << std::endl;
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
           std::format("std_seq::scan/{}/{}/", 200 + i, size));
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
-          std::format("avx_seq::scan/{}/{}/", 200 + i, size));
+          std::format("std_tbb::scan/{}/{}/", 200 + i, size));
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
-          std::format("std_tbb::scan/{}/{}/", 200 + i, size));
+          std::format("avx_seq::scan/{}/{}/", 200 + i, size));
         benchmark::RunSpecifiedBenchmarks(
           &reporter,
           std::format("avx_tbb::scan/{}/{}/", 200 + i, size));

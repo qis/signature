@@ -34,7 +34,7 @@
 #include <string_view>
 #include <utility>
 
-// Enables or disables AVX2 optimizations.
+// Enable AVX2 optimizations.
 #ifndef QIS_SIGNATURE_USE_AVX2
 #ifdef __AVX2__
 #define QIS_SIGNATURE_USE_AVX2 1
@@ -43,7 +43,12 @@
 #endif
 #endif
 
-// Enables or disables concurrency using oneTBB.
+// Number of searcher template specializations.
+#ifndef QIS_SIGNATURE_TEMPLATE_SPECIALIZATIONS
+#define QIS_SIGNATURE_TEMPLATE_SPECIALIZATIONS 3
+#endif
+
+// Enable concurrency using oneTBB.
 #ifndef QIS_SIGNATURE_USE_TBB
 #if __has_include(<tbb/parallel_for.h>)
 #define QIS_SIGNATURE_USE_TBB 1
@@ -52,21 +57,21 @@
 #endif
 #endif
 
-// Minimum scan data size before concurrency is used.
+// Scan size threshold for concurrency.
 #ifndef QIS_SIGNATURE_CONCURRENCY_THRESHOLD
 #if QIS_SIGNATURE_USE_AVX2
-#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 256 * 1024
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 512 * 1024
 #else
-#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 10 * 1024
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 128 * 1024
 #endif
 #endif
 
-// Maximum number of concurrently scanned ranges.
+// Maximum number of concurrency ranges.
 #ifndef QIS_SIGNATURE_CONCURRENCY_RANGES
 #define QIS_SIGNATURE_CONCURRENCY_RANGES 64
 #endif
 
-// Enables or disables throwing exceptions during signature parsing.
+// Enable exceptions during signature parsing.
 #ifndef QIS_SIGNATURE_USE_EXCEPTIONS
 #ifdef __cpp_exceptions
 #define QIS_SIGNATURE_USE_EXCEPTIONS 1
@@ -76,6 +81,7 @@
 #endif
 
 // Verify settings.
+static_assert(QIS_SIGNATURE_TEMPLATE_SPECIALIZATIONS > 0);
 static_assert(QIS_SIGNATURE_CONCURRENCY_THRESHOLD >= 0);
 static_assert(QIS_SIGNATURE_CONCURRENCY_RANGES > 0);
 
@@ -307,314 +313,6 @@ static constexpr std::size_t npos = std::string_view::npos;
 
 namespace detail {
 
-template <std::size_t Size>
-bool equal(const char* s, const char* p) noexcept;
-
-template <>
-constexpr bool equal<1>(const char* s, const char* p) noexcept
-{
-  return s[0] == p[0];
-}
-
-template <>
-inline bool equal<2>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint16_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint16_t*>(p);
-  return s0 == p0;
-}
-
-template <>
-inline bool equal<3>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
-  return (s0 & 0x00FFFFFF) == (p0 & 0x00FFFFFF);
-}
-
-template <>
-inline bool equal<4>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
-  return s0 == p0;
-}
-
-template <>
-inline bool equal<5>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  return ((s0 ^ p0) & 0x000000FFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<6>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  return ((s0 ^ p0) & 0x0000FFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<7>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  return ((s0 ^ p0) & 0x00FFFFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<8>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  return s0 == p0;
-}
-
-template <>
-inline bool equal<9>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  return (s0 == p0) && (s[8] == p[8]);
-}
-
-template <>
-inline bool equal<10>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint16_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint16_t*>(p + 8);
-  return (s0 == p0) && (s1 == p1);
-}
-
-template <>
-inline bool equal<11>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
-  return (s0 == p0) && ((s1 & 0x00FFFFFF) == (p1 & 0x00FFFFFF));
-}
-
-template <>
-inline bool equal<12>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
-  return (s0 == p0) && (s1 == p1);
-}
-
-template <>
-inline bool equal<13>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  return (s0 == p0) && ((s1 ^ p1) & 0x000000FFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<14>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  return (s0 == p0) && ((s1 ^ p1) & 0x0000FFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<15>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  return (s0 == p0) && ((s1 ^ p1) & 0x00FFFFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<16>(const char* s, const char* p) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  return (s0 == p0) && (s1 == p1);
-}
-
-template <std::size_t Size>
-bool equal(const char* s, const char* p, const char* m) noexcept;
-
-template <>
-constexpr bool equal<1>(const char* s, const char* p, const char* m) noexcept
-{
-  return (s[0] & m[0]) == p[0];
-}
-
-template <>
-inline bool equal<2>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint16_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint16_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint16_t*>(m);
-  return (s0 & m0) == p0;
-}
-
-template <>
-inline bool equal<3>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint32_t*>(m);
-  return (s0 & m0 & 0x00FFFFFF) == (p0 & 0x00FFFFFF);
-}
-
-template <>
-inline bool equal<4>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint32_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint32_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint32_t*>(m);
-  return (s0 & m0) == p0;
-}
-
-template <>
-inline bool equal<5>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  return ((s0 & m0 ^ p0) & 0x000000FFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<6>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  return ((s0 & m0 ^ p0) & 0x0000FFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<7>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  return ((s0 & m0 ^ p0) & 0x00FFFFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<8>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  return (s0 & m0) == p0;
-}
-
-template <>
-inline bool equal<9>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  return ((s0 & m0) == p0) && ((s[8] & m[8]) == p[8]);
-}
-
-template <>
-inline bool equal<10>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint16_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint16_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint16_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
-}
-
-template <>
-inline bool equal<11>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint32_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1 & 0x00FFFFFF) == (p1 & 0x00FFFFFF));
-}
-
-template <>
-inline bool equal<12>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint32_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint32_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint32_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
-}
-
-template <>
-inline bool equal<13>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x000000FFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<14>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x0000FFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<15>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1 ^ p1) & 0x00FFFFFFFFFFFFFF) == 0;
-}
-
-template <>
-inline bool equal<16>(const char* s, const char* p, const char* m) noexcept
-{
-  const auto s0 = *reinterpret_cast<const std::uint64_t*>(s);
-  const auto s1 = *reinterpret_cast<const std::uint64_t*>(s + 8);
-  const auto p0 = *reinterpret_cast<const std::uint64_t*>(p);
-  const auto p1 = *reinterpret_cast<const std::uint64_t*>(p + 8);
-  const auto m0 = *reinterpret_cast<const std::uint64_t*>(m);
-  const auto m1 = *reinterpret_cast<const std::uint64_t*>(m + 8);
-  return ((s0 & m0) == p0) && ((s1 & m1) == p1);
-}
-
 inline const char* safe_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
   if (k == 1) {
@@ -624,7 +322,10 @@ inline const char* safe_search(const char* s, const char* e, const char* p, cons
       };
       return std::find_if(s, e, compare);
     }
-    return std::find(s, e, p[0]);
+    if (const auto i = std::memchr(s, p[0], static_cast<std::size_t>(e - s))) {
+      return reinterpret_cast<const char*>(i);
+    }
+    return e;
   }
   if (m) {
     auto m0 = m;
@@ -696,19 +397,24 @@ struct searcher {
     // Compares [i+1..i+k-2] with [p+1..p+k-2] (applies mask).
     const auto compare = [p, m, k](const char* i) noexcept {
       if constexpr (M0 || MK) {
+        auto c = m + 1;
+        const auto predicate = [&c](char lhs, char rhs) noexcept {
+          return (lhs & *c++) == rhs;
+        };
         if constexpr (K == 0) {
-          auto c = m + 1;
-          return std::equal(i + 1, i + k - 1, p + 1, p + k - 1, [&c](char lhs, char rhs) noexcept {
-            return (lhs & *c++) == rhs;
-          });
+          return std::equal(i + 1, i + k - 1, p + 1, p + k - 1, predicate);
+        } else if constexpr (K != 3) {
+          return std::equal(i + 1, i + K - 1, p + 1, p + K - 1, predicate);
         } else {
-          return equal<K - 2>(i + 1, p + 1, m + 1);
+          return (i[1] & m[1]) == p[1];
         }
       } else {
         if constexpr (K == 0) {
           return std::memcmp(i + 1, p + 1, k - 2) == 0;
+        } else if constexpr (K != 3) {
+          return std::memcmp(i + 1, p + 1, K - 2) == 0;
         } else {
-          return equal<K - 2>(i + 1, p + 1);
+          return i[1] == p[1];
         }
       }
     };
@@ -759,29 +465,15 @@ struct searcher<M0, MK, 1> {
     const char* m,
     std::size_t k) noexcept
   {
-#ifdef _MSVC_STL_VERSION
-    // The MSVC STL std::find implementation is already optimized.
-    return safe_search(s, e, p, m, k);
-#else
     // Fill 32 bytes of 'p0' with the first data (p) byte.
     const auto p0 = _mm256_set1_epi8(p[0]);
 
     // Fill 32 bytes of 'm0' with the first mask (m) byte.
-    const auto m0 = [m]() noexcept {
-      if constexpr (M0 || MK) {
-        return _mm256_set1_epi8(m[0]);
-      } else {
-        return __m256i{};
-      }
-    }();
+    const auto m0 = _mm256_set1_epi8(m[0]);
 
     // Compares all bytes in 'si' with the first byte in 'p' (applies mask).
     const auto compare_p0 = [p0, m0](__m256i si) noexcept {
-      if constexpr (M0 || MK) {
-        return _mm256_cmpeq_epi8(_mm256_and_si256(si, m0), p0);
-      } else {
-        return _mm256_cmpeq_epi8(si, p0);
-      }
+      return _mm256_cmpeq_epi8(_mm256_and_si256(si, m0), p0);
     };
 
     // Iterate over scan (s) 32 bytes at a time.
@@ -799,7 +491,22 @@ struct searcher<M0, MK, 1> {
       }
     }
     return e;
-#endif
+  }
+};
+
+template <>
+struct searcher<false, false, 1> {
+  static inline const char* search(
+    const char* s,
+    const char* e,
+    const char* p,
+    const char* m,
+    std::size_t k) noexcept
+  {
+    if (const auto i = std::memchr(s, p[0], static_cast<std::size_t>(e - s))) {
+      return reinterpret_cast<const char*>(i);
+    }
+    return e;
   }
 };
 
@@ -897,20 +604,21 @@ consteval auto make_searchers(std::index_sequence<I...>) noexcept
 
 inline const char* fast_search(const char* s, const char* e, const char* p, const char* m, std::size_t k) noexcept
 {
-  static constexpr auto none = make_searchers<false, false>(std::make_index_sequence<17>());
-  static constexpr auto mkmk = make_searchers<false, true>(std::make_index_sequence<17>());
-  static constexpr auto m0m0 = make_searchers<true, false>(std::make_index_sequence<17>());
-  static constexpr auto m0mk = make_searchers<true, true>(std::make_index_sequence<17>());
+  static constexpr auto size = std::size_t(QIS_SIGNATURE_TEMPLATE_SPECIALIZATIONS + 1);
+  static constexpr auto none = make_searchers<false, false>(std::make_index_sequence<size>());
+  static constexpr auto mkmk = make_searchers<false, true>(std::make_index_sequence<size>());
+  static constexpr auto m0m0 = make_searchers<true, false>(std::make_index_sequence<size>());
+  static constexpr auto m0mk = make_searchers<true, true>(std::make_index_sequence<size>());
   if (m) {
     if (m[0] != '\xFF') {
       if (m[k - 1] != '\xFF') {
-        return m0mk[k < m0mk.size() ? k : 0](s, e, p, m, k);
+        return m0mk[k < size ? k : 0](s, e, p, m, k);
       }
-      return m0m0[k < m0m0.size() ? k : 0](s, e, p, m, k);
+      return m0m0[k < size ? k : 0](s, e, p, m, k);
     }
-    return mkmk[k < mkmk.size() ? k : 0](s, e, p, m, k);
+    return mkmk[k < size ? k : 0](s, e, p, m, k);
   }
-  return none[k < none.size() ? k : 0](s, e, p, m, k);
+  return none[k < size ? k : 0](s, e, p, m, k);
 }
 
 #else

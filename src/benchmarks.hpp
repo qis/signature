@@ -1,4 +1,5 @@
 #pragma once
+#define QIS_SIGNATURE_CONCURRENCY_THRESHOLD 0  // NOLINT
 #include <qis/signature.hpp>
 #include <benchmark/benchmark.h>
 #include <memory.hpp>
@@ -9,10 +10,10 @@
 #include <cstdlib>
 
 #define QIS_BENCHMARK_REGISTER(abi, name) BENCHMARK(abi::name)
-#define QIS_BENCHMARK(size)                                               \
-  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, scan)                         \
-    ->ArgsProduct({ benchmark::CreateDenseRange(101, 126, 1), { size } }) \
-    ->ArgsProduct({ benchmark::CreateDenseRange(201, 226, 1), { size } }) \
+#define QIS_BENCHMARK(size)                        \
+  QIS_BENCHMARK_REGISTER(QIS_SIGNATURE_ABI, scan)  \
+    ->ArgsProduct({ { 106, 112, 124 }, { size } }) \
+    ->ArgsProduct({ { 206, 212, 224 }, { size } }) \
     ->Iterations(benchmark_iterations(size))
 
 #define QIS_BENCHMARK_ABORT(message)            \
