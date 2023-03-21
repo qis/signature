@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23
+  },
+  "configurePresets": [
+    {
+      "hidden": true,
+      "name": "default",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL",
+        "CONAN_CMAKE_SILENT_OUTPUT": true,
+        "SIGNATURE_INSTALL_HEADERS": false,
+        "SIGNATURE_BUILD_BENCHMARKS": true,
+        "SIGNATURE_BUILD_TESTS": true,
+        "SIGNATURE_BUILD_MAIN": true
+      }
+    },
+    {
+      "hidden": true,
+      "name": "code-analysis-msvc",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-msvc-x64",
+          "enableMicrosoftCodeAnalysis": true
+        }
+      }
+    },
+    {
+      "hidden": true,
+      "name": "code-analysis-llvm",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x64",
+          "enableClangTidyCodeAnalysis": true
+        }
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "inherits": [ "default", "code-analysis-msvc" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "inherits": [ "default", "code-analysis-msvc" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug-clang",
+      "displayName": "Debug (clang)",
+      "inherits": [ "default", "code-analysis-llvm" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ]
+        }
+      }
+    },
+    {
+      "name": "release-clang",
+      "displayName": "Release (clang)",
+      "inherits": [ "default", "code-analysis-llvm" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "clang"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ]
+        }
+      }
+    },
+    {
+      "name": "debug-clang-cl",
+      "displayName": "Debug (clang-cl)",
+      "inherits": [ "default", "code-analysis-llvm" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      }
+    },
+    {
+      "name": "release-clang-cl",
+      "displayName": "Release (clang-cl)",
+      "inherits": [ "default", "code-analysis-llvm" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      }
+    },
+    {
+      "name": "check",
+      "displayName": "Check",
+      "inherits": [ "default", "code-analysis-llvm" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang",
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+/*
+.*
+!/include/
+!/res/
+!/src/
+!/third_party/
+!/.clangd
+!/.clang-format
+!/.clang-tidy
+!/.gitattributes
+!/.gitignore
+!/CMakeLists.txt
+!/CMakePresets.json
+!/license.txt
+!/readme.md
